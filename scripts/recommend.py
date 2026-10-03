@@ -7,10 +7,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 
 WEIGHTS = {
-    "ingredient_match": 0.40,
+    "ingredient_match": 0.55,
     "nutrition_match": 0.30,
-    "time_match": 0.10,
-    "region_match": 0.15,
+    "time_match": 0.05,
+    "region_match": 0.05,
     "diversity": 0.05,
 }
 

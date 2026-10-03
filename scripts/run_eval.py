@@ -63,7 +63,11 @@ def infer_meal_type(case):
     user_input = case["user_input"]
     if "早餐" in user_input:
         return "breakfast"
+    if "早上" in user_input:
+        return "breakfast"
     if "午餐" in user_input:
+        return "lunch"
+    if "中午" in user_input:
         return "lunch"
     if "练后" in user_input or "训练后" in user_input:
         return "post_workout"
