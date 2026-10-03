@@ -1,0 +1,5 @@
+goal,meal_type,calorie_min,calorie_max,protein_min,fat_max,carbs_min,carbs_max,description
+fat_loss,dinner,350,550,30,18,25,60,减脂晚餐控制热量和脂肪，保持高蛋白
+muscle_gain,dinner,550,800,40,25,50,100,增肌晚餐需要更高热量和碳水
+fat_loss,post_workout,350,600,30,18,35,80,练后餐应补充蛋白质和适量碳水
+muscle_gain,breakfast,450,650,25,20,50,75,增肌早餐需要足够碳水支持训练
