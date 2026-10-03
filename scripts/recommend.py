@@ -129,6 +129,92 @@ def recommend(user_input, recipes=None, rules=None, top_n=3):
     return sorted(candidates, key=lambda x: x["score"], reverse=True)[:top_n]
 
 
+def recommend_eat_out(user_input, eat_out_foods=None, top_n=3):
+    eat_out_foods = eat_out_foods or load_csv("eat_out_foods.csv")
+    goal = user_input.get("goal")
+    region = user_input.get("region", "generic")
+
+    candidates = []
+    for row in eat_out_foods:
+        goals = split_items(row["suitable_goals"])
+        if goal and goal not in goals:
+            continue
+
+        region_score = 0
+        if row["region"] == "generic":
+            region_score = 0.8
+        elif row["region"] == region:
+            region_score = 1.0
+        else:
+            continue
+
+        score = region_score
+        if "低脂" in row["tags"] or "高蛋白" in row["tags"]:
+            score += 0.2
+
+        candidates.append({
+            "id": row["id"],
+            "name": row["name"],
+            "score": round(min(score, 1.0), 4),
+            "region": row["region"],
+            "suitable_goals": goals,
+            "order_strategy": row["order_strategy"],
+            "risk_notes": split_items(row["risk_notes"]),
+            "calorie_range": row["calorie_range"],
+            "tags": split_items(row["tags"]),
+        })
+
+    return sorted(candidates, key=lambda x: x["score"], reverse=True)[:top_n]
+
+
+def suggest_substitution(user_input, substitutions=None):
+    substitutions = substitutions or load_csv("substitutions.csv")
+    original = user_input.get("original_ingredient")
+    if not original:
+        return []
+
+    results = []
+    for row in substitutions:
+        if row["original"] != original:
+            continue
+        results.append({
+            "id": row["id"],
+            "original": row["original"],
+            "substitute": row["substitute"],
+            "reason": row["reason"],
+            "nutrition_change": row["nutrition_change"],
+            "applies_to": row["applies_to"],
+        })
+    return results
+
+
+def analyze_nutrition(user_input, nutrition_data=None):
+    nutrition_data = nutrition_data or load_csv("nutrition.csv")
+    ingredient_name = user_input.get("nutrition_ingredient")
+    amount_g = user_input.get("amount_g", 100)
+    if not ingredient_name:
+        return None
+
+    for row in nutrition_data:
+        if row["name"] != ingredient_name:
+            continue
+        factor = float(amount_g) / 100 if row["unit"] == "100g" else 1
+        return {
+            "id": row["id"],
+            "name": row["name"],
+            "unit": row["unit"],
+            "amount": amount_g,
+            "calories": round(float(row["calories"]) * factor, 1),
+            "protein_g": round(float(row["protein_g"]) * factor, 1),
+            "fat_g": round(float(row["fat_g"]) * factor, 1),
+            "carbs_g": round(float(row["carbs_g"]) * factor, 1),
+            "fiber_g": round(float(row["fiber_g"]) * factor, 1),
+            "allergens": row["allergens"],
+            "source": row["source"],
+        }
+    return None
+
+
 if __name__ == "__main__":
     sample = {
         "intent": "cook",
