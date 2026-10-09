@@ -64,11 +64,11 @@
 | `rules_version`（`rv-…`） | goal_rules / substitutions | 规则内容指纹 |
 | `bundle_version`（`bv-…`） | 以上两组 | 数据 + 规则整体指纹 |
 
-当前（2026-10-07）：
+当前（2026-10-09）：
 
-- `data_version = dv-3bc959a3d8ad`
-- `rules_version = rv-9124f01c88ba`
-- `bundle_version = bv-fcec5cdd225e`
+- `data_version = dv-a3345d800862`
+- `rules_version = rv-ecedb1a359c3`
+- `bundle_version = bv-a3e6abe13870`
 
 规则：
 
@@ -85,8 +85,8 @@
 3. **落库**：`uv run --python 3.12 python scripts/add_data.py --regen batch.json` —— 走 `scripts/data_store.py` 原子写入，保持 BOM / 行尾 / 列序 / 列名不变，自动生成主键。
 4. **重算缓存 / 派生列**：改食谱后执行 `uv run --python 3.12 python scripts/regen_recipe_nutrition.py`（或 `--regen` 已包含）；再执行 `uv run --python 3.12 python scripts/refresh_target_ingredients.py` 同步 `data/target_ingredients.csv` 的 `current_recipes` 派生列。
 5. **全量校验**：`uv run --python 3.12 python scripts/validate_data.py` 必须全 PASS。
-6. **回归**：跑 `scripts/run_eval.py --dry-run` 确认无新增回归；关注 `coverage_report.py` 的覆盖变化。
-7. **记录版本**：在本次记录（`docs/dev-log.md` / `evals/runs/`）写入新的 `bundle_version`，并说明改了什么、为什么。
+6. **回归**：跑 `scripts/run_eval_set.py --cases evals/eval_set.csv`，确认没有新增回归；同时关注 `coverage_report.py` 的覆盖变化。
+7. **记录版本**：在提交说明和评测摘要中写明新的 `bundle_version`，并说明改了什么、为什么。
 
 > 铁律：**所有写入必须走 `scripts/data_store.py`**，不要手工编辑 `data/*.csv`。手改会破坏行尾 / 列序，且绕过校验。
 
@@ -113,12 +113,10 @@
 《中国食物成分表 标准版（第6版）》第一册「能量和食物一般营养成分」的每 100g 可食部值，
 逐条升到 L3；口径不符或该书未收录的，如实保留 L2，**不强行凑**。
 
-**数据底座**（离线，随仓库提交，可追溯）：
+**数据底座**（本地内部资料，不随公开仓库提供）：
 
-- `data/sources/cfct/raw_json/merged_*.json`：原书表格按 49 个细分类拆分，共 1505 条。
-- `data/sources/cfct/cfct_index.csv`：由 `build` 生成的扁平索引（`Tr`→0，`—`/空→缺失）。
-- `data/sources/cn_food_composition.csv`：人工审核的「本地食材 → 食物成分表条目」映射。
-- 管线：`scripts/cn_food_composition.py`（`build` / `search` / `report` / `apply`）。
+- 原始索引和人工映射保存在本地 `internal/` 资料区，不作为公开仓库文件。
+- 公开数据表只保留已经核验后的来源字段和版本记录。
 - 来源说明：数值转录自开源数字化项目 `Sanotsu/china-food-composition-data`（对原书表格做
   双模型交叉识别 + 恒等式 / 值域校验，并附原始截图）。本项目仅转录数值，著作权归原书作者；
   索引与映射作为可追溯引用一并保留。
@@ -137,7 +135,7 @@
 - 干基 vs 湿基必须区分：书中「河粉」（79.2g 碳水/100g）为干基，与项目湿河粉不符；书中仅「魔芋精粉」（干基）与项目鲜魔芋不符 → 均 `keep`。
 - 品种差异：书中甘薯仅红心 / 白心两档，与「紫薯」差异大 → `keep`。
 
-**本轮执行结果（2026-10-07）**：`data/sources/cn_food_composition.csv` 共 39 条映射——21 条 `apply_mode=cfct` 已替换为 `cn_food_composition`/L3（`source_ref` 形如 `CFCT6:047104`），18 条 `apply_mode=keep` 如实保留 L2/L1（含全 0 的「温水」仍 L1）。`nutrition.csv` 的 `confidence` 由 L3 117 / L2 41 / L1 1 变为 **L3 138 / L2 20 / L1 1**；`source` 变为 `usda_fdc` 120 / `cn_food_composition` 21 / `local` 18。替换后 `regen_recipe_nutrition.py` 重算 208 条营养缓存（最大热量偏差 55.8 kcal），`refresh_target_ingredients.py` 刷新施工单（无变化）。
+**本轮执行结果（2026-10-07）**：本地映射底稿共 39 条——21 条替换为 `cn_food_composition`/L3（`source_ref` 形如 `CFCT6:047104`），18 条如实保留 L2/L1（含全 0 的「温水」仍 L1）。`nutrition.csv` 的 `confidence` 由 L3 117 / L2 41 / L1 1 变为 **L3 138 / L2 20 / L1 1**；`source` 变为 `usda_fdc` 120 / `cn_food_composition` 21 / `local` 18。替换后 `regen_recipe_nutrition.py` 重算 208 条营养缓存（最大热量偏差 55.8 kcal），`refresh_target_ingredients.py` 刷新施工单（无变化）。
 
 ### 5A.2 外食菜品来源升级方案（L1→L2）
 
@@ -187,7 +185,7 @@
 3. 用「同一批数据反推规则，再用同一批数据验收」——会造成循环验证。
 4. 因为实现做不到，就放宽规则、改期望值或删除用例。
 5. 让 LLM 直接生成营养数值并作为事实落库。
-6. 在同一份 `evals/runs/` 记录里混用不同 `data_version` 的结果而不标注版本。
+6. 在同一份评测摘要里混用不同 `data_version` 的结果而不标注版本。
 
 ## 8. 重新填写数据会影响评测吗？
 

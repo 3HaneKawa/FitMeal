@@ -1,7 +1,7 @@
 """FitMeal 评测执行器（代码层模式）。
 
 职责：
-- 读取结构化用例集（默认 evals/eval_set.csv，缺失时回退 e2_pilot_cases.csv）
+- 读取正式结构化用例集 evals/eval_set.csv
 - 把用例构造成 payload，调用 scripts/handler.handle()（真实 Python / 数据层，不经 LLM）
 - 把 pass_rule 的声明式断言逐条求值，输出 通过 / 失败 / 未评估
 - 结果写入 evals/runs/<时间戳>_code_<版本>.csv
@@ -30,7 +30,6 @@ ROOT = Path(__file__).resolve().parents[1]
 EVALS = ROOT / "evals"
 RUNS = EVALS / "runs"
 DEFAULT_CASES = EVALS / "eval_set.csv"
-FALLBACK_CASES = EVALS / "e2_pilot_cases.csv"
 NUTRITION = ROOT / "data" / "nutrition.csv"
 
 from handler import handle  # noqa: E402
@@ -387,7 +386,9 @@ def main() -> None:
         print("api 模式需要 Dify endpoint，尚未接入。请先使用 code 模式。")
         raise SystemExit(2)
 
-    cases_path = (args.cases or (DEFAULT_CASES if DEFAULT_CASES.exists() else FALLBACK_CASES)).resolve()
+    cases_path = (args.cases or DEFAULT_CASES).resolve()
+    if not cases_path.exists():
+        raise SystemExit(f"用例文件不存在：{cases_path}")
     rows = read_csv(cases_path)
     if args.limit:
         rows = rows[: args.limit]

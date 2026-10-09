@@ -12,9 +12,7 @@ sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
 ROOT = Path(__file__).resolve().parents[1]
 EVALS = ROOT / "evals"
 MATRIX = EVALS / "capability_matrix.csv"
-PILOT = EVALS / "e2_pilot_cases.csv"
 CASES = EVALS / "eval_set.csv"
-LEGACY = EVALS / "eval_cases.csv"
 
 GROUP_NAMES = {
     "functional": "功能",
@@ -43,10 +41,10 @@ def distribution(rows: list[dict], field: str) -> list[tuple[str, int]]:
     return sorted(counter.items(), key=lambda item: (-item[1], item[0]))
 
 
-def build_coverage(pilot: list[dict]) -> tuple[Counter, Counter]:
+def build_coverage(cases: list[dict]) -> tuple[Counter, Counter]:
     dev: Counter = Counter()
     holdout: Counter = Counter()
-    for row in pilot:
+    for row in cases:
         caps = [c for c in row["capability_id"].split(";") if c]
         target = holdout if row["split"] == "holdout" else dev
         for cap in caps:
@@ -60,10 +58,9 @@ def main() -> None:
     args = parser.parse_args()
 
     matrix = read_csv(MATRIX)
-    pilot = read_csv(PILOT)
-    cases = read_csv(CASES) if CASES.exists() else []
-    structured = cases if cases else pilot
-    legacy = read_csv(LEGACY) if LEGACY.exists() else []
+    if not CASES.exists():
+        raise SystemExit(f"正式用例文件不存在：{CASES}")
+    structured = read_csv(CASES)
     dev, holdout = build_coverage(structured)
 
     try:
@@ -81,9 +78,7 @@ def main() -> None:
     print(f"版本指纹：{version_line}")
 
     section("一、用例文件盘点")
-    print(f"  evals/eval_cases.csv       {len(legacy):3d} 条  旧口径（expected_recommendations 命中式，无 capability_id / split）")
-    print(f"  evals/e2_pilot_cases.csv   {len(pilot):3d} 条  试点结构化集（dev / holdout + 机检 pass_rule）")
-    print(f"  evals/eval_set.csv         {len(cases):3d} 条  正式结构化集（E2.2 累积集）")
+    print(f"  evals/eval_set.csv         {len(structured):3d} 条  正式结构化集（dev / holdout + 机检 pass_rule）")
     print(f"  结构化用例合计             {len(structured):3d} / 目标 270（E1 冻结口径，去重后总数）")
     dev_n = sum(row["split"] == "dev" for row in structured)
     hold_n = sum(row["split"] == "holdout" for row in structured)
@@ -144,7 +139,6 @@ def main() -> None:
     section("五、结论")
     print(f"  - 结构化评测集规模 {len(structured)} / 270，覆盖 {len(set(dev) | set(holdout))} 项能力。")
     print(f"  - 未达标 in-scope 能力 {len(unmet)} 项；F10 为承诺未实现，暂按占位处理。")
-    print("  - 旧口径 eval_cases.csv 32 条仍待按维护计划迁移；文件保留，继续作为回归参考。")
     print("  - rubric.md 营养阈值与 goal_rules.csv 一致性校验已 PASS。")
     print("  - 下一批优先补 F06 / F08，随后补安全风险与 X01 交叉难题。")
     print("  - 分批建设与门禁见 docs/eval-maintenance-plan.md。")

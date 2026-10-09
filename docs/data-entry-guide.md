@@ -76,7 +76,7 @@
 | substitutes | 否 | 可替换食材，多个用分号分隔 |
 | source | 否 | 数据来源，建议写 `manual_entry` / `USDA` / `中国食物成分表` |
 
-> 注：表中只有 `source` 可经本接口录入；`source_ref` / `source_name` / `confidence` / `verified_at` 不由本接口写入，由来源替换与校验脚本（`scripts/source_authority.py`、`scripts/cn_food_composition.py`）维护，具体口径见 `docs/data-dictionary.md`。
+> 注：表中只有 `source` 可经本接口录入；`source_ref` / `source_name` / `confidence` / `verified_at` 由来源核验流程维护，不通过普通录入接口改写。具体口径见 `docs/data-dictionary.md`。
 
 ### 3.2 菜谱 recipes
 

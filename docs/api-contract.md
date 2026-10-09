@@ -31,7 +31,7 @@
 
 ## 3. 节点输出结构
 
-> **本节是这套字段的唯一事实来源。** `prompts/parameter_extractor.md`、`prompts/intent_classifier.md`、`docs/phase2-dify-chatflow-guide.md` 都必须与本节一致；`scripts/handler.py` 只消费本节字段。
+> **本节是这套字段的唯一事实来源。** `prompts/parameter_extractor.md`、`prompts/intent_classifier.md` 与 `scripts/handler.py` 都必须和本节一致；编排画布配置属于本地内部资料，不随公开仓库提供。
 > v1 使用**三个 LLM 节点**：参数抽取、安全判断、意图分类。安全判断与意图分类并行，之后由「参数合并」代码节点合成一个 `payload`，再交给 `handler.handle()` 消费。
 > 注意：LLM 节点在 Dify 里**读不到任何本地文件**，提示词必须自带全部判据与字段规则，不能写“请参考某文档”。
 
@@ -298,7 +298,7 @@
    - v0.5（2026-10-06）：营养改为**计算值**（事实来源 `data/nutrition.csv`，`recipes.csv` 营养列降级为缓存并由校验强制对齐）；新增 `data/ingredient_aliases.csv`（24 组别名）与 `data/unit_conversions.csv`（14 条单位换算）；推荐项新增 `ingredient_breakdown`（食材级营养拆解）与每份 `fiber_g`。
    - v0.6（2026-10-06）：新增第 8 节「数据录入接口」（`/data/*` + `scripts/add_data.py`）；确认营养写入规则为「只收食材与克重、一律现算」，写入统一走 `scripts/data_store.py`。
    - v0.7（2026-10-07）：意图新增 `provenance`（数据来源与算法口径溯源）；响应新增 `answer_type=provenance` 与 `sources`；`ingredient_breakdown[]` 与 `analyze_nutrition` 新增 `source` / `source_ref` / `source_name` / `confidence` / `verified_at` 来源字段。
-2. 本契约变更需同步更新 `prompts/*.md`、`scripts/*.py` 与 `evals/eval_cases.csv`。
+2. 本契约变更需同步更新 `prompts/*.md`、`scripts/*.py` 与 `evals/eval_set.csv`。
 
 ## 8. 数据录入接口
 

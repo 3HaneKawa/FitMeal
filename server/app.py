@@ -13,7 +13,7 @@
 - 写接口不接受"营养数值"作为食谱输入：食谱只给食材与克重，营养必须现算。
 - 依赖 Python 标准库 + fastapi / uvicorn，不需要数据库。
 
-启动（项目根目录下，详见 docs/phase2-dify-chatflow-guide.md 步骤 5B）：
+启动（项目根目录下，完整命令见 README.md）：
 
     uv run --python 3.12 --with fastapi --with uvicorn \
         uvicorn app:app --app-dir server --host 0.0.0.0 --port 8765

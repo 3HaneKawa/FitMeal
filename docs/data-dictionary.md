@@ -148,42 +148,17 @@ uv run --python 3.12 python scripts/coverage_report.py            # 第 5 节输
 
 > `current_recipes` 是缓存快照，改完食谱要重跑校验脚本对齐；本文件无 BOM、LF 行尾。
 
-## eval_cases.csv
+## eval_set.csv
 
-| 字段 | 类型 | 说明 |
-| --- | --- | --- |
-| case_id | string | 评测 ID |
-| user_input | string | 用户输入 |
-| expected_intent | string | 预期意图 |
-| expected_goal | string | 预期目标 |
-| expected_ingredients | string | 应识别食材 |
-| expected_time | int | 预期时间 |
-| expected_region | string | 预期地域 |
-| expected_recommendations | string | 可接受推荐 ID |
-| expected_behavior | string | 预期行为 |
-| severity | string | 严重度 |
-| forbidden_items | string | 禁止内容 |
-| pass_rule | string | 通过规则 |
-| grader | string | 评分方式 |
-| notes | string | 备注 |
+正式评测集字段、能力映射和判定方式见 `evals/README.md` 与 `evals/rubric.md`。该文件包含开发集和验收集，不能为了修通过率而删除高风险样本或修改 holdout 期望。
 
 ---
 
-## 来源底座（`data/sources/`）
+## 来源底稿
 
-存放可复现的**来源原始数据与映射表**，供脚本回查与重建，不直接参与推荐计算。
+`data/nutrition.csv` 保留每个食材的 `source`、`source_ref`、`source_name`、`confidence` 和 `verified_at`，用于说明当前数值来自哪里。原始下载文件、映射底稿和维护脚本属于本地内部资料，不随公开仓库提供；替换记录和口径见 `docs/data-governance.md`。
 
-| 文件 | 内容 | 生成 / 使用脚本 |
-| --- | --- | --- |
-| `sources/fdc_index.csv` | USDA FoodData Central 条目索引（fdc_id、描述、公开发布日期、营养值） | `scripts/source_authority.py` 等 |
-| `sources/ingredient_sources.csv` | 食材标准名 → USDA fdc_id 的映射与匹配质量 | 同上 |
-| `sources/cfct/cfct_index.csv` | 《中国食物成分表 标准版（第6版）》条目索引（food_code、食物名、可食部比例、营养值） | `scripts/cn_food_composition.py build` |
-| `sources/cfct/raw_json/`、`raw_json_foodwake.json` | 成分表原始 JSON（按类别合并） | 采集产物，随索引一起存档 |
-| `sources/cn_food_composition.csv` | 食材标准名 → 成分表条目的映射（`apply_mode=cfct` 覆盖 / `keep` 保留） | `scripts/cn_food_composition.py apply` 读入 |
-| `sources/eat_out_portion_model.csv` | 外食「标准份量模型」逐菜组成（主料 / 主食 / 蔬菜 / 烹调油 + 克重） | `scripts/estimate_eat_out.py apply` 读入 |
-| `sources/raw/` | USDA 官方 CSV 解压件（SR Legacy / Survey 等），仅本地留档、体积大 | 人工下载，不参与构建 |
-
-> 这些是**执行底稿**，只读；改动 `data/*.csv` 的正式数据一律走 `scripts/data_store.py`。来源分级与替换流程见 `docs/data-governance.md`。
+> 改动 `data/*.csv` 的正式数据一律走 `scripts/data_store.py`。
 
 ---
 
@@ -203,7 +178,7 @@ uv run --python 3.12 python scripts/coverage_report.py            # 第 5 节输
 - 数量、重量、形容词、来源描述（「昨晚的」「半个」）不进食材数组。
 - 计算层再加一道**最低食材匹配门槛**：用户给了食材时，一种都没命中的食谱直接跳过；推荐项用 `matched_ingredients` 记录实际命中的食材。
 
-> 两层词表必须同步：新增别名时同时改 `data/ingredient_aliases.csv` 与 `prompts/parameter_extractor.md`，然后跑 `scripts/validate_data.py` 与 `evals/eval_cases.csv` 回归。
+> 两层词表必须同步：新增别名时同时改 `data/ingredient_aliases.csv` 与 `prompts/parameter_extractor.md`，然后跑 `scripts/validate_data.py` 与 `scripts/run_eval_set.py --cases evals/eval_set.csv`。
 
 ## 营养缓存（recipes.csv 的营养列）
 

@@ -20,6 +20,7 @@ data/sources/
 # Local runtime artifacts
 server/logs/
 backup/
+internal/
 
 # OS
 .DS_Store
@@ -43,7 +44,6 @@ _build_eval_set.py
 dify/code_node.py
 dify/merge_node.py
 server/run-service.ps1
-evals/e2_pilot_cases.csv
 evals/eval_batch*_cases.csv
 scripts/build_code_node.py
 scripts/build_eval_batch2.py
@@ -53,3 +53,4 @@ scripts/kb_generate.py
 scripts/knowledge_base.py
 scripts/refresh_target_ingredients.py
 scripts/regen_recipe_nutrition.py
+evals/e2_pilot_cases.csv
