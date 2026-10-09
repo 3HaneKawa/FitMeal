@@ -1,5 +1,4 @@
-goal,meal_type,calorie_min,calorie_max,protein_min,fat_max,carbs_min,carbs_max,description
-fat_loss,dinner,350,550,30,18,25,60,减脂晚餐控制热量和脂肪，保持高蛋白
-muscle_gain,dinner,550,800,40,25,50,100,增肌晚餐需要更高热量和碳水
-fat_loss,post_workout,350,600,30,18,35,80,练后餐应补充蛋白质和适量碳水
-muscle_gain,breakfast,450,650,25,20,50,75,增肌早餐需要足够碳水支持训练
+goal,calorie_min,calorie_max,protein_min,fat_max,carbs_min,carbs_max,description
+fat_loss,120,520,20,20,10,70,减脂餐区间：控热量与脂肪。能量上限按《中国居民膳食指南(2022)》轻身体活动成人每日能量(女1800/男2250 kcal)的约1/3折算，下限120 kcal 用于排除配菜/零食；蛋白下限取 ISSN 每餐20g 肌肉蛋白合成阈值；脂肪上限按脂肪供能比<=35% 折算为每份<=20g。
+muscle_gain,320,740,25,29,25,95,增肌餐区间：较高能量与碳水、保证训练恢复用蛋白。能量按每日约2250 kcal 的1/3折算；蛋白下限取 ISSN 每餐20-40g 区间的中低段25g；脂肪上限按脂肪供能比<=35% 折算为每份<=29g。
+maintain,200,660,20,26,15,80,维持餐区间：热量与三大营养素均衡。能量按每日约2000 kcal 的1/3折算；蛋白下限取 ISSN 每餐20g；脂肪上限按脂肪供能比<=35% 折算为每份<=26g。

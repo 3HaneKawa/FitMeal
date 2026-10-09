@@ -1,11 +1,31 @@
-id,original,substitute,reason,nutrition_change,applies_to
-S001,鸡蛋,豆腐,保持蛋白质摄入,"热量接近，脂肪略低",fat_loss
-S002,鸡胸肉,去皮鸡腿肉,改善口感,"脂肪略升",muscle_gain
-S003,糙米,燕麦,保持碳水与饱腹感,"碳水接近，纤维更高",maintain
-S004,花生酱,无糖酸奶,降低脂肪,"脂肪明显下降",fat_loss
-S005,虾仁,鸡胸肉,规避海鲜过敏,"蛋白接近，脂肪略低",fat_loss
-S006,土豆,山药,降低热量密度,"碳水略低，更清爽",fat_loss
-S007,牛肉,鸡胸肉,降低脂肪,"蛋白接近，脂肪更低",fat_loss
-S008,牛奶,植物奶,规避乳制品过敏,"热量接近，蛋白略低",maintain
-S009,木耳,香菇,调整口感和可得性,"营养功能相似",maintain
-S010,杂粮饭,燕麦,减少烹饪时间,"碳水相近，饱腹感相近",muscle_gain
+id,original,substitute,reason,nutrition_change,applies_to,source,source_ref,source_name,confidence,verified_at
+S001,鸡蛋,豆腐,保持蛋白质摄入,热量接近，脂肪略低,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S002,鸡胸肉,去皮鸡腿肉,改善口感,脂肪略升,muscle_gain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S003,糙米,燕麦,保持碳水与饱腹感,碳水接近，纤维更高,maintain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S004,花生酱,无糖酸奶,降低脂肪,脂肪明显下降,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S005,虾仁,鸡胸肉,规避海鲜过敏,蛋白接近，脂肪略低,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S006,土豆,山药,降低热量密度,碳水略低，更清爽,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S007,牛肉,鸡胸肉,降低脂肪,蛋白接近，脂肪更低,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S008,牛奶,植物奶,规避乳制品过敏,热量接近，蛋白略低,maintain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S009,木耳,香菇,调整口感和可得性,营养功能相似,maintain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S010,米饭,燕麦,减少烹饪时间,碳水相近，饱腹感相近,muscle_gain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S011,白米饭,糙米饭,降低升糖速度,碳水接近，纤维更高,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S012,五花肉,瘦牛肉,降低脂肪,脂肪明显下降，蛋白更高,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S013,全脂牛奶,低脂牛奶,降低脂肪,热量和脂肪下降,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S014,蛋黄酱,无糖酸奶,降低脂肪,脂肪大幅下降,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S015,油炸鸡排,香煎鸡胸,降低脂肪,脂肪明显下降,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S016,白面包,全麦面包,增加纤维,碳水接近，纤维更高,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S017,方便面,荞麦面条,降低脂肪和钠,热量略降，钠下降,maintain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S018,培根,火鸡胸,降低脂肪,脂肪明显下降,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S019,奶油意面,番茄意面,降低脂肪,脂肪下降，热量略降,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S020,奶茶,无糖豆浆,降低糖分,糖分大幅下降,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S021,土豆泥,蒸红薯,增加纤维,热量接近，纤维更高,maintain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S022,冰淇淋,希腊酸奶,降低糖分,糖分下降，蛋白略增,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S023,猪里脊,鸡胸肉,降低脂肪,脂肪更低，蛋白接近,muscle_gain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S024,白吐司,全麦吐司,增加纤维,碳水接近，纤维更高,muscle_gain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S025,植物油,橄榄油,改善脂肪质量,热量接近，脂肪酸更优,maintain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S026,沙拉酱,油醋汁,降低脂肪,脂肪明显下降,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S027,蛋白粉,鸡蛋,天然蛋白来源,蛋白接近，附带其他营养,muscle_gain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S028,精制糖,蜂蜜,天然甜味,糖分略降，风味更好,maintain,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S029,米粉,糙米粉,增加纤维,碳水接近，纤维更高,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07
+S030,香肠,鸡胸肉肠,降低脂肪,脂肪明显下降,fat_loss,rule_derived,,基于 nutrition.csv 每100g 营养差异推导的定性替换规则,L2,2026-10-07

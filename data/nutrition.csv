@@ -1,101 +1,160 @@
-id,name,category,unit,calories,protein_g,fat_g,carbs_g,fiber_g,allergens,substitutes,source
-I001,鸡胸肉,protein,100g,133,24,3,0,0,无,"去皮鸡腿肉;瘦牛肉",human_estimated
-I002,去皮鸡腿肉,protein,100g,146,22,7,0,0,无,"鸡胸肉;瘦牛肉",human_estimated
-I003,瘦牛肉,protein,100g,158,22,7,0,0,无,"鸡胸肉;虾仁",human_estimated
-I004,虾仁,protein,100g,93,19,1,0,0,"鱼虾","鸡胸肉;鸡蛋白",human_estimated
-I005,三文鱼,protein,100g,208,20,13,0,0,"鱼虾","鲈鱼;鸡胸肉",human_estimated
-I006,鲈鱼,protein,100g,105,20,3,0,0,"鱼虾","三文鱼;鳕鱼",human_estimated
-I007,鸡蛋,protein,1个,72,6,5,0.4,0,蛋,"豆腐;鸡蛋白",human_estimated
-I008,豆腐,protein,100g,82,8,5,3,1,大豆,"鸡蛋白;瘦肉",human_estimated
-I009,西兰花,vegetable,100g,36,4,0.6,7,2.6,无,"花菜;芦笋",human_estimated
-I010,花菜,vegetable,100g,27,2,0.3,5,2,无,"西兰花;白菜",human_estimated
-I011,芦笋,vegetable,100g,22,2,0.1,3,2,无,"西兰花;豆角",human_estimated
-I012,菠菜,vegetable,100g,28,3,0.4,4,2,无,"上海青;油麦菜",human_estimated
-I013,上海青,vegetable,100g,15,1.5,0.2,2,1.5,无,"菠菜;菜心",human_estimated
-I014,番茄,vegetable,100g,20,1,0.2,4,1,无,"圣女果;彩椒",human_estimated
-I015,圣女果,vegetable,100g,22,1,0.2,5,1,无,"番茄;彩椒",human_estimated
-I016,胡萝卜,vegetable,100g,39,1,0.2,8,3,无,"彩椒;南瓜",human_estimated
-I017,豆角,vegetable,100g,34,2,0.2,7,3,无,"四季豆;西兰花",human_estimated
-I018,土豆,carb,100g,77,2,0.2,17,2,无,"山药;糙米",human_estimated
-I019,山药,carb,100g,57,1.5,0.2,12,1,无,"土豆;南瓜",human_estimated
-I020,杂粮饭,carb,100g,120,3,1,25,2.5,无,"糙米;燕麦",human_estimated
-I021,糙米,carb,100g,112,2.5,0.9,24,1.8,无,"杂粮饭;燕麦",human_estimated
-I022,燕麦,carb,40g,150,5,3,27,4,无,"糙米;藜麦",human_estimated
-I023,藜麦,carb,40g,148,6,2.5,25,3,无,"糙米;燕麦",human_estimated
-I024,全麦意面,carb,80g,280,11,2,56,7,小麦,"糙米;荞麦面",human_estimated
-I025,牛奶,dairy,150ml,81,5,4.5,6,0,乳,"植物奶;蛋白粉",human_estimated
-I026,羊肉,protein,100g,203,18,14,0,0,无,"牛肉;鸡胸肉",human_estimated
-I027,猪里脊,protein,100g,155,21,7,0,0,无,"鸡胸肉;瘦牛肉",human_estimated
-I028,猪小排,protein,100g,278,17,22,0,0,无,"鸡腿肉;猪里脊",human_estimated
-I029,猪肝,protein,100g,129,19,4,4,0,无,"鸡肝;猪心",human_estimated
-I030,猪心,protein,100g,120,17,5,1,0,无,"猪肝;牛肉",human_estimated
-I031,鸡腿肉,protein,100g,181,19,11,0,0,无,"鸡胸肉;去皮鸡腿肉",human_estimated
-I032,鸡爪,protein,100g,254,23,17,1,0,无,"鸡胸肉;猪蹄筋",human_estimated
-I033,鸭肉,protein,100g,240,19,19,0,0,无,"鸡肉;鹅肉",human_estimated
-I034,鳕鱼,protein,100g,105,21,2,0,0,"鱼虾","鲈鱼;鳜鱼",human_estimated
-I035,鳜鱼,protein,100g,117,20,4,0,0,"鱼虾","鲈鱼;鳕鱼",human_estimated
-I036,鲩鱼,protein,100g,112,18,4,0,0,"鱼虾","草鱼;鲈鱼",human_estimated
-I037,草鱼,protein,100g,112,18,4,0,0,"鱼虾","鲩鱼;鲈鱼",human_estimated
-I038,金枪鱼,protein,100g,132,28,1,0,0,"鱼虾","鸡胸肉;三文鱼",human_estimated
-I039,羊肉串,protein,100g,220,22,14,0,0,无,"羊里脊;鸡肉串",human_estimated
-I040,羊里脊,protein,100g,155,20,7,0,0,无,"鸡胸肉;瘦牛肉",human_estimated
-I041,羊心,protein,100g,165,18,10,1,0,无,"鸡心;猪心",human_estimated
-I042,羊肝,protein,100g,134,17,5,4,0,无,"猪肝;鸡肝",human_estimated
-I043,豆腐皮,protein,100g,409,44,17,12,3,无,"鸡胸肉;豆皮",human_estimated
-I044,豆皮,protein,100g,409,44,17,12,3,无,"鸡胸肉;豆腐",human_estimated
-I045,澄粉,carb,50g,170,0,0,42,1,无,"全麦面粉;玉米淀粉",human_estimated
-I046,红薯粉,carb,100g,338,1,0,81,3,无,"木薯粉;土豆粉",human_estimated
-I047,河粉,carb,100g,219,4,1,50,1,无,"粿条;米线",human_estimated
-I048,糯米粉,carb,100g,360,7,1,81,1,无,"粘米粉;玉米淀粉",human_estimated
-I049,面条,carb,100g,280,9,1,61,3,无,"全麦面条;荞麦面",human_estimated
-I050,荞麦面条,carb,100g,335,13,2,68,5,无,"荞麦面;全麦面条",human_estimated
-I051,全麦面条,carb,100g,348,14,2,71,8,无,"荞麦面;糙米",human_estimated
-I052,全麦面粉,carb,100g,340,14,2,71,11,无,"荞麦粉;玉米粉",human_estimated
-I053,全麦饺子皮,carb,100g,350,13,2,72,8,无,"全麦面粉;荞麦面",human_estimated
-I054,全麦饼,carb,1张,130,4,2,26,4,无,"全麦面条;糙米",human_estimated
-I055,杂粮米,carb,100g,350,12,4,72,10,无,"糙米;藜麦",human_estimated
-I056,杂粮馒头,carb,100g,250,9,2,52,7,无,"全麦面包;糙米",human_estimated
-I057,大米,carb,100g,346,7,1,77,1,无,"糙米;杂粮米",human_estimated
-I058,魔芋,vegetable,100g,7,0,0,2,2,无,"魔芋丝;冬瓜",human_estimated
-I059,魔芋丝,vegetable,100g,10,0,0,3,2,无,"魔芋;冬瓜",human_estimated
-I060,金针菇,vegetable,100g,37,2,0.3,7,2.7,无,"香菇;木耳",human_estimated
-I061,香菇,vegetable,100g,34,3,0.5,7,2.5,无,"金针菇;平菇",human_estimated
-I062,蘑菇,vegetable,100g,22,3,0.3,3,1,无,"香菇;金针菇",human_estimated
-I063,白菜,vegetable,100g,17,1.5,0.2,3,1.5,无,"娃娃菜;包菜",human_estimated
-I064,包菜,vegetable,100g,25,1.5,0.2,5,2,无,"白菜;生菜",human_estimated
-I065,生菜,vegetable,100g,15,1.4,0.2,3,1.3,无,"包菜;菠菜",human_estimated
-I066,空心菜,vegetable,100g,20,2,0.3,4,2,无,"菠菜;油麦菜",human_estimated
-I067,菜心,vegetable,100g,20,1.7,0.2,4,1.6,无,"上海青;菠菜",human_estimated
-I068,黄瓜,vegetable,100g,15,0.7,0.1,4,0.5,无,"冬瓜;西葫芦",human_estimated
-I069,冬瓜,vegetable,100g,12,0.4,0.2,3,1,无,"黄瓜;西葫芦",human_estimated
-I070,南瓜,vegetable,100g,23,1,0.1,5,2,无,"红薯;山药",human_estimated
-I071,紫薯,carb,100g,82,1.5,0.1,19,3,无,"红薯;紫米",human_estimated
-I072,红薯,carb,100g,86,1.6,0.1,20,3,无,"紫薯;山药",human_estimated
-I073,玉米,carb,100g,106,4,1.5,22,2.5,无,"豌豆;红薯",human_estimated
-I074,豌豆,vegetable,100g,111,5,0.4,20,5,无,"玉米;四季豆",human_estimated
-I075,四季豆,vegetable,100g,31,2,0.2,6,2,无,"豆角;豌豆",human_estimated
-I076,茄子,vegetable,100g,24,1,0.2,5,3,无,"西葫芦;彩椒",human_estimated
-I077,西红柿,vegetable,100g,18,0.9,0.2,3.9,1.2,无,"圣女果;彩椒",human_estimated
-I078,青椒,vegetable,100g,22,1,0.2,5,1.8,无,"彩椒;辣椒",human_estimated
-I079,洋葱,vegetable,100g,40,1.1,0.1,9,1.7,无,"蒜;大葱",human_estimated
-I080,木耳,vegetable,100g,27,1.5,0.2,6,3,无,"银耳;香菇",human_estimated
-I081,紫菜,seafood,100g,250,25,1,45,21,无,"海带;海苔",human_estimated
-I082,蓝莓,fruit,100g,57,0.7,0.3,14,2.4,无,"桑葚;黑莓",human_estimated
-I083,香蕉,fruit,100g,89,1.1,0.3,23,2.6,无,"芒果;木瓜",human_estimated
-I084,柠檬,fruit,100g,29,1.1,0.3,9,2.8,无,"青柠;橙子",human_estimated
-I085,嫩豆腐,protein,100g,62,6,3,2,1,大豆,"豆腐;大豆",human_estimated
-I086,鸡蛋白,protein,100g,52,11,0,0.7,0,蛋,"鸡胸肉;豆腐",human_estimated
-I087,牛油果,fat,100g,160,2,15,9,7,无,"坚果;橄榄油",human_estimated
-I088,花生,fat,50g,284,13,14,24,8,花生,"杏仁;腰果",human_estimated
-I089,花生酱,fat,20g,188,8,16,7,2,花生,"杏仁酱;芝麻酱",human_estimated
-I090,杏仁,fat,50g,289,12,14,25,12,无,"腰果;花生",human_estimated
-I091,腰果,fat,50g,275,10,14,22,3,无,"杏仁;花生",human_estimated
-I092,橄榄油,fat,10ml,88,0,10,0,0,无,"茶油;菜籽油",human_estimated
-I093,芝麻酱,fat,20g,126,3,11,4,2,无,"花生酱;腰果",human_estimated
-I094,黄酒,other,100ml,66,0,0,1,0,无,"清酒;米酒",human_estimated
-I095,蜂蜜,sugar,20g,64,0,0,17,0,无,"枫糖;椰枣",human_estimated
-I096,番茄酱,sauce,30g,29,1,0,7,1,无,"低糖番茄酱;彩椒酱",human_estimated
-I097,沙茶酱,sauce,20g,116,3,10,3,1,花生,"豆瓣酱;麻辣酱",human_estimated
-I098,豆瓣酱,sauce,20g,70,3,6,5,2,无,"黄豆酱;沙茶酱",human_estimated
-I099,豆豉,sauce,20g,60,5,3,5,3,大豆,"黄豆酱;豆瓣酱",human_estimated
-I100,甜面酱,sauce,20g,58,1,4,8,1,小麦,"黄豆酱;沙拉酱",human_estimated
+id,name,category,unit,calories,protein_g,fat_g,carbs_g,fiber_g,allergens,substitutes,source,source_ref,source_name,confidence,verified_at
+I001,鸡胸肉,protein,100g,120.0,22.5,2.6,0.0,0.0,无,去皮鸡腿肉;瘦牛肉,usda_fdc,FDC:171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",L3,2026-10-07
+I002,去皮鸡腿肉,protein,100g,121.0,19.7,4.1,0.0,0.0,无,鸡胸肉;瘦牛肉,usda_fdc,FDC:173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",L3,2026-10-07
+I003,瘦牛肉,protein,100g,133.0,22.0,5.0,0.0,0.0,无,鸡胸肉;虾仁,usda_fdc,FDC:171776,"Beef, composite of trimmed retail cuts, separable lean only, trimmed to 0"" fat, select, raw",L3,2026-10-07
+I004,虾仁,protein,100g,71.0,13.6,1.0,0.9,0.0,鱼虾,鸡胸肉;鸡蛋白,usda_fdc,FDC:174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",L3,2026-10-07
+I005,三文鱼,protein,100g,208.0,20.4,13.4,0.0,0.0,鱼虾,鲈鱼;鸡胸肉,usda_fdc,FDC:175167,"Fish, salmon, Atlantic, farmed, raw",L3,2026-10-07
+I006,鲈鱼,protein,100g,97.0,18.4,2.0,0.0,0.0,鱼虾,三文鱼;鳕鱼,usda_fdc,FDC:175142,"Fish, sea bass, mixed species, raw",L3,2026-10-07
+I007,鸡蛋,protein,100g,143.0,12.6,9.5,0.7,0.0,蛋,豆腐;鸡蛋白,usda_fdc,FDC:171287,"Egg, whole, raw, fresh",L3,2026-10-07
+I008,豆腐,protein,100g,76.0,8.1,4.8,1.9,0.3,大豆,鸡蛋白;瘦肉,usda_fdc,FDC:172476,"Tofu, raw, regular, prepared with calcium sulfate",L3,2026-10-07
+I009,西兰花,vegetable,100g,34.0,2.8,0.4,6.6,2.6,无,花菜;芦笋,usda_fdc,FDC:170379,"Broccoli, raw",L3,2026-10-07
+I010,花菜,vegetable,100g,25.0,1.9,0.3,5.0,2.0,无,西兰花;白菜,usda_fdc,FDC:169986,"Cauliflower, raw",L3,2026-10-07
+I011,芦笋,vegetable,100g,20.0,2.2,0.1,3.9,2.1,无,西兰花;豆角,usda_fdc,FDC:168389,"Asparagus, raw",L3,2026-10-07
+I012,菠菜,vegetable,100g,23.0,2.9,0.4,3.6,2.2,无,上海青;油麦菜,usda_fdc,FDC:168462,"Spinach, raw",L3,2026-10-07
+I013,上海青,vegetable,100g,13.0,1.5,0.2,2.2,1.0,无,菠菜;菜心,usda_fdc,FDC:170390,"Cabbage, chinese (pak-choi), raw",L3,2026-10-07
+I014,番茄,vegetable,100g,18.0,0.9,0.2,3.9,1.2,无,圣女果;彩椒,usda_fdc,FDC:170457,"Tomatoes, red, ripe, raw, year round average",L3,2026-10-07
+I015,圣女果,vegetable,100g,27.0,0.8,0.6,5.5,2.1,无,番茄;彩椒,usda_fdc,FDC:321360,"Tomatoes, grape, raw",L3,2026-10-07
+I016,胡萝卜,vegetable,100g,41.0,0.9,0.2,9.6,2.8,无,彩椒;南瓜,usda_fdc,FDC:170393,"Carrots, raw",L3,2026-10-07
+I017,豆角,vegetable,100g,31.0,1.8,0.2,7.0,2.7,无,四季豆;西兰花,usda_fdc,FDC:169961,"Beans, snap, green, raw",L3,2026-10-07
+I018,土豆,carb,100g,77.0,2.0,0.1,17.5,2.1,无,山药;糙米,usda_fdc,FDC:170026,"Potatoes, flesh and skin, raw",L3,2026-10-07
+I019,山药,carb,100g,57.0,1.9,0.2,12.4,0.8,无,土豆;南瓜,cn_food_composition,CFCT6:047104,山药（鲜）［薯蓣，大薯］,L3,2026-10-07
+I020,米饭,carb,100g,130.0,2.7,0.3,28.2,0.4,无,糙米;燕麦,usda_fdc,FDC:168878,"Rice, white, long-grain, regular, enriched, cooked",L3,2026-10-07
+I021,糙米,carb,100g,112.0,2.3,0.8,23.5,1.8,无,米饭;燕麦,usda_fdc,FDC:168875,"Rice, brown, medium-grain, cooked (Includes foods for USDA's Food Distribution Program)",L3,2026-10-07
+I022,燕麦,carb,100g,379.0,13.2,6.5,67.7,10.1,无,糙米;藜麦,usda_fdc,FDC:173904,"Cereals, oats, regular and quick, not fortified, dry",L3,2026-10-07
+I023,藜麦,carb,100g,368.0,14.1,6.1,64.2,7.0,无,糙米;燕麦,usda_fdc,FDC:168874,"Quinoa, uncooked",L3,2026-10-07
+I024,意面,carb,100g,371.0,13.0,1.5,74.7,3.2,小麦,糙米;荞麦面,usda_fdc,FDC:169736,"Pasta, dry, enriched",L3,2026-10-07
+I025,牛奶,dairy,100g,61.0,3.1,3.2,4.8,0.0,乳,植物奶;蛋白粉,usda_fdc,FDC:171265,"Milk, whole, 3.25% milkfat, with added vitamin D",L3,2026-10-07
+I026,羊肉,protein,100g,243.0,17.5,18.7,0.0,0.0,无,牛肉;鸡胸肉,usda_fdc,FDC:172545,"Lamb, composite of trimmed retail cuts, separable lean and fat, trimmed to 1/8"" fat, choice, raw",L3,2026-10-07
+I027,猪里脊,protein,100g,143.0,21.4,5.7,0.0,0.0,无,鸡胸肉;瘦牛肉,usda_fdc,FDC:168230,"Pork, fresh, loin, whole, separable lean only, raw",L3,2026-10-07
+I028,猪小排,protein,100g,277.0,15.5,23.4,0.0,0.0,无,鸡腿肉;猪里脊,usda_fdc,FDC:167853,"Pork, fresh, spareribs, separable lean and fat, raw",L3,2026-10-07
+I029,猪肝,protein,100g,134.0,21.4,3.6,2.5,0.0,无,鸡肝;猪心,usda_fdc,FDC:167862,"Pork, fresh, variety meats and by-products, liver, raw",L3,2026-10-07
+I030,猪心,protein,100g,118.0,17.3,4.4,1.3,0.0,无,猪肝;牛肉,usda_fdc,FDC:168267,"Pork, fresh, variety meats and by-products, heart, raw",L3,2026-10-07
+I031,鸡腿肉,protein,100g,221.0,16.5,16.6,0.2,0.0,无,鸡胸肉;去皮鸡腿肉,usda_fdc,FDC:172385,"Chicken, broilers or fryers, thigh, meat and skin, raw",L3,2026-10-07
+I032,鸡爪,protein,100g,254.0,23.9,16.4,2.7,0.0,无,鸡胸肉;猪蹄筋,cn_food_composition,CFCT6:091111,鸡爪,L3,2026-10-07
+I033,鸭肉,protein,100g,135.0,18.3,6.0,0.9,0.0,无,鸡肉;鹅肉,usda_fdc,FDC:172410,"Duck, domesticated, meat only, raw",L3,2026-10-07
+I034,鳕鱼,protein,100g,82.0,17.8,0.7,0.0,0.0,鱼虾,鲈鱼;鳜鱼,usda_fdc,FDC:171955,"Fish, cod, Atlantic, raw",L3,2026-10-07
+I035,鳜鱼,protein,100g,117.0,19.9,4.2,0.0,0.0,鱼虾,鲈鱼;鳕鱼,cn_food_composition,CFCT6:121129,鳜鱼［桂鱼、花鲫鱼］,L3,2026-10-07
+I036,鲩鱼,protein,100g,96.0,17.7,2.6,0.5,0.0,鱼虾,草鱼;鲈鱼,cn_food_composition,CFCT6:121131,草鱼［白鲩、草包鱼］,L3,2026-10-07
+I037,草鱼,protein,100g,113.0,16.6,5.2,0.0,0.0,鱼虾,鲩鱼;鲈鱼,cn_food_composition,CFCT6:121102,草鱼,L3,2026-10-07
+I038,金枪鱼,protein,100g,109.0,24.4,0.5,0.0,0.0,鱼虾,鸡胸肉;三文鱼,usda_fdc,FDC:175159,"Fish, tuna, fresh, yellowfin, raw",L3,2026-10-07
+I039,羊肉串,protein,100g,206.0,26.0,10.3,2.4,0.0,无,羊里脊;鸡肉串,cn_food_composition,CFCT6:083304,羊肉串（烤）,L3,2026-10-07
+I040,羊里脊,protein,100g,143.0,20.9,5.9,0.0,0.0,无,鸡胸肉;瘦牛肉,usda_fdc,FDC:172491,"Lamb, loin, separable lean only, trimmed to 1/4"" fat, choice, raw",L3,2026-10-07
+I041,羊心,protein,100g,122.0,16.5,5.7,0.2,0.0,无,鸡心;猪心,usda_fdc,FDC:172527,"Lamb, variety meats and by-products, heart, raw",L3,2026-10-07
+I042,羊肝,protein,100g,139.0,20.4,5.0,1.8,0.0,无,猪肝;鸡肝,usda_fdc,FDC:172531,"Lamb, variety meats and by-products, liver, raw",L3,2026-10-07
+I043,豆腐皮,protein,100g,447.0,51.6,23.0,12.5,0,无,鸡胸肉;豆皮,cn_food_composition,CFCT6:031527,豆腐皮,L3,2026-10-07
+I044,豆皮,protein,100g,447.0,51.6,23.0,12.5,0,无,鸡胸肉;豆腐,cn_food_composition,CFCT6:031527,豆腐皮,L3,2026-10-07
+I045,澄粉,carb,100g,351.0,0.2,0.5,86.0,0.0,无,全麦面粉;玉米淀粉,cn_food_composition,CFCT6:022108,淀粉（小麦）,L3,2026-10-07
+I046,红薯粉,carb,100g,338.0,0.5,0.1,84.2,0.6,无,木薯粉;土豆粉,cn_food_composition,CFCT6:022203,粉条,L3,2026-10-07
+I047,河粉,carb,100g,219,4,1,50,1,无,粿条;米线,local,,食物成分表河粉为干基(碳水79.2g)，项目为湿河粉口径不符，保留原值,L2,2026-10-07
+I048,糯米粉,carb,100g,350.0,7.3,1.0,78.3,0.8,无,粘米粉;玉米淀粉,cn_food_composition,CFCT6:012301,糯米［江米］,L3,2026-10-07
+I049,面条,carb,100g,283.0,8.5,1.6,59.5,1.5,无,全麦面条;荞麦面,cn_food_composition,CFCT6:011306,面条（标准粉，切面）,L3,2026-10-07
+I050,荞麦面条,carb,100g,336.0,14.4,0.7,74.6,0.0,无,荞麦面;全麦面条,usda_fdc,FDC:168906,"Noodles, japanese, soba, dry",L3,2026-10-07
+I051,全麦面条,carb,100g,352.0,13.9,2.9,73.4,9.2,无,荞麦面;糙米,usda_fdc,FDC:169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",L3,2026-10-07
+I052,全麦面粉,carb,100g,340.0,13.2,2.5,72.0,10.7,无,荞麦粉;玉米粉,usda_fdc,FDC:168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",L3,2026-10-07
+I053,全麦饺子皮,carb,100g,350,13,2,72,8,无,全麦面粉;荞麦面,local,,复合加工品，食物成分表无对应条目，保留原值,L2,2026-10-07
+I054,全麦饼,carb,100g,260,8.0,3.0,55.0,7.0,无,全麦面条;糙米,local,,复合加工品，食物成分表无对应条目，保留原值,L2,2026-10-07
+I055,杂粮米,carb,100g,350,12,4,72,10,无,糙米;藜麦,local,,复合杂粮，食物成分表无对应条目，保留原值,L2,2026-10-07
+I056,杂粮馒头,carb,100g,250,9,2,52,7,无,全麦面包;糙米,local,,复合加工品，食物成分表无对应条目，保留原值,L2,2026-10-07
+I057,大米,carb,100g,365.0,7.1,0.7,80.0,1.3,无,糙米;杂粮米,usda_fdc,FDC:168877,"Rice, white, long-grain, regular, raw, enriched",L3,2026-10-07
+I058,魔芋,vegetable,100g,7,0,0,2,2,无,魔芋丝;冬瓜,local,,食物成分表仅魔芋精粉(干基)，项目为鲜魔芋口径不符，保留原值,L2,2026-10-07
+I059,魔芋丝,vegetable,100g,10,0,0,3,2,无,魔芋;冬瓜,local,,同上（鲜魔芋口径）,L2,2026-10-07
+I060,金针菇,vegetable,100g,37.0,2.7,0.3,7.8,2.7,无,香菇;木耳,usda_fdc,FDC:169382,"Mushrooms, enoki, raw",L3,2026-10-07
+I061,香菇,vegetable,100g,34.0,2.2,0.5,6.8,2.5,无,金针菇;平菇,usda_fdc,FDC:169242,"Mushrooms, shiitake, raw",L3,2026-10-07
+I062,蘑菇,vegetable,100g,22.0,3.1,0.3,3.3,1.0,无,香菇;金针菇,usda_fdc,FDC:169251,"Mushrooms, white, raw",L3,2026-10-07
+I063,白菜,vegetable,100g,16.0,1.2,0.2,3.2,1.2,无,娃娃菜;包菜,usda_fdc,FDC:169979,"Cabbage, chinese (pe-tsai), raw",L3,2026-10-07
+I064,包菜,vegetable,100g,25.0,1.3,0.1,5.8,2.5,无,白菜;生菜,usda_fdc,FDC:169975,"Cabbage, raw",L3,2026-10-07
+I065,生菜,vegetable,100g,15.0,1.4,0.1,2.9,1.3,无,包菜;菠菜,usda_fdc,FDC:169249,"Lettuce, green leaf, raw",L3,2026-10-07
+I066,空心菜,vegetable,100g,19.0,2.6,0.2,3.1,2.1,无,菠菜;油麦菜,usda_fdc,FDC:169301,"Water convolvulus,raw",L3,2026-10-07
+I067,菜心,vegetable,100g,28.0,2.8,0.5,4.0,1.7,无,上海青;菠菜,cn_food_composition,CFCT6:045108,白菜薹［菜薹，菜心］,L3,2026-10-07
+I068,黄瓜,vegetable,100g,15.0,0.7,0.1,3.6,0.5,无,冬瓜;西葫芦,usda_fdc,FDC:168409,"Cucumber, with peel, raw",L3,2026-10-07
+I069,冬瓜,vegetable,100g,13.0,0.4,0.2,3.0,2.9,无,黄瓜;西葫芦,usda_fdc,FDC:170069,"Waxgourd, (chinese preserving melon), raw",L3,2026-10-07
+I070,南瓜,vegetable,100g,26.0,1.0,0.1,6.5,0.5,无,红薯;山药,usda_fdc,FDC:168448,"Pumpkin, raw",L3,2026-10-07
+I071,紫薯,carb,100g,86.0,1.6,0.1,20.1,3.0,无,红薯;紫米,usda_fdc,FDC:168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",L2,2026-10-07
+I072,红薯,carb,100g,86.0,1.6,0.1,20.1,3.0,无,紫薯;山药,usda_fdc,FDC:168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",L3,2026-10-07
+I073,玉米,carb,100g,86.0,3.3,1.4,18.7,2.0,无,豌豆;红薯,usda_fdc,FDC:169998,"Corn, sweet, yellow, raw",L3,2026-10-07
+I074,豌豆,vegetable,100g,81.0,5.4,0.4,14.4,5.7,无,玉米;四季豆,usda_fdc,FDC:170419,"Peas, green, raw",L3,2026-10-07
+I075,四季豆,vegetable,100g,31.0,1.8,0.2,7.0,2.7,无,豆角;豌豆,usda_fdc,FDC:169961,"Beans, snap, green, raw",L3,2026-10-07
+I076,茄子,vegetable,100g,25.0,1.0,0.2,5.9,3.0,无,西葫芦;彩椒,usda_fdc,FDC:169228,"Eggplant, raw",L3,2026-10-07
+I078,青椒,vegetable,100g,20.0,0.9,0.2,4.6,1.7,无,彩椒;辣椒,usda_fdc,FDC:170427,"Peppers, sweet, green, raw",L3,2026-10-07
+I079,洋葱,vegetable,100g,40.0,1.1,0.1,9.3,1.7,无,蒜;大葱,usda_fdc,FDC:170000,"Onions, raw",L3,2026-10-07
+I080,木耳,vegetable,100g,27.0,1.5,0.2,6.0,2.6,无,银耳;香菇,cn_food_composition,CFCT6:051014,木耳（水发）［黑木耳，云耳］,L3,2026-10-07
+I081,紫菜,seafood,100g,250.0,26.7,1.1,44.1,21.6,无,海带;海苔,cn_food_composition,CFCT6:052008,紫菜（干）,L3,2026-10-07
+I082,蓝莓,fruit,100g,57.0,0.7,0.3,14.5,2.4,无,桑葚;黑莓,usda_fdc,FDC:171711,"Blueberries, raw",L3,2026-10-07
+I083,香蕉,fruit,100g,89.0,1.1,0.3,22.8,2.6,无,芒果;木瓜,usda_fdc,FDC:173944,"Bananas, raw",L3,2026-10-07
+I084,柠檬,fruit,100g,29.0,1.1,0.3,9.3,2.8,无,青柠;橙子,usda_fdc,FDC:167746,"Lemons, raw, without peel",L3,2026-10-07
+I085,嫩豆腐,protein,100g,87.0,5.7,5.8,3.9,0,大豆,豆腐;大豆,cn_food_composition,CFCT6:031307,豆腐（南豆腐）,L3,2026-10-07
+I086,鸡蛋白,protein,100g,52.0,10.9,0.2,0.7,0.0,蛋,鸡胸肉;豆腐,usda_fdc,FDC:172183,"Egg, white, raw, fresh",L3,2026-10-07
+I087,牛油果,fat,100g,160.0,2.0,14.7,8.5,6.7,无,坚果;橄榄油,usda_fdc,FDC:171705,"Avocados, raw, all commercial varieties",L3,2026-10-07
+I088,花生,fat,100g,567.0,25.8,49.2,16.1,8.5,花生,杏仁;腰果,usda_fdc,FDC:172430,"Peanuts, all types, raw",L3,2026-10-07
+I089,花生酱,fat,100g,598.0,22.2,51.4,22.3,5.0,花生,杏仁酱;芝麻酱,usda_fdc,FDC:172470,"Peanut butter, smooth style, without salt",L3,2026-10-07
+I090,杏仁,fat,100g,579.0,21.1,49.9,21.6,12.5,无,腰果;花生,usda_fdc,FDC:170567,"Nuts, almonds",L3,2026-10-07
+I091,腰果,fat,100g,553.0,18.2,43.9,30.2,3.3,无,杏仁;花生,usda_fdc,FDC:170162,"Nuts, cashew nuts, raw",L3,2026-10-07
+I092,橄榄油,fat,100g,884.0,0.0,100.0,0.0,0.0,无,茶油;菜籽油,usda_fdc,FDC:171413,"Oil, olive, salad or cooking",L3,2026-10-07
+I093,芝麻酱,fat,100g,595.0,17.0,53.8,21.2,9.3,无,花生酱;腰果,usda_fdc,FDC:170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",L3,2026-10-07
+I094,黄酒,other,100g,66.0,0.0,0.0,1.0,0.0,无,清酒;米酒,local,,食物成分表数字化版无酒类，保留原值,L2,2026-10-07
+I095,蜂蜜,sugar,100g,304.0,0.3,0.0,82.4,0.2,无,枫糖;椰枣,usda_fdc,FDC:169640,Honey,L3,2026-10-07
+I096,番茄酱,sauce,100g,101.0,1.0,0.1,27.4,0.3,无,低糖番茄酱;彩椒酱,usda_fdc,FDC:168556,Catsup,L3,2026-10-07
+I097,沙茶酱,sauce,100g,580.0,15.0,50.0,15.0,5.0,花生,豆瓣酱;麻辣酱,local,,食物成分表数字化版无调味品，保留原值,L2,2026-10-07
+I098,豆瓣酱,sauce,100g,178,13.0,6.4,15.6,1.5,无,黄豆酱;沙茶酱,local,,食物成分表数字化版无调味品，保留原值,L2,2026-10-07
+I099,豆豉,sauce,100g,254,21.5,7.3,25.6,5.9,大豆,黄豆酱;豆瓣酱,local,,食物成分表数字化版无调味品，保留原值,L2,2026-10-07
+I100,甜面酱,sauce,100g,136,4.5,1.0,25.0,1.5,小麦,黄豆酱;沙拉酱,local,,食物成分表数字化版无调味品，保留原值,L2,2026-10-07
+I101,青菜,vegetable,100g,13.0,1.5,0.2,2.2,1.0,无,菠菜;菜心,usda_fdc,FDC:170390,"Cabbage, chinese (pak-choi), raw",L3,2026-10-07
+I102,白萝卜,vegetable,100g,18.0,0.6,0.1,4.1,1.6,无,冬瓜;胡萝卜,usda_fdc,FDC:168451,"Radishes, oriental, raw",L3,2026-10-07
+I103,豆芽,vegetable,100g,30.0,3.0,0.2,5.9,1.8,无,青椒;豆角,usda_fdc,FDC:169957,"Mung beans, mature seeds, sprouted, raw",L3,2026-10-07
+I104,韭菜,vegetable,100g,30.0,3.3,0.7,4.3,2.5,无,葱;蒜苗,usda_fdc,FDC:169994,"Chives, raw",L3,2026-10-07
+I105,酸菜,vegetable,100g,10.0,0.7,0.2,2.6,0,无,白菜;泡菜,cn_food_composition,CFCT6:045119,酸白菜［酸菜］,L3,2026-10-07
+I106,笋,vegetable,100g,27.0,2.6,0.3,5.2,2.2,无,芦笋;豆角,usda_fdc,FDC:169210,"Bamboo shoots, raw",L3,2026-10-07
+I107,彩椒,vegetable,100g,26.0,1.0,0.3,6.0,2.1,无,青椒;番茄,usda_fdc,FDC:170108,"Peppers, sweet, red, raw",L3,2026-10-07
+I108,辣椒,vegetable,100g,40.0,1.9,0.4,8.8,1.5,无,青椒;彩椒,usda_fdc,FDC:170106,"Peppers, hot chili, red, raw",L3,2026-10-07
+I109,干辣椒,sauce,100g,324.0,10.6,5.8,69.9,28.7,无,辣椒粉;辣椒,usda_fdc,FDC:168570,"Peppers, hot chile, sun-dried",L3,2026-10-07
+I110,蒜苗,vegetable,100g,40.0,2.1,0.4,8.0,1.8,无,葱;韭菜,cn_food_composition,CFCT6:044106,蒜苗（绿色，青蒜）,L3,2026-10-07
+I111,葱,vegetable,100g,32.0,1.8,0.2,7.3,2.6,无,蒜苗;洋葱,usda_fdc,FDC:170005,"Onions, spring or scallions (includes tops and bulb), raw",L3,2026-10-07
+I112,姜,vegetable,100g,80.0,1.8,0.8,17.8,2.0,无,蒜;葱,usda_fdc,FDC:169231,"Ginger root, raw",L3,2026-10-07
+I113,蒜,vegetable,100g,149.0,6.4,0.5,33.1,2.1,无,姜;葱,usda_fdc,FDC:169230,"Garlic, raw",L3,2026-10-07
+I114,香菜,vegetable,100g,23.0,2.1,0.5,3.7,2.8,无,葱;青菜,usda_fdc,FDC:169997,"Coriander (cilantro) leaves, raw",L3,2026-10-07
+I115,猪瘦肉,protein,100g,143.0,21.4,5.7,0.0,0.0,无,鸡胸肉;瘦牛肉,usda_fdc,FDC:168230,"Pork, fresh, loin, whole, separable lean only, raw",L3,2026-10-07
+I116,五花肉,protein,100g,518.0,9.3,53.0,0.0,0.0,无,猪瘦肉;猪里脊,usda_fdc,FDC:167812,"Pork, fresh, belly, raw",L3,2026-10-07
+I117,蟹粉,seafood,100g,87.0,18.1,1.1,0.0,0.0,蟹,虾仁;鳕鱼,usda_fdc,FDC:174204,"Crustaceans, crab, blue, raw",L3,2026-10-07
+I118,瑶柱,seafood,100g,264.0,55.6,2.4,5.1,0.0,贝类,虾仁;金枪鱼,cn_food_composition,CFCT6:124112,扇贝（干）［干贝］,L3,2026-10-07
+I119,粉丝,carb,100g,338.0,0.8,0.2,83.7,1.1,无,红薯粉;河粉,cn_food_composition,CFCT6:022201,粉丝,L3,2026-10-07
+I120,凉粉,carb,100g,38,0.2,0.1,9.3,0.3,无,魔芋丝;粉丝,local,,食物成分表无对应条目，保留原值,L2,2026-10-07
+I121,盐,sauce,100g,0.0,0.0,0.0,0.0,0.0,无,,usda_fdc,FDC:173468,"Salt, table",L3,2026-10-07
+I122,糖,sugar,100g,387.0,0.0,0.0,100.0,0.0,无,蜂蜜;代糖,usda_fdc,FDC:169655,"Sugars, granulated",L3,2026-10-07
+I123,酱油,sauce,100g,53.0,8.1,0.6,4.9,0.8,大豆,生抽;豆豉,usda_fdc,FDC:174277,Soy sauce made from soy and wheat (shoyu),L3,2026-10-07
+I124,醋,sauce,100g,18.0,0.0,0.0,0.0,0.0,无,柠檬,usda_fdc,FDC:172237,"Vinegar, distilled",L2,2026-10-07
+I125,黄油,fat,100g,717.0,0.8,81.1,0.1,0.0,乳,橄榄油;食用油,usda_fdc,FDC:173410,"Butter, salted",L3,2026-10-07
+I126,食用油,fat,100g,884.0,0.0,100.0,0.0,0.0,无,橄榄油;黄油,usda_fdc,FDC:172370,"Oil, vegetable, soybean, refined",L3,2026-10-07
+I127,辣椒油,fat,100g,884.0,0.0,100.0,0.0,0.0,无,食用油;芝麻酱,usda_fdc,FDC:172370,"Oil, vegetable, soybean, refined",L2,2026-10-07
+I128,麻辣酱,sauce,100g,135,2,6,18,1,大豆,豆瓣酱;黄酱,local,,食物成分表数字化版无调味品，保留原值,L2,2026-10-07
+I129,黄酱,sauce,100g,136,12.1,1.2,17.9,3.4,大豆,酱油;甜面酱,local,,食物成分表数字化版无调味品，保留原值,L2,2026-10-07
+I130,叉烧酱,sauce,100g,220,2,1,50,0,大豆,番茄酱;蜂蜜,local,,食物成分表数字化版无调味品，保留原值,L2,2026-10-07
+I131,淀粉,carb,100g,381.0,0.3,0.1,91.3,0.9,无,糯米粉;全麦面粉,usda_fdc,FDC:169698,Cornstarch,L3,2026-10-07
+I132,孜然,sauce,100g,375.0,17.8,22.3,44.2,10.5,无,辣椒粉;豆豉,usda_fdc,FDC:170923,"Spices, cumin seed",L3,2026-10-07
+I133,辣椒粉,sauce,100g,318.0,12.0,17.3,56.6,27.2,无,干辣椒;孜然,usda_fdc,FDC:170932,"Spices, pepper, red or cayenne",L3,2026-10-07
+I134,龙井茶叶,other,100g,0,0,0,0,0,无,,local,,食物成分表数字化版无茶叶，保留原值,L2,2026-10-07
+I135,枸杞,fruit,100g,349.0,14.3,0.4,77.1,13.0,无,红枣;蓝莓,usda_fdc,FDC:173032,"Goji berries, dried",L3,2026-10-07
+I136,红豆沙,sugar,100g,244.0,4.5,0.1,57.1,1.8,无,蜂蜜;紫薯,cn_food_composition,CFCT6:033204,红豆沙（去皮）,L3,2026-10-07
+I137,温水,other,100g,0,0,0,0,0,无,,local,,纯水营养值全0，无需外部来源,L1,2026-10-07
+I138,秋葵,vegetable,100g,33.0,1.9,0.2,7.5,3.2,无,,usda_fdc,FDC:169260,"Okra, raw",L3,2026-10-07
+I139,无糖希腊酸奶,dairy,100g,61.0,10.3,0.4,3.6,0.0,乳,牛奶;低脂牛奶,usda_fdc,FDC:330137,"Yogurt, Greek, plain, nonfat",L3,2026-10-07
+I140,低脂牛奶,dairy,100g,50.0,3.4,1.9,4.9,0.0,乳,牛奶;豆浆,usda_fdc,FDC:321359,"Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D",L3,2026-10-07
+I141,切达奶酪,dairy,100g,408.0,23.3,34.0,2.4,0.0,乳,,usda_fdc,FDC:328637,"Cheese, cheddar",L3,2026-10-07
+I142,豆浆,other,100g,38.5,3.5,2.1,1.3,0.0,大豆,牛奶,usda_fdc,FDC:1750337,"Soy milk, unsweetened, plain, shelf stable",L3,2026-10-07
+I143,草莓,fruit,100g,31.0,0.6,0.2,7.6,1.8,无,蓝莓,usda_fdc,FDC:327699,"Strawberries, raw",L3,2026-10-07
+I144,苹果,fruit,100g,52.0,0.3,0.2,13.8,2.4,无,,usda_fdc,FDC:171688,"Apples, raw, with skin",L3,2026-10-07
+I145,橙子,fruit,100g,47.0,0.9,0.1,11.8,2.4,无,,usda_fdc,FDC:169097,"Oranges, raw, all commercial varieties",L3,2026-10-07
+I146,猕猴桃,fruit,100g,58.0,1.1,0.4,14.0,3.0,无,,usda_fdc,FDC:327046,"Kiwifruit, green, raw",L3,2026-10-07
+I147,核桃,fat,100g,654.0,15.2,65.2,13.7,6.7,坚果,杏仁;腰果,usda_fdc,FDC:170187,"Nuts, walnuts, english",L3,2026-10-07
+I148,亚麻籽,fat,100g,534.0,18.3,42.2,28.9,27.3,无,奇亚籽,usda_fdc,FDC:169414,"Seeds, flaxseed",L3,2026-10-07
+I149,奇亚籽,fat,100g,486.0,16.5,30.7,42.1,34.4,无,亚麻籽,usda_fdc,FDC:170554,"Seeds, chia seeds, dried",L3,2026-10-07
+I150,荞麦仁,carb,100g,346.0,11.7,2.7,75.0,10.3,无,藜麦;燕麦,usda_fdc,FDC:170685,"Buckwheat groats, roasted, dry",L3,2026-10-07
+I151,鹰嘴豆,carb,100g,378.0,20.5,6.0,63.0,12.2,无,黑豆;红豆,usda_fdc,FDC:173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",L3,2026-10-07
+I152,黑豆,carb,100g,341.0,21.6,1.4,62.4,15.5,无,红豆,usda_fdc,FDC:173734,"Beans, black, mature seeds, raw",L3,2026-10-07
+I153,红豆,carb,100g,329.0,19.9,0.5,62.9,12.7,无,黑豆,usda_fdc,FDC:173727,"Beans, adzuki, mature seeds, raw",L3,2026-10-07
+I154,绿豆,carb,100g,347.0,23.9,1.1,62.6,16.3,无,红豆,usda_fdc,FDC:174256,"Mung beans, mature seeds, raw",L3,2026-10-07
+I155,芹菜,vegetable,100g,14.0,0.7,0.2,3.0,1.6,无,,usda_fdc,FDC:169988,"Celery, raw",L3,2026-10-07
+I156,卷心菜,vegetable,100g,25.0,1.3,0.1,5.8,2.5,无,上海青,usda_fdc,FDC:169975,"Cabbage, raw",L3,2026-10-07
+I157,紫甘蓝,vegetable,100g,31.0,1.4,0.2,7.4,2.1,无,卷心菜,usda_fdc,FDC:169977,"Cabbage, red, raw",L3,2026-10-07
+I158,苦瓜,vegetable,100g,17.0,1.0,0.2,3.7,2.8,无,,usda_fdc,FDC:168393,"Balsam-pear (bitter gourd), pods, raw",L3,2026-10-07
+I159,毛豆,vegetable,100g,109.0,11.2,4.7,7.6,4.8,大豆,,usda_fdc,FDC:168410,"Edamame, frozen, unprepared",L3,2026-10-07
+I160,鸡翅,protein,100g,191.0,17.5,12.8,0.0,0.0,无,鸡腿肉,usda_fdc,FDC:172390,"Chicken, broilers or fryers, wing, meat and skin, raw",L3,2026-10-07

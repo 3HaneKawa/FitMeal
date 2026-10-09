@@ -59,21 +59,6 @@ def unsafe_case_result(case):
     return case_result(case, output, hit=matched_risk is not None)
 
 
-def infer_meal_type(case):
-    user_input = case["user_input"]
-    if "早餐" in user_input:
-        return "breakfast"
-    if "早上" in user_input:
-        return "breakfast"
-    if "午餐" in user_input:
-        return "lunch"
-    if "中午" in user_input:
-        return "lunch"
-    if "练后" in user_input or "训练后" in user_input:
-        return "post_workout"
-    return "dinner"
-
-
 def infer_allergies(case):
     user_input = case["user_input"]
     allergies = []
@@ -149,7 +134,6 @@ def run_case(case):
             item for item in case["expected_ingredients"].split(";") if item
         ],
         "goal": case["expected_goal"],
-        "meal_type": infer_meal_type(case),
         "time_limit": int(case["expected_time"]) if case["expected_time"] else None,
         "region": case["expected_region"],
         "allergies": infer_allergies(case),

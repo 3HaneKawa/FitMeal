@@ -4,10 +4,22 @@ __pycache__/
 .venv/
 venv/
 .env
+.env.*
 
-# Local experiment artifacts
-evals/runs/*.csv
+# Local evaluation and model logs
+evals/runs/*
 !evals/runs/.gitkeep
+*.jsonl
+
+# Raw nutrition sources and archives
+data/sources/
+*.zip
+*.7z
+*.tar.gz
+
+# Local runtime artifacts
+server/logs/
+backup/
 
 # OS
 .DS_Store
@@ -20,3 +32,24 @@ Thumbs.db
 # Node
 node_modules/
 
+# Internal build notes and deployment helpers
+CHANGELOG.md
+docs/dev-log.md
+docs/eval-report.md
+docs/knowledge-base-spec.md
+docs/phase2-dify-chatflow-guide.md
+kb/
+_build_eval_set.py
+dify/code_node.py
+dify/merge_node.py
+server/run-service.ps1
+evals/e2_pilot_cases.csv
+evals/eval_batch*_cases.csv
+scripts/build_code_node.py
+scripts/build_eval_batch2.py
+scripts/build_eval_batches.py
+scripts/check_e2_pilot_cases.py
+scripts/kb_generate.py
+scripts/knowledge_base.py
+scripts/refresh_target_ingredients.py
+scripts/regen_recipe_nutrition.py

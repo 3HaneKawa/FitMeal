@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FitMeal 轻食令本地产品原型">
+  <title>FitMeal 轻食令</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="FitMeal 首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" role="img"><path d="M8.5 7.5c4.8.4 8.2 2.5 10.2 6.3 2.1 4 1.5 8-1.8 11.6-2.6-1-4.5-2.5-5.9-4.7-1.6-2.6-2.4-5.5-2.5-8.7-.1-1.7 0-3.2 0-4.5Z"/><path d="M18.2 12.1c1.4-3 3.5-4.8 6.4-5.5.8 3.7-.1 6.7-2.8 8.9"/></svg>
+        </span>
+        <span>
+          <strong>FitMeal</strong>
+          <small>轻食令</small>
+        </span>
+      </a>
+      <div class="service-state" id="serviceState">
+        <span class="state-dot" aria-hidden="true"></span>
+        <span>正在连接本地服务</span>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="input-panel" aria-labelledby="inputTitle">
+        <div class="eyebrow">今天这一餐</div>
+        <h1 id="inputTitle">先把条件说清楚，再决定吃什么。</h1>
+        <p class="lead">输入现有食材、目标和时间。推荐结果会说明用了什么、还缺什么，以及营养数字从哪里来。</p>
+
+        <div class="sample-row" aria-label="示例输入">
+          <button class="sample-button" type="button" data-sample="cook">自烹饪</button>
+          <button class="sample-button" type="button" data-sample="eat_out">外食</button>
+          <button class="sample-button" type="button" data-sample="substitute">替换</button>
+          <button class="sample-button" type="button" data-sample="safety">安全拦截</button>
+        </div>
+
+        <form id="mealForm">
+          <label class="field field-wide">
+            <span>一句话描述</span>
+            <textarea id="userInput" rows="3" placeholder="例：我有鸡胸肉、西兰花和鸡蛋，减脂，想 20 分钟内做完"></textarea>
+          </label>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>场景</span>
+              <select id="intent">
+                <option value="auto">自动判断</option>
+                <option value="cook">自己做饭</option>
+                <option value="eat_out">外食 / 点餐</option>
+                <option value="substitute">食材替换</option>
+                <option value="nutrition_analysis">营养查询</option>
+                <option value="unsafe">安全测试</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>目标</span>
+              <select id="goal">
+                <option value="fat_loss">减脂</option>
+                <option value="muscle_gain">增肌</option>
+                <option value="maintain">维持</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>时间上限</span>
+              <div class="input-suffix">
+                <input id="timeLimit" type="number" min="5" max="120" step="5" value="20">
+                <span>分钟</span>
+              </div>
+            </label>
+            <label class="field">
+              <span>地域偏好</span>
+              <select id="region">
+                <option value="generic">不限</option>
+                <option value="川渝">川渝</option>
+                <option value="粤式">粤式</option>
+                <option value="江浙">江浙</option>
+                <option value="北方">北方</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="field field-wide">
+            <span>现有食材 <small>用逗号分隔</small></span>
+            <input id="ingredients" type="text" placeholder="鸡胸肉，西兰花，鸡蛋">
+          </label>
+
+          <label class="field field-wide">
+            <span>过敏 / 忌口 <small>仅填写明确说明</small></span>
+            <input id="allergies" type="text" placeholder="例：花生，牛奶">
+          </label>
+
+          <div class="advanced-fields" id="advancedFields">
+            <label class="field" data-advanced="substitute">
+              <span>想替换的食材</span>
+              <input id="originalIngredient" type="text" placeholder="例：白米饭">
+            </label>
+            <label class="field" data-advanced="nutrition">
+              <span>查询食材</span>
+              <input id="nutritionIngredient" type="text" placeholder="例：鸡胸肉">
+            </label>
+            <label class="field" data-advanced="nutrition">
+              <span>查询重量</span>
+              <div class="input-suffix">
+                <input id="amountG" type="number" min="1" step="10" value="100">
+                <span>克</span>
+              </div>
+            </label>
+          </div>
+
+          <button class="primary-button" id="submitButton" type="submit">
+            <span>生成今晚的建议</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4"/></svg>
+          </button>
+          <p class="form-note">本地 Demo 会把表单转换为结构化请求，再调用 FastAPI。Dify 链路另见项目文档。</p>
+        </form>
+      </section>
+
+      <section class="result-panel" aria-live="polite" aria-busy="false" id="resultPanel">
+        <div class="result-toolbar">
+          <div>
+            <div class="eyebrow">推荐结果</div>
+            <h2 id="resultTitle">等待输入</h2>
+          </div>
+          <div class="result-meta" id="resultMeta"></div>
+        </div>
+
+        <div id="requestSummary" class="request-summary" hidden></div>
+        <div id="results" class="results">
+          <div class="empty-state">
+            <div class="empty-illustration" aria-hidden="true">
+              <span class="plate"></span>
+              <span class="leaf leaf-a"></span>
+              <span class="leaf leaf-b"></span>
+            </div>
+            <h3>先给这顿饭设几个边界</h3>
+            <p>条件越具体，推荐越容易解释。也可以直接点上方示例快速体验。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="loadingTemplate">
+    <div class="loading-state">
+      <div class="loading-mark"><span></span><span></span><span></span></div>
+      <p>正在筛选候选并核算营养...</p>
+    </div>
+  </template>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
