@@ -319,3 +319,19 @@ h3 { margin-bottom: 8px; }
   .result-panel { border: 0; box-shadow: none; min-height: 0; }
   .results { padding: 10px 0; }
 }
+
+@media (max-width: 760px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .topbar-actions .service-state {
+    margin-left: auto;
+  }
+}

@@ -400,6 +400,56 @@ def describe_tables() -> dict[str, Any]:
     return out
 
 
+def query_rows(
+    table: str,
+    query: str = "",
+    limit: int = 50,
+    offset: int = 0,
+) -> dict[str, Any]:
+    """只读查询一张数据表：跨列关键词搜索 + 分页。
+
+    搜索不区分英文大小写；空关键词返回全部行。limit 会限制在 1-200，
+    避免一次请求把整张表带进浏览器。
+    """
+    table = str(table or "").strip()
+    if table not in TABLES:
+        raise DataError(f"未知数据表: {table!r}；可用: {', '.join(TABLES)}")
+
+    try:
+        limit = int(limit)
+        offset = int(offset)
+    except (TypeError, ValueError):
+        raise DataError("limit 和 offset 必须是整数") from None
+
+    limit = max(1, min(limit, 200))
+    offset = max(0, offset)
+    fieldnames, rows = read_table(table)
+    needle = str(query or "").strip().casefold()
+
+    if needle:
+        matched = []
+        for row in rows:
+            haystack = " ".join(str(row.get(column, "")) for column in fieldnames)
+            if needle in haystack.casefold():
+                matched.append(row)
+    else:
+        matched = rows
+
+    total = len(matched)
+    page = matched[offset : offset + limit]
+    return {
+        "table": table,
+        "file": TABLES[table][0],
+        "columns": fieldnames or [],
+        "rows": page,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "query": str(query or "").strip(),
+        "returned": len(page),
+    }
+
+
 def import_batch(items: list[dict]) -> dict[str, Any]:
     """按 items[*].table 逐条分发，逐条返回成功 / 失败，不因一条失败中断整批。"""
     handlers = {

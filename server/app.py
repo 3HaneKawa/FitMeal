@@ -24,7 +24,8 @@
 - POST /chat                  前端自然语言入口：代理调用 Dify Chatflow
 - POST /recommend             Dify HTTP 节点内部数据接口，不由前端直接调用
 - POST /feedback              记录采纳、不喜欢、太麻烦和换一批事件
-- GET  /data/schema           六张数据表的列名、行数、id 前缀（录入端先看这个）
+- GET  /data/schema           数据表的列名、行数、id 前缀（录入端先看这个）
+- GET  /data/rows             只读查询一张数据表（关键词搜索 + 分页）
 - POST /data/nutrition        新增 / 更新一条食材营养（每 100g）
 - POST /data/recipes/preview  食谱营养试算（不落库，含目标区间判定）
 - POST /data/recipes          新增一条食谱（营养现算，不接受手填）
@@ -62,7 +63,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from fastapi import Body, FastAPI
+from fastapi import Body, FastAPI, Query
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -369,6 +370,23 @@ def feedback_endpoint(payload: dict[str, Any] | None = Body(default=None)) -> JS
 
 
 # ---------------------------------------------------------------- 数据录入
+
+@app.get("/data/rows")
+def data_rows(
+    table: str = Query(..., min_length=1, description="数据表名，例如 nutrition / recipes"),
+    q: str = Query("", description="跨字段关键词搜索"),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+) -> JSONResponse:
+    """只读查询已有数据，供数据总览页使用。"""
+    try:
+        result = data_entry.query_rows(table=table, query=q, limit=limit, offset=offset)
+        return JSONResponse(content={"ok": True, "result": result})
+    except DataError as exc:
+        return _error(400, "invalid_query", str(exc))
+    except Exception as exc:  # noqa: BLE001
+        return _error(500, "internal_error", str(exc))
+
 
 @app.get("/data/schema")
 def data_schema() -> JSONResponse:

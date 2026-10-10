@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FitMeal 轻食令本地数据总览与检索">
+  <title>数据总览 · FitMeal 轻食令</title>
+  <link rel="stylesheet" href="./styles.css?v=0.5.3">
+  <link rel="stylesheet" href="./overview.css?v=0.1.0">
+</head>
+<body>
+  <div class="page-shell overview-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="返回 FitMeal 推荐首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" role="img"><path d="M8.5 7.5c4.8.4 8.2 2.5 10.2 6.3 2.1 4 1.5 8-1.8 11.6-2.6-1-4.5-2.5-5.9-4.7-1.6-2.6-2.4-5.5-2.5-8.7-.1-1.7 0-3.2 0-4.5Z"/><path d="M18.2 12.1c1.4-3 3.5-4.8 6.4-5.5.8 3.7-.1 6.7-2.8 8.9"/></svg>
+        </span>
+        <span>
+          <strong>FitMeal</strong>
+          <small>轻食令 · 数据台</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <a class="data-entry-link" href="./">推荐首页</a>
+        <a class="data-entry-link" href="./data.html">数据录入</a>
+        <a class="data-entry-link is-current" href="./overview.html" aria-current="page">数据总览</a>
+        <div class="service-state" id="serviceState">
+          <span class="state-dot" aria-hidden="true"></span>
+          <span>正在连接本地服务</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="overview-hero">
+        <div>
+          <div class="eyebrow">只读数据中心</div>
+          <h1>先看清已有数据，再决定补什么、改什么。</h1>
+          <p>按数据表检索现有记录，查看字段、数量和来源。这里不会新增、覆盖或删除数据；需要修改时再前往数据录入台。</p>
+        </div>
+        <div class="overview-stats" aria-label="数据统计">
+          <div class="overview-stat">
+            <span>数据表</span>
+            <strong id="tableCount">—</strong>
+          </div>
+          <div class="overview-stat">
+            <span>当前表记录</span>
+            <strong id="currentTotal">—</strong>
+          </div>
+          <div class="overview-stat">
+            <span>本页显示</span>
+            <strong id="currentReturned">—</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="query-panel" aria-labelledby="queryTitle">
+        <form class="query-form" id="queryForm">
+          <label class="field">
+            <span id="queryTitle">数据类别</span>
+            <select id="tableSelect">
+              <option value="nutrition">食材营养</option>
+              <option value="recipes">食谱</option>
+              <option value="eat_out">外食条目</option>
+              <option value="substitutions">替换规则</option>
+              <option value="aliases">食材别名</option>
+              <option value="units">单位换算</option>
+              <option value="goal_rules">目标规则</option>
+              <option value="target_ingredients">目标食材</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>关键词</span>
+            <input id="queryInput" type="search" placeholder="输入名称、分类、来源或备注" autocomplete="off">
+          </label>
+          <label class="field">
+            <span>每页</span>
+            <select id="limitSelect">
+              <option value="20">20 条</option>
+              <option value="50" selected>50 条</option>
+              <option value="100">100 条</option>
+              <option value="200">200 条</option>
+            </select>
+          </label>
+          <button class="primary-button" id="queryButton" type="submit">查询数据</button>
+        </form>
+        <div class="query-hints">
+          <span class="query-hint" id="queryHint">会搜索当前表的全部字段</span>
+          <span class="query-hint">点击任意记录可查看完整字段</span>
+          <span class="query-hint">当前页面只读</span>
+        </div>
+      </section>
+
+      <section class="result-panel" aria-labelledby="resultTitle">
+        <div class="result-toolbar">
+          <div>
+            <h2 id="resultTitle">食材营养</h2>
+            <p id="resultMeta">等待查询</p>
+          </div>
+          <label class="column-toggle">
+            <input id="allColumnsToggle" type="checkbox">
+            显示全部字段
+          </label>
+        </div>
+
+        <div class="state-card" id="tableState">正在读取数据…</div>
+
+        <div class="table-wrap" id="tableWrap" hidden>
+          <table class="data-table">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="pager" id="pager" hidden>
+          <div class="pager-info" id="pagerInfo"></div>
+          <div class="pager-actions">
+            <button class="pager-button" id="prevPage" type="button">上一页</button>
+            <button class="pager-button" id="nextPage" type="button">下一页</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="row-dialog" id="rowDialog">
+    <div class="dialog-head">
+      <h2 id="dialogTitle">记录详情</h2>
+      <button class="dialog-close" id="dialogClose" type="button">关闭</button>
+    </div>
+    <div class="dialog-body" id="dialogBody"></div>
+  </dialog>
+
+  <script src="./overview.js?v=0.1.0" defer></script>
+</body>
+</html>

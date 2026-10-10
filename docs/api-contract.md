@@ -392,15 +392,17 @@
    - v0.7（2026-10-07）：意图新增 `provenance`（数据来源与算法口径溯源）；响应新增 `answer_type=provenance` 与 `sources`；`ingredient_breakdown[]` 与 `analyze_nutrition` 新增 `source` / `source_ref` / `source_name` / `confidence` / `verified_at` 来源字段。
    - v0.8（2026-10-10）：`/recommend` 外层新增 `request_id`；新增 `/feedback` 最小事件记录接口。反馈当前不读取、不重排、不持久化为个性化偏好。
    - v0.9（2026-10-10）：新增浏览器唯一聊天入口 `/chat` 及探活接口 `/chat/status`；明确 `/recommend` 只作为 Dify 内部数据节点，前端不持有 API Key、不回退本地规则。
+   - v0.10（2026-10-10）：新增只读数据查询接口 `/data/rows`，供数据总览页执行表切换、关键词检索与分页。
 2. 本契约变更需同步更新 `prompts/*.md`、`scripts/*.py` 与 `evals/eval_set.csv`。
 
-## 8. 数据录入接口
+## 8. 数据录入与查询接口
 
 数据录入不走 Chatflow，直接面向本地数据服务 `server/`（`POST /data/*`）与命令行 `scripts/add_data.py`。字段级说明与完整示例见 `docs/data-entry-guide.md`。
 
 | 方法 | 路径 | 作用 |
 | --- | --- | --- |
 | GET | `/data/schema` | 返回各表的文件名、列名、行数与 ID 前缀 |
+| GET | `/data/rows` | 按表只读查询已有数据，支持关键词、分页 |
 | POST | `/data/nutrition` | 新增食材营养（每 100g） |
 | POST | `/data/recipes/preview` | 试算每份营养与 `ingredient_breakdown`，**不落库** |
 | POST | `/data/recipes` | 新增菜谱，营养现算 |
@@ -409,6 +411,14 @@
 | POST | `/data/units` | 新增单位换算 |
 | POST | `/data/import` | 批量导入（数组，每条带 `table`） |
 | POST | `/data/regen` | 重算全部菜谱的营养缓存 |
+
+查询示例：
+
+```http
+GET /data/rows?table=nutrition&q=鸡胸&limit=50&offset=0
+```
+
+`q` 会匹配该表全部字段，英文不区分大小写；`limit` 范围为 1–200，`offset` 用于分页。该接口只读，不写入 CSV。
 
 约定：
 
