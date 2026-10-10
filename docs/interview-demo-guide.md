@@ -4,10 +4,10 @@
 
 ## 1. 演示前检查
 
-1. 确认项目根目录 `.env` 已配置 `DIFY_API_KEY`，且 Dify、8765 数据服务和 8766 向量服务在线。
-2. 双击根目录 `启动FitMeal.bat`，或运行 `powershell -ExecutionPolicy Bypass -File .\server\start.ps1`。启动器会检查 Dify、向量服务、环境变量和端口。
-3. 打开 `http://127.0.0.1:8765/app/?v=0.5.0`。
-4. 确认页面顶部显示 `Dify Chatflow` 已连接。
+1. 先自行启动 Dify 和 Docker Desktop，确认 Dify 控制台可访问；项目根目录 `.env` 已配置 `DIFY_API_KEY`。
+2. 双击根目录 `启动FitMeal.bat`，或运行 `powershell -ExecutionPolicy Bypass -File .\server\start.ps1`。脚本会自动启动向量服务 `8766` 和 FitMeal 服务 `8765`，并检查 Dify、环境变量和端口。
+3. 打开 `http://127.0.0.1:8765/app/?v=0.5.1`。
+4. 确认页面顶部显示“智能服务已连接”。
 5. 提前打开 `docs/PRD.md`、`prototypes/screens.md`、`evals/showcase_results.md` 和 `docs/evaluation-summary.md`。
 6. 不要现场展示 API Key、Dify 节点配置、原始回包和未脱敏运行记录。
 

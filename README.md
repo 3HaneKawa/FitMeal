@@ -48,18 +48,20 @@ Copy-Item .env.example .env
 
 ## 一键启动（Windows）
 
-本项目提供双击启动入口：
+先自行启动 Dify 和 Docker Desktop，确认 Dify 控制台可访问。然后在项目根目录双击：
 
 ```text
 启动FitMeal.bat
 ```
 
-双击后会自动启动本地服务并打开：
+启动脚本会自动完成：
 
-- 前端 Demo：`http://127.0.0.1:8765/app/`
-- 健康检查：`http://127.0.0.1:8765/health`
+- 检查 `.env` 与 Dify 连接；
+- 启动本地向量服务 `8766`（如果尚未运行）；
+- 启动 FitMeal 数据与前端服务 `8765`；
+- 打开前端 Demo：`http://127.0.0.1:8765/app/`
 
-服务窗口需要保持打开。停止服务时在该窗口按 `Ctrl+C`。本项目使用 `uv` 管理 Python 3.12；如果电脑上没有 `uv`，启动脚本会给出提示。
+服务窗口需要保持打开。停止 FitMeal 时在该窗口按 `Ctrl+C`；向量服务日志位于 `D:\Desktop\ai\embed-server\logs`。本项目使用 `uv` 管理 Python 3.12；如果电脑上没有 `uv`，启动脚本会给出提示。
 
 ## 手动运行
 

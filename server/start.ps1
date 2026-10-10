@@ -1,4 +1,4 @@
-param(
+﻿param(
     [switch]$NoBrowser
 )
 
@@ -11,6 +11,9 @@ $appUrl = "http://127.0.0.1:$port/app/?v=0.5.1"
 $chatStatusUrl = "http://127.0.0.1:$port/chat/status"
 $embedRoot = Join-Path (Split-Path -Parent $root) "embed-server"
 $embedHealthUrl = "http://127.0.0.1:8766/health"
+$embedLogDir = Join-Path $embedRoot "logs"
+$embedStdout = Join-Path $embedLogDir "out.log"
+$embedStderr = Join-Path $embedLogDir "err.log"
 $browserJob = $null
 
 function Get-DotEnvValue {
@@ -42,6 +45,32 @@ function Wait-HttpOk {
     return $false
 }
 
+function Start-EmbeddingService {
+    param(
+        [string]$Root,
+        [string]$HealthUrl,
+        [string]$LogDirectory,
+        [string]$StdoutPath,
+        [string]$StderrPath
+    )
+
+    if (Test-HttpOk -Url $HealthUrl -TimeoutSec 2) {
+        return $null
+    }
+
+    if (-not (Test-Path -LiteralPath (Join-Path $Root "server.py"))) {
+        throw "找不到本地向量服务目录：$Root"
+    }
+
+    New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
+    return Start-Process -FilePath "uv" `
+        -ArgumentList @("run", "--python", "3.12", "python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8766") `
+        -WorkingDirectory $Root `
+        -WindowStyle Hidden `
+        -RedirectStandardOutput $StdoutPath `
+        -RedirectStandardError $StderrPath `
+        -PassThru
+}
 function Get-DifyProbeUrl {
     param([string]$ChatEndpoint)
     if ($ChatEndpoint) {
@@ -84,9 +113,27 @@ try {
         exit 1
     }
     if (-not (Test-HttpOk -Url $embedHealthUrl -TimeoutSec 2)) {
-        Write-Host "[FitMeal] 8766 向量服务没有运行。" -ForegroundColor Red
-        Write-Host "请先在 D:\Desktop\ai\embed-server 启动本地向量服务。" -ForegroundColor Yellow
-        exit 1
+        $embedListener = Get-NetTCPConnection -LocalPort 8766 -State Listen -ErrorAction SilentlyContinue
+        if ($embedListener) {
+            Write-Host "[FitMeal] 8766 端口已被占用，但健康检查失败。" -ForegroundColor Red
+            Write-Host "请检查占用进程或查看日志：$embedStderr" -ForegroundColor Yellow
+            exit 1
+        }
+
+        Write-Host "[FitMeal] 正在启动本地向量服务 8766..." -ForegroundColor Cyan
+        try {
+            Start-EmbeddingService -Root $embedRoot -HealthUrl $embedHealthUrl `
+                -LogDirectory $embedLogDir -StdoutPath $embedStdout -StderrPath $embedStderr | Out-Null
+        } catch {
+            Write-Host "[FitMeal] 本地向量服务启动失败：$($_.Exception.Message)" -ForegroundColor Red
+            exit 1
+        }
+
+        if (-not (Wait-HttpOk -Url $embedHealthUrl -Attempts 60 -DelaySeconds 1)) {
+            Write-Host "[FitMeal] 8766 向量服务没有及时就绪。日志：$embedStderr" -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "[FitMeal] 本地向量服务已就绪。" -ForegroundColor Green
     }
 
     try {
