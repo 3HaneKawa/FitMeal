@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FitMeal 轻食令本地数据录入与维护">
+  <title>数据录入 · FitMeal 轻食令</title>
+  <link rel="stylesheet" href="./styles.css?v=0.5.2">
+  <link rel="stylesheet" href="./data.css?v=0.1.0">
+</head>
+<body>
+  <div class="page-shell data-page">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="返回 FitMeal 推荐首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" role="img"><path d="M8.5 7.5c4.8.4 8.2 2.5 10.2 6.3 2.1 4 1.5 8-1.8 11.6-2.6-1-4.5-2.5-5.9-4.7-1.6-2.6-2.4-5.5-2.5-8.7-.1-1.7 0-3.2 0-4.5Z"/><path d="M18.2 12.1c1.4-3 3.5-4.8 6.4-5.5.8 3.7-.1 6.7-2.8 8.9"/></svg>
+        </span>
+        <span>
+          <strong>FitMeal</strong>
+          <small>轻食令 · 数据台</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <a class="data-entry-link is-current" href="./data.html" aria-current="page">数据录入</a>
+        <div class="service-state" id="serviceState">
+          <span class="state-dot" aria-hidden="true"></span>
+          <span>正在连接本地服务</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="data-workspace">
+      <aside class="data-sidebar">
+        <div class="eyebrow">本地数据维护</div>
+        <h1>数据录入台</h1>
+        <p class="lead">补食材、食谱、外食和别名数据。保存后直接写入本地数据文件，并立即刷新推荐索引。</p>
+
+        <div class="data-warning">
+          <strong>写入前请确认</strong>
+          这里的保存操作会直接修改本地数据，不会先进入草稿或审批队列。食谱营养只在服务端按食材和克重计算，不接受手填营养值。
+        </div>
+
+        <div class="sidebar-actions">
+          <button class="secondary-button" id="refreshSchema" type="button">刷新数据概览</button>
+          <a class="text-link" href="./">返回推荐页</a>
+        </div>
+
+        <div class="count-title">当前数据量</div>
+        <div class="count-list" id="datasetCounts">
+          <div class="count-item"><span>正在读取</span><strong>—</strong></div>
+        </div>
+      </aside>
+
+      <section class="data-main">
+        <nav class="data-tabs" role="tablist" aria-label="数据类别">
+          <button class="tab-button is-active" id="tab-nutrition" type="button" role="tab" aria-selected="true" aria-controls="panel-nutrition" data-tab="nutrition">食材营养</button>
+          <button class="tab-button" id="tab-recipes" type="button" role="tab" aria-selected="false" aria-controls="panel-recipes" data-tab="recipes">食谱</button>
+          <button class="tab-button" id="tab-eat-out" type="button" role="tab" aria-selected="false" aria-controls="panel-eat-out" data-tab="eat-out">外食</button>
+          <button class="tab-button" id="tab-aliases" type="button" role="tab" aria-selected="false" aria-controls="panel-aliases" data-tab="aliases">别名</button>
+          <button class="tab-button" id="tab-units" type="button" role="tab" aria-selected="false" aria-controls="panel-units" data-tab="units">单位换算</button>
+          <button class="tab-button" id="tab-batch" type="button" role="tab" aria-selected="false" aria-controls="panel-batch" data-tab="batch">批量导入</button>
+          <button class="tab-button" id="tab-maintenance" type="button" role="tab" aria-selected="false" aria-controls="panel-maintenance" data-tab="maintenance">维护</button>
+        </nav>
+
+        <section class="tab-panel" id="panel-nutrition" role="tabpanel" aria-labelledby="tab-nutrition">
+          <div class="panel-heading">
+            <div>
+              <h2>食材营养</h2>
+              <p>营养值统一按每 100 克填写。同名食材默认覆盖更新，选择“同名报错”可以避免误覆盖。</p>
+            </div>
+            <span class="panel-badge">写入 nutrition.csv</span>
+          </div>
+
+          <form class="data-form" id="nutritionForm">
+            <div class="form-section">
+              <div class="form-grid form-grid-3">
+                <label class="field">
+                  <span>食材标准名 *</span>
+                  <input name="name" type="text" required placeholder="例：秋葵">
+                </label>
+                <label class="field">
+                  <span>分类</span>
+                  <select name="category">
+                    <option value="protein">蛋白质</option>
+                    <option value="vegetable">蔬菜</option>
+                    <option value="staple">主食</option>
+                    <option value="fruit">水果</option>
+                    <option value="dairy">乳制品</option>
+                    <option value="fat">油脂</option>
+                    <option value="condiment">调味</option>
+                    <option value="other" selected>其他</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>同名处理</span>
+                  <select name="mode">
+                    <option value="upsert" selected>覆盖更新</option>
+                    <option value="append">同名报错</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">每 100 克营养</div>
+              <div class="form-grid form-grid-3">
+                <label class="field">
+                  <span>热量 kcal *</span>
+                  <input name="calories" type="number" min="0" step="0.1" required placeholder="33">
+                </label>
+                <label class="field">
+                  <span>蛋白质 g</span>
+                  <input name="protein_g" type="number" min="0" step="0.1" placeholder="2.0">
+                </label>
+                <label class="field">
+                  <span>脂肪 g</span>
+                  <input name="fat_g" type="number" min="0" step="0.1" placeholder="0.2">
+                </label>
+                <label class="field">
+                  <span>碳水 g</span>
+                  <input name="carbs_g" type="number" min="0" step="0.1" placeholder="7.5">
+                </label>
+                <label class="field">
+                  <span>膳食纤维 g</span>
+                  <input name="fiber_g" type="number" min="0" step="0.1" placeholder="3.9">
+                </label>
+                <label class="field">
+                  <span>来源标记</span>
+                  <input name="source" type="text" value="manual_entry" placeholder="manual_entry / usda_fdc">
+                </label>
+              </div>
+              <div class="form-grid form-grid-3">
+                <label class="field">
+                  <span>过敏原</span>
+                  <input name="allergens" type="text" placeholder="例：无；多个用分号分隔">
+                </label>
+                <label class="field">
+                  <span>可替代食材</span>
+                  <input name="substitutes" type="text" placeholder="例：菠菜;油麦菜">
+                </label>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="primary-button" type="submit">保存食材</button>
+            </div>
+            <p class="helper-text">保存来源建议保留可追溯标记；本页面不会修改既有 source_ref、confidence 等审计字段。</p>
+          </form>
+
+          <div class="api-result" id="nutritionResult" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="tab-panel" id="panel-recipes" role="tabpanel" aria-labelledby="tab-recipes" hidden>
+          <div class="panel-heading">
+            <div>
+              <h2>食谱</h2>
+              <p>只填写食材与克重，服务会自动计算一份的热量、蛋白质、脂肪和碳水。先试算，再保存。</p>
+            </div>
+            <span class="panel-badge">写入 recipes.csv</span>
+          </div>
+
+          <form class="data-form" id="recipeForm">
+            <div class="form-section">
+              <div class="form-grid form-grid-3">
+                <label class="field">
+                  <span>菜名 *</span>
+                  <input name="name" type="text" required placeholder="例：秋葵炒鸡胸">
+                </label>
+                <label class="field">
+                  <span>目标 *</span>
+                  <select name="goal" required>
+                    <option value="fat_loss">减脂</option>
+                    <option value="muscle_gain">增肌</option>
+                    <option value="maintain">维持</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>地区</span>
+                  <select name="region">
+                    <option value="通用">通用</option>
+                    <option value="川渝">川渝</option>
+                    <option value="粤式">粤式</option>
+                    <option value="江浙">江浙</option>
+                    <option value="北方">北方</option>
+                  </select>
+                </label>
+              </div>
+              <div class="form-grid form-grid-4">
+                <label class="field">
+                  <span>份数</span>
+                  <input name="servings" type="number" min="1" step="1" value="1">
+                </label>
+                <label class="field">
+                  <span>耗时分钟</span>
+                  <input name="cooking_time" type="number" min="0" step="1" value="15">
+                </label>
+                <label class="field">
+                  <span>难度</span>
+                  <select name="difficulty">
+                    <option value="easy" selected>简单</option>
+                    <option value="medium">中等</option>
+                    <option value="hard">较难</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>可缺食材数</span>
+                  <input name="missing_tolerance" type="number" min="0" step="1" value="1">
+                </label>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">食材与做法</div>
+              <div class="form-grid">
+                <label class="field">
+                  <span>食材清单 *</span>
+                  <textarea name="ingredients" rows="3" required placeholder="鸡胸肉:150g;秋葵:200g;鸡蛋:1个"></textarea>
+                  <small>格式为“食材:克重或数量”，用分号分隔。</small>
+                </label>
+                <label class="field">
+                  <span>步骤</span>
+                  <textarea name="steps" rows="4" placeholder="鸡胸肉切块;焯水;少油翻炒;加入秋葵调味"></textarea>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">标签与备注</div>
+              <div class="form-grid form-grid-3">
+                <label class="field">
+                  <span>标签</span>
+                  <input name="tags" type="text" placeholder="高蛋白;低脂;快手菜">
+                </label>
+                <label class="field">
+                  <span>过敏原</span>
+                  <input name="allergens" type="text" placeholder="蛋;多个用分号分隔">
+                </label>
+                <label class="field">
+                  <span>来源</span>
+                  <input name="source" type="text" value="manual_entry">
+                </label>
+              </div>
+              <div class="form-grid">
+                <label class="field">
+                  <span>替代食材</span>
+                  <input name="substitutes" type="text" placeholder="鸡胸肉:去皮鸡腿肉;鸡蛋:豆腐">
+                </label>
+                <label class="field">
+                  <span>备注</span>
+                  <textarea name="notes" rows="2" placeholder="记录配方边界、口味或风险提示"></textarea>
+                </label>
+              </div>
+              <label class="check-line">
+                <input name="allow_duplicate" type="checkbox">
+                <span>允许新增同名食谱。默认不勾选，保存时会拒绝重名，避免误建重复数据。</span>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button class="secondary-button" id="recipePreview" type="button">先试算营养</button>
+              <button class="primary-button" type="submit">保存食谱</button>
+            </div>
+            <p class="helper-text">试算不会写入数据；保存后如果营养未落在目标区间，接口会返回提醒，但不会阻止保存。</p>
+          </form>
+
+          <div class="api-result" id="recipeResult" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="tab-panel" id="panel-eat-out" role="tabpanel" aria-labelledby="tab-eat-out" hidden>
+          <div class="panel-heading">
+            <div>
+              <h2>外食条目</h2>
+              <p>记录点餐场景、适用目标和风险说明。用户提出鱼肉、火锅、粥等品类时，系统会优先匹配这里的名称与标签。</p>
+            </div>
+            <span class="panel-badge">写入 eat_out_foods.csv</span>
+          </div>
+
+          <form class="data-form" id="eatOutForm">
+            <div class="form-section">
+              <div class="form-grid form-grid-3">
+                <label class="field">
+                  <span>档口 / 菜品类型 *</span>
+                  <input name="name" type="text" required placeholder="例：清蒸鱼套餐">
+                </label>
+                <label class="field">
+                  <span>地区</span>
+                  <select name="region">
+                    <option value="通用">通用</option>
+                    <option value="川渝">川渝</option>
+                    <option value="粤式">粤式</option>
+                    <option value="江浙">江浙</option>
+                    <option value="北方">北方</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>热量区间</span>
+                  <input name="calorie_range" type="text" placeholder="例：380-520 kcal">
+                </label>
+              </div>
+
+              <fieldset class="fieldset-field">
+                <legend>适用目标 *</legend>
+                <div class="choice-row">
+                  <label class="choice-chip"><input name="suitable_goals" type="checkbox" value="fat_loss" data-multi="true"><span>减脂</span></label>
+                  <label class="choice-chip"><input name="suitable_goals" type="checkbox" value="muscle_gain" data-multi="true"><span>增肌</span></label>
+                  <label class="choice-chip"><input name="suitable_goals" type="checkbox" value="maintain" data-multi="true"><span>维持</span></label>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="form-section">
+              <div class="form-grid">
+                <label class="field">
+                  <span>点餐策略</span>
+                  <textarea name="order_strategy" rows="3" placeholder="优先选鱼肉；要求少油少盐；主食减半；搭配一份绿叶菜"></textarea>
+                </label>
+                <label class="field">
+                  <span>风险说明</span>
+                  <textarea name="risk_notes" rows="3" placeholder="酱汁含油;汤底偏咸;主食容易超量"></textarea>
+                </label>
+                <label class="field">
+                  <span>标签</span>
+                  <input name="tags" type="text" placeholder="鱼肉;高蛋白;清淡">
+                </label>
+              </div>
+              <label class="check-line">
+                <input name="allow_duplicate" type="checkbox">
+                <span>允许新增同名外食条目。默认不勾选。</span>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button class="primary-button" type="submit">保存外食条目</button>
+            </div>
+          </form>
+
+          <div class="api-result" id="eatOutResult" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="tab-panel" id="panel-aliases" role="tabpanel" aria-labelledby="tab-aliases" hidden>
+          <div class="panel-heading">
+            <div>
+              <h2>食材别名</h2>
+              <p>把用户常说的叫法映射到营养库标准名，避免同一食材被识别成多条数据。</p>
+            </div>
+            <span class="panel-badge">写入 ingredient_aliases.csv</span>
+          </div>
+
+          <form class="data-form" id="aliasForm">
+            <div class="form-grid form-grid-3">
+              <label class="field">
+                <span>别名 *</span>
+                <input name="alias" type="text" required placeholder="例：大虾">
+              </label>
+              <label class="field">
+                <span>标准名 *</span>
+                <input name="standard" type="text" required placeholder="例：虾仁">
+              </label>
+              <label class="field">
+                <span>备注</span>
+                <input name="note" type="text" placeholder="例：口语叫法">
+              </label>
+            </div>
+            <div class="form-actions">
+              <button class="primary-button" type="submit">保存别名</button>
+            </div>
+            <p class="helper-text">标准名必须已经存在于 nutrition.csv 中；同名别名会覆盖更新。</p>
+          </form>
+
+          <div class="api-result" id="aliasResult" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="tab-panel" id="panel-units" role="tabpanel" aria-labelledby="tab-units" hidden>
+          <div class="panel-heading">
+            <div>
+              <h2>单位换算</h2>
+              <p>补充个、瓣、张、把等口语单位的克重。填写食材时只对该食材生效，不填则作为通用换算。</p>
+            </div>
+            <span class="panel-badge">写入 unit_conversions.csv</span>
+          </div>
+
+          <form class="data-form" id="unitForm">
+            <div class="form-grid form-grid-4">
+              <label class="field">
+                <span>单位 *</span>
+                <input name="unit" type="text" required placeholder="例：瓣">
+              </label>
+              <label class="field">
+                <span>食材</span>
+                <input name="ingredient" type="text" placeholder="例：蒜；留空表示通用">
+              </label>
+              <label class="field">
+                <span>等于多少克 *</span>
+                <input name="grams" type="number" min="0.01" step="0.01" required placeholder="5">
+              </label>
+              <label class="field">
+                <span>备注</span>
+                <input name="note" type="text" placeholder="例：一瓣蒜约 5 克">
+              </label>
+            </div>
+            <div class="form-actions">
+              <button class="primary-button" type="submit">保存单位换算</button>
+            </div>
+            <p class="helper-text">填写了食材时，该食材必须已经存在于营养库；相同的单位和食材组合会覆盖更新。</p>
+          </form>
+
+          <div class="api-result" id="unitResult" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="tab-panel" id="panel-batch" role="tabpanel" aria-labelledby="tab-batch" hidden>
+          <div class="panel-heading">
+            <div>
+              <h2>批量导入</h2>
+              <p>粘贴数组或 `{"items": []}`。服务会逐条校验并返回成功和失败明细，一条失败不会中断其余条目。</p>
+            </div>
+            <span class="panel-badge">POST /data/import</span>
+          </div>
+
+          <form class="data-form" id="batchForm">
+            <label class="field">
+              <span>JSON 数据</span>
+              <textarea class="json-input" name="itemsJson" required placeholder='[{"table":"nutrition","name":"秋葵","calories":33}]'></textarea>
+            </label>
+            <details class="sample-box">
+              <summary>查看可用于批量导入的格式</summary>
+              <pre>[
+  {
+    "table": "nutrition",
+    "name": "秋葵",
+    "category": "vegetable",
+    "calories": 33,
+    "protein_g": 2.0,
+    "fat_g": 0.2,
+    "carbs_g": 7.5,
+    "fiber_g": 3.9,
+    "source": "manual_entry"
+  },
+  {
+    "table": "aliases",
+    "alias": "大虾",
+    "standard": "虾仁",
+    "note": "口语叫法"
+  }
+]</pre>
+            </details>
+            <div class="form-actions">
+              <button class="primary-button" type="submit">校验并导入</button>
+            </div>
+          </form>
+
+          <div class="api-result" id="batchResult" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="tab-panel" id="panel-maintenance" role="tabpanel" aria-labelledby="tab-maintenance" hidden>
+          <div class="panel-heading">
+            <div>
+              <h2>数据维护</h2>
+              <p>查看接口当前读取到的表结构。修改过营养库、别名或单位换算后，需要重算食谱营养缓存。</p>
+            </div>
+            <span class="panel-badge">只读概览 + 重算</span>
+          </div>
+
+          <div class="maintenance-card">
+            <h3>重算食谱营养</h3>
+            <p>按当前 nutrition.csv、别名和单位换算重新计算所有食谱的营养列。这个操作不会新增食谱。</p>
+            <button class="danger-button" id="regenButton" type="button">重算全部食谱营养</button>
+          </div>
+
+          <div class="maintenance-card">
+            <h3>数据表结构</h3>
+            <p>以下内容来自服务当前实际读取的文件，可用于核对字段名和数据量。</p>
+            <div class="table-wrap">
+              <table class="schema-table">
+                <thead>
+                  <tr>
+                    <th>数据表</th>
+                    <th>文件</th>
+                    <th>行数</th>
+                    <th>列名</th>
+                  </tr>
+                </thead>
+                <tbody id="schemaRows">
+                  <tr><td colspan="4">正在读取数据表结构...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="api-result" id="maintenanceResult" aria-live="polite" hidden></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="./data.js?v=0.1.0" defer></script>
+</body>
+</html>

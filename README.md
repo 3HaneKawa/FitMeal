@@ -81,6 +81,7 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 服务启动后打开：
 
 - 前端 Demo：`http://127.0.0.1:8765/app/`
+- 数据录入台：`http://127.0.0.1:8765/app/data.html`
 - 健康检查：`http://127.0.0.1:8765/health`
 
 健康检查会返回各表行数和 Dify 代理配置状态。当前快照为食谱 208、营养 159、外食 50、目标规则 3、替换规则 30、别名 24、单位换算 19。

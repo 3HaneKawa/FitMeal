@@ -60,6 +60,17 @@ svg { display: block; }
 .state-dot { width: 8px; height: 8px; border-radius: 50%; background: #b6832e; box-shadow: 0 0 0 4px rgba(182,131,46,.12); }
 .service-state.is-online .state-dot { background: #2d7e5c; box-shadow: 0 0 0 4px rgba(45,126,92,.13); }
 .service-state.is-offline .state-dot { background: #b8483e; box-shadow: 0 0 0 4px rgba(184,72,62,.12); }
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.data-entry-link {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 36px; padding: 8px 13px;
+  border: 1px solid #c7d3ca; border-radius: 999px;
+  color: var(--green); background: rgba(255,255,255,.58);
+  font-size: 12px; font-weight: 800; text-decoration: none;
+  transition: .18s ease;
+}
+.data-entry-link:hover,
+.data-entry-link.is-current { border-color: #9db7a5; background: var(--green-soft); }
 
 .workspace {
   max-width: 1500px;
