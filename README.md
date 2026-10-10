@@ -35,7 +35,22 @@ docs/         PRD、架构、接口、安全、数据治理和评测说明
 prototypes/   页面结构、交互流程和原型说明
 ```
 
-## 快速运行
+## 一键启动（Windows）
+
+本项目提供双击启动入口：
+
+```text
+启动FitMeal.bat
+```
+
+双击后会自动启动本地服务并打开：
+
+- 前端 Demo：`http://127.0.0.1:8765/app/`
+- 健康检查：`http://127.0.0.1:8765/health`
+
+服务窗口需要保持打开。停止服务时在该窗口按 `Ctrl+C`。本项目使用 `uv` 管理 Python 3.12；如果电脑上没有 `uv`，启动脚本会给出提示。
+
+## 手动运行
 
 项目使用 Python 3.12。推荐在项目根目录使用 `uv` 运行：
 
@@ -104,6 +119,7 @@ Dify Chatflow 是另一条真实 API 调用链，包含参数抽取、安全判�
 | `prototypes/screens.md` | 页面结构和交互说明 |
 | `evals/showcase_results.md` | 面试演示案例、证据和讲解口径 |
 | `docs/interview-demo-guide.md` | 面试演示顺序、示例输入和讲解边界 |
+| `docs/project-status-and-artifacts.md` | 项目现状、已实现范围、交付物和当前限制 |
 
 ## 当前限制
 
