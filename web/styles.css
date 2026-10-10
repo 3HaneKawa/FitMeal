@@ -217,6 +217,18 @@ h3 { margin-bottom: 8px; }
 .breakdown-track { height: 7px; border-radius: 999px; background: #e7e9e3; overflow: hidden; }
 .breakdown-fill { height: 100%; border-radius: inherit; background: var(--accent); }
 .breakdown-row span:last-child { text-align: right; color: var(--muted); }
+.feedback-actions {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 7px;
+  margin-top: 17px; padding-top: 14px; border-top: 1px dashed var(--line);
+}
+.feedback-label { color: var(--muted); font-size: 11.5px; margin-right: 3px; }
+.feedback-button {
+  border: 1px solid #cbd6ce; border-radius: 999px; background: #fffefb;
+  color: #405249; padding: 6px 10px; font: inherit; font-size: 11.5px; cursor: pointer;
+}
+.feedback-button:hover { border-color: var(--green); color: var(--green); background: #f1f7f2; }
+.feedback-button:disabled { opacity: .55; cursor: default; }
+.feedback-result { flex-basis: 100%; color: var(--green); font-size: 11.5px; }
 
 .eatout-card, .source-card, .substitution-card {
   border: 1px solid var(--line); border-radius: 16px; background: #fffefb;

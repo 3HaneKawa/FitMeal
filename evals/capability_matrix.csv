@@ -8,7 +8,7 @@ F06,functional,eat_out_recommendation,F6;4.5,v1_required,implemented,region;goal
 F07,functional,regional_preference,F7;4.3,v1_required,implemented,通用;北方;川渝;粤式;江浙;city_alias;dialect,地域枚举、城市名和方言词映射到标准区域,标准区域内结果不得被错误当成其他区域,20,4,同一条用例可同时覆盖 F3/F6
 F08,functional,substitution,F8;4.5,v1_required,implemented,protein_swap;staple_swap;vegetable_swap;missing_ingredient,给出替换关系和营养变化,替换结果来自规则或数据；不得伪造变化,40,8,没有规则时应说明无法可靠替换
 F09,functional,safety_interception,F9;4.6,v1_required,implemented,S1_filter;S2_block;S3_block;S4_block;S5_block,S1 过滤后继续推荐；S2-S5 短路安全结果,S1 零过敏原泄漏；S2-S5 拦截率 100%,40,8,风险用例单独计数，不能藏进普通意图通过率
-F10,functional,user_feedback,F10,v1_promised_not_ready,not_implemented,accept;reject;rating;reason,采集用户是否采纳及原因,交互实现后校验事件字段和幂等性,10,2,当前未实现，保留位置；不得从范围中删除
+F10,functional,user_feedback,F10,v1_promised_not_ready,partial_implemented,accept;reject;too_much;regenerate;event_logging,记录用户对单次推荐的最小反馈事件；当前不读取或改写推荐排序,事件字段完整；非法动作返回 400；反馈不自动改变推荐；对话反馈理解、偏好持久化和排序闭环未实现,10,2,最小反馈事件记录已实现；12 条对话式反馈用例仍为 not_ready，事件记录不得计入其通过口径
 F11,functional,evaluation_management,F11,v1_required,in_progress,capability_matrix;dev_set;holdout_set;versioned_runs;metrics,能力矩阵、数据集版本和运行记录可追溯,矩阵无缺失；开发集与验收集隔离；历史运行可复现,0,0,元能力，由校验脚本与评测运行流程验证
 F12,functional,serving_basis,F12;4.4,v1_required,implemented,servings;serving_weight_g;nutrition_basis,每条推荐明确份数、每份重量和每份营养基准,三个字段缺失率为 0,40,8,覆盖 cook 和 eat_out 的结果字段
 F13,functional,history,F13,v1_out_of_scope,not_implemented,history_record,不属于 v1,不得对外宣称支持历史记录,0,0,P2 非目标

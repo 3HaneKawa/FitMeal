@@ -59,6 +59,7 @@ const requestSummary = document.getElementById('requestSummary');
 const submitButton = document.getElementById('submitButton');
 const serviceState = document.getElementById('serviceState');
 const advancedFields = document.getElementById('advancedFields');
+let currentRequestId = null;
 
 const esc = (value) => String(value ?? '')
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -233,8 +234,58 @@ function renderRecipe(recommendation, index) {
         <div class="breakdown">${breakdownHtml}</div>
       </div>` : ''}
       ${recommendation.notes ? `<div class="note-box">${esc(recommendation.notes)}</div>` : ''}
+      <div class="feedback-actions" data-feedback-group>
+        <span class="feedback-label">这道菜怎么样？</span>
+        <button type="button" class="feedback-button" data-recipe-id="${esc(recommendation.id)}" data-feedback-action="accept">采纳</button>
+        <button type="button" class="feedback-button" data-recipe-id="${esc(recommendation.id)}" data-feedback-action="reject">不喜欢</button>
+        <button type="button" class="feedback-button" data-recipe-id="${esc(recommendation.id)}" data-feedback-action="too_much">太麻烦</button>
+        <button type="button" class="feedback-button" data-recipe-id="${esc(recommendation.id)}" data-feedback-action="regenerate">换一批</button>
+        <span class="feedback-result" data-feedback-result hidden></span>
+      </div>
     </div>
   </article>`;
+}
+
+async function submitFeedback(event) {
+  const button = event.target.closest('[data-feedback-action]');
+  if (!button) return;
+  const group = button.closest('[data-feedback-group]');
+  const result = group?.querySelector('[data-feedback-result]');
+  const action = button.dataset.feedbackAction;
+  const recipeId = button.dataset.recipeId;
+
+  if (!currentRequestId) {
+    if (result) {
+      result.textContent = '这次结果缺少请求编号，暂时无法记录';
+      result.hidden = false;
+    }
+    return;
+  }
+
+  group.querySelectorAll('button').forEach((item) => { item.disabled = true; });
+  if (result) {
+    result.textContent = '正在记录…';
+    result.hidden = false;
+  }
+
+  try {
+    const response = await fetch('/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        request_id: currentRequestId,
+        recipe_id: recipeId,
+        action,
+        reason: button.textContent.trim()
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || `HTTP ${response.status}`);
+    if (result) result.textContent = '已记录，感谢反馈';
+  } catch (error) {
+    group.querySelectorAll('button').forEach((item) => { item.disabled = false; });
+    if (result) result.textContent = `记录失败：${error.message}`;
+  }
 }
 
 function renderEatOut(item) {
@@ -292,6 +343,7 @@ function renderSources(sources) {
 function renderResponse(data, elapsedMs) {
   const result = data.result || data;
   const type = result.answer_type;
+  currentRequestId = data.request_id || null;
   resultPanel.setAttribute('aria-busy', 'false');
   resultMeta.textContent = `本地接口 ${formatNumber(elapsedMs, ' ms')}`;
 
@@ -357,6 +409,7 @@ function renderResponse(data, elapsedMs) {
 
 async function submitForm(event) {
   event?.preventDefault();
+  currentRequestId = null;
   const payload = buildPayload();
   renderRequestSummary(payload);
   resultPanel.setAttribute('aria-busy', 'true');
@@ -408,6 +461,7 @@ function init() {
   });
   intentSelect.addEventListener('change', updateAdvancedFields);
   form.addEventListener('submit', submitForm);
+  results.addEventListener('click', submitFeedback);
   updateAdvancedFields();
   checkHealth();
 

@@ -12,6 +12,7 @@
 | `showcase_cases.csv` | 12 条适合面试讲解的代表性用例 |
 | `showcase_results.md` | 首轮真实 API 结果、失败归因和产品决策 |
 | `runs/.gitkeep` | 运行结果目录占位，原始结果不进入公开仓库 |
+| `../docs/evaluation-pipeline.md` | 用例从哪里来、怎么构建、怎么运行、结果怎么解释 |
 
 ## 2. 评测目标
 
@@ -45,6 +46,7 @@
 uv run --python 3.12 python scripts/check_eval_set.py --strict
 uv run --python 3.12 python scripts/check_eval_consistency.py
 uv run --python 3.12 python scripts/run_eval_set.py --cases evals/eval_set.csv
+uv run --python 3.12 python scripts/check_feedback_store.py
 ```
 
 真实 Dify API 评测需要额外配置 API Key、服务地址和节点 ID。公开仓库中的 `scripts/run_eval_api.py` 只保留运行框架，不包含内部节点配置。
@@ -53,4 +55,4 @@ uv run --python 3.12 python scripts/run_eval_set.py --cases evals/eval_set.csv
 
 首轮真实 API 批次是修复前基线。总体结果为 196 pass、58 fail、3 blocked、12 not_ready、1 error。意图识别和 JSON 解析已经可用，安全判定、食材抽取、过敏自动口径和 P95 延迟没有达到目标。
 
-代码层结果和真实 API 结果分开记录，不用其中一个替代另一个。当前离线版本 `bv-a3e6abe13870` 的代码层结果为 234 pass、10 fail、14 条待人工或 LLM 评分、12 条 F10 未实现占位；开发集为 190 / 8 / 11 / 10，验收集为 44 / 2 / 3 / 2。代码层通过只能说明规则、数据和本地筛选逻辑没有明显回归，不能说明 Dify 真实 API 调用链已经通过。
+代码层结果和真实 API 结果分开记录，不用其中一个替代另一个。当前离线版本 `bv-a3e6abe13870` 的代码层结果为 234 pass、10 fail、14 条待人工或 LLM 评分、12 条对话式反馈用例未就绪；开发集为 190 / 8 / 11 / 10，验收集为 44 / 2 / 3 / 2。最小事件记录由 `scripts/check_feedback_store.py` 单独验证，不能把它算作这 12 条对话式用例通过。代码层通过只能说明规则、数据和本地筛选逻辑没有明显回归，不能说明 Dify 真实 API 调用链已经通过。

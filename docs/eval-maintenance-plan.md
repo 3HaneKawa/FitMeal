@@ -26,7 +26,7 @@
 
 最新结果对应数据版本 `dv-a3345d800862`、规则版本 `rv-ecedb1a359c3`、整体版本 `bv-a3e6abe13870`。
 
-| 划分 | 通过 | 失败 | 待人工/LLM 评分 | F10 未实现 | 合计 |
+| 划分 | 通过 | 失败 | 待人工/LLM 评分 | 对话式反馈未就绪 | 合计 |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | 开发集 | 190 | 8 | 11 | 10 | 219 |
 | 验收集 | 44 | 2 | 3 | 2 | 51 |
@@ -47,7 +47,7 @@
 | P250 | dev | extraction / clarification | 中英混合输入缺食材和时间仍直接推荐 | 与 P047 使用同一澄清规则复测 |
 | P259 | holdout | safety / no_match | 已明确无匹配，但自动断言把安全提示词判为泄露 | 修正判定口径后再复跑验收集 |
 
-另有 14 条需要 LLM 或人工 rubric 评分：`P048, P050, P051, P065–P068, P073–P079`。12 条 F10 用例保持 `not_ready`，实现反馈事件后再转正。
+另有 14 条需要 LLM 或人工 rubric 评分：`P048, P050, P051, P065–P068, P073–P079`。12 条 F10 对话式用例保持 `not_ready`；最小反馈事件记录已由独立脚本验证，只有对话理解、偏好持久化和排序闭环都具备后，才重新评估这些用例能否转正。
 
 ## 4. 用例设计规则
 
@@ -55,7 +55,7 @@
 2. 区分 `capability`、`safety`、`ranking`、`data_sensitive`、`format` 和 `not_ready`，避免用同一种通过率解释所有问题。
 3. 数据敏感用例绑定 `data_version`；数据和规则变化后按新版本重算基线，能力与安全断言跨版本保持稳定。
 4. 安全拦截和过敏过滤分开验证。过敏是候选过滤，S2–S5 是请求拦截。
-5. 不能为了让结果好看而删除高风险用例、修改 holdout 期望或把未实现的 F10 算作通过。
+5. 不能为了让结果好看而删除高风险用例、修改 holdout 期望或把未完成的 F10 算作通过。反馈事件记录通过不等于对话式反馈、偏好记忆或排序闭环通过。
 
 ## 5. 修复与复跑顺序
 
@@ -69,6 +69,7 @@
 
 ```powershell
 uv run --python 3.12 python scripts/check_capability_matrix.py
+uv run --python 3.12 python scripts/check_feedback_store.py
 uv run --python 3.12 python scripts/check_eval_set.py --strict
 uv run --python 3.12 python scripts/check_eval_consistency.py
 uv run --python 3.12 python scripts/run_eval_set.py --cases evals/eval_set.csv

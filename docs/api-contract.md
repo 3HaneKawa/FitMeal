@@ -1,7 +1,7 @@
 # 接口契约
 
-> 状态：v0.7
-> 更新时间：2026-10-07
+> 状态：v0.8
+> 更新时间：2026-10-10
 > 适用范围：Dify Chatflow 与后续自建 API 的统一输入输出约定
 
 ## 1. 约定
@@ -103,6 +103,8 @@
 
 ## 4. 响应结构
 
+> `POST /recommend` 的完整响应是外层包络 `{ "result": { … }, "elapsed_ms": 123.4, "request_id": "…" }`；下面先展示 `result` 的内容，再把 `request_id` 交给 `POST /feedback`。
+
 ```json
 {
   "answer_type": "recipe",
@@ -178,6 +180,9 @@
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
+| result | object | 下方第 4.1 至 4.3 节描述的业务响应 |
+| elapsed_ms | float | 本地服务处理耗时，单位毫秒；仅用于本地 Demo 排查，不代表 Dify 全链路延迟 |
+| request_id | string | 本次推荐请求编号；仅用于关联同一次结果上的反馈事件，不包含用户身份信息 |
 | answer_type | string | `recipe` / `eat_out` / `substitution` / `nutrition` / `provenance` / `safety` |
 | recommendations | array | 推荐列表，安全拦截时为空 |
 | missing_information | array | 需要追问的字段 |
@@ -298,6 +303,7 @@
    - v0.5（2026-10-06）：营养改为**计算值**（事实来源 `data/nutrition.csv`，`recipes.csv` 营养列降级为缓存并由校验强制对齐）；新增 `data/ingredient_aliases.csv`（24 组别名）与 `data/unit_conversions.csv`（14 条单位换算）；推荐项新增 `ingredient_breakdown`（食材级营养拆解）与每份 `fiber_g`。
    - v0.6（2026-10-06）：新增第 8 节「数据录入接口」（`/data/*` + `scripts/add_data.py`）；确认营养写入规则为「只收食材与克重、一律现算」，写入统一走 `scripts/data_store.py`。
    - v0.7（2026-10-07）：意图新增 `provenance`（数据来源与算法口径溯源）；响应新增 `answer_type=provenance` 与 `sources`；`ingredient_breakdown[]` 与 `analyze_nutrition` 新增 `source` / `source_ref` / `source_name` / `confidence` / `verified_at` 来源字段。
+   - v0.8（2026-10-10）：`/recommend` 外层新增 `request_id`；新增 `/feedback` 最小事件记录接口。反馈当前不读取、不重排、不持久化为个性化偏好。
 2. 本契约变更需同步更新 `prompts/*.md`、`scripts/*.py` 与 `evals/eval_set.csv`。
 
 ## 8. 数据录入接口
@@ -323,3 +329,58 @@
 3. 成功返回 `{ "ok": true, "result": { … } }`；入参不合法返回 HTTP 400 且 `error.code = "invalid_payload"`；服务内部错误返回 500。
 4. `preview` 与 `add` 的请求体完全一致，便于「先看后写」：`preview` 额外返回 `goal_fit`（`{ passed, reasons }`），只提示不拦。
 5. 新增或修改菜谱后必须重算营养缓存（`POST /data/regen`，或 `add_data.py --regen` 导入时自动做）。
+
+## 9. 反馈接口
+
+`POST /feedback` 只记录用户对某次推荐结果的明确操作，用于本地 Demo 复盘。它不自动改变下一次推荐，也不把反馈写进用户画像。
+
+请求：
+
+```json
+{
+  "request_id": "b4c2e0f7a9d14c91b9576a04e0a54db7",
+  "recipe_id": "R001",
+  "action": "reject",
+  "reason": "不喜欢",
+  "note": "口味偏淡"
+}
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| request_id | string | 是 | `/recommend` 返回的请求编号 |
+| recipe_id | string | 是 | 用户操作的食谱 ID；当前四类按钮都以单张食谱卡片为单位 |
+| action | string | 是 | `accept` 采纳 / `reject` 不喜欢 / `too_much` 太麻烦 / `regenerate` 换一批 |
+| reason | string | 否 | 当前只接受与 `action` 一致的中文按钮文案 |
+| note | string | 否 | 预留的自由文本，最长 500 字；当前前端不采集 |
+
+成功响应：
+
+```json
+{
+  "ok": true,
+  "event": {
+    "event_id": "1f5c9f5d5d8a4cd5a85b9f547db2f4e0",
+    "request_id": "b4c2e0f7a9d14c91b9576a04e0a54db7",
+    "recipe_id": "R001",
+    "action": "reject",
+    "reason": "不喜欢",
+    "note": "口味偏淡",
+    "created_at": "2026-10-10T14:30:00+08:00"
+  }
+}
+```
+
+错误：
+
+| HTTP | error.code | 触发条件 |
+| ---: | --- | --- |
+| 400 | `invalid_feedback` | `request_id` 或 `recipe_id` 为空；action 不在枚举内；reason 与 action 不匹配 |
+| 500 | `internal_error` | 本地事件文件无法写入 |
+
+边界：
+
+1. 当前只覆盖食谱推荐卡片的四个按钮，不覆盖外食、替换、营养和安全结果。
+2. “换一批”当前只记录用户意图，不会重新生成或排除上一批推荐。
+3. 事件写入 `runtime/feedback_events.csv`；该运行文件被 `.gitignore` 排除，不进入公开仓库。
+4. 反馈事件持久化不等于偏好持久化；对话式反馈理解、偏好记忆和排序闭环仍未实现。

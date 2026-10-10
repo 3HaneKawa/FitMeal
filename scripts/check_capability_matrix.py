@@ -78,8 +78,20 @@ def main() -> None:
     by_id = {row["matrix_id"]: row for row in rows}
     if by_id["F10"]["v1_scope"] != "v1_promised_not_ready":
         fail("F10 must remain v1_promised_not_ready")
-    if by_id["F10"]["implementation_status"] != "not_implemented":
-        fail("F10 must keep an explicit not_implemented status until delivered")
+    f10 = by_id["F10"]
+    if f10["implementation_status"] not in {"not_implemented", "partial_implemented"}:
+        fail("F10 must be not_implemented or partial_implemented")
+    required_feedback_coverage = {
+        "accept",
+        "reject",
+        "too_much",
+        "regenerate",
+        "event_logging",
+    }
+    if not required_feedback_coverage.issubset(set(f10["coverage_values"].split(";"))):
+        fail("F10 must cover all four feedback actions and event_logging")
+    if "12 条" not in f10["notes"] or "not_ready" not in f10["notes"]:
+        fail("F10 must keep the 12 dialogue feedback cases explicitly not_ready")
     if by_id["S01"]["v1_scope"] != "v1_required":
         fail("S01 must be part of v1")
     if "filter" not in by_id["S01"]["coverage_values"]:

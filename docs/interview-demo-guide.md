@@ -119,11 +119,11 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 - 左侧表单负责收集条件，右侧按结果类型渲染，不同状态分开处理。
 - 先回显条件，再给推荐卡片，避免用户看到结果后才发现条件理解错了。
 - 信息不足、无匹配和安全拦截分别展示，不合并成同一种报错。
-- F10 用户反馈没有实现，页面没有采纳、不喜欢和换一批按钮。
+- 食谱卡片底部已有采纳、不喜欢、太麻烦和换一批按钮，点击会记录事件；换一批当前只记录意图，不会真正重排，反馈也还不会影响下一次推荐。
 
 ### 第四分钟：测试和判断
 
-- 代码层最新复跑是 234 pass、10 fail、14 条待人工或 LLM 评分、12 条 F10 占位。
+- 代码层最新复跑是 234 pass、10 fail、14 条待人工或 LLM 评分、12 条对话式反馈用例未就绪；最小反馈事件记录由独立自测验证，不混入这 12 条口径。
 - 首轮真实 API 中，意图识别 95.4%、JSON 解析 100%，说明理解层和格式基本可用。
 - 安全 LLM 判定 88.9%、食材抽取 52.5%，没有达到 PRD 目标。
 - 过敏自动口径 14.3%，但 P032、P034、P259 的失败来自安全提示词被字符串断言误判，不能直接说系统漏放了过敏原。
@@ -143,10 +143,10 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 | 需求从哪里来 | `docs/requirements-analysis.md` | 公开产品观察、场景拆解和自用流程，真实访谈尚未完成 |
 | 为什么这样分工 | `docs/PRD.md`、`docs/architecture.md` | 模型负责理解与表达，代码和数据负责可追溯的筛选与计算 |
 | 原型怎么做的 | `prototypes/screens.md`、`prototypes/wireframes.md` | 表单输入、结果回显、五类结果和独立异常状态 |
-| 测试集怎么设计 | `evals/capability_matrix.csv`、`evals/eval_set.csv` | 按能力和风险分层，开发集定位问题，验收集只做验收 |
+| 测试集怎么设计 | `evals/capability_matrix.csv`、`evals/eval_set.csv`、`docs/evaluation-pipeline.md` | 按能力和风险分层，开发集定位问题，验收集只做验收；先讲数据怎么构建和解释 |
 | 失败后怎么判断 | `evals/showcase_results.md` | 用代表用例说明观测、判断、动作和下一轮通过条件 |
 | 项目是否真的能跑 | `README.md`、`web/screenshots/` | 展示本地服务、五类请求和页面截图；Dify 结果单独说明 |
-| 哪些还没做 | `docs/PRD.md`、`docs/evaluation-summary.md` | F10 未实现，真实用户测试未完成，首轮 API 是修复前基线 |
+| 哪些还没做 | `docs/PRD.md`、`docs/evaluation-summary.md` | F10 只完成事件记录，真实用户测试本轮不做，首轮 API 是修复前基线 |
 
 ## 5. 断网或 Dify 不可用时的备选
 
@@ -158,7 +158,7 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 ## 6. 不能说的内容
 
 - 不能说真实用户访谈、采纳率、决策率或付费意愿已经验证。
-- 不能说 F10 已完成。
+- 不能说反馈闭环、偏好记忆或反馈驱动排序已经完成。
 - 不能说真实 API 首轮结果代表优化后效果。
 - 不能把过敏自动断言结果直接说成真实漏放过敏原。
 - 不能把本地前端延迟写成 Dify API 延迟。

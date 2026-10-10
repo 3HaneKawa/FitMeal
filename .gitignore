@@ -18,6 +18,7 @@ data/sources/
 *.tar.gz
 
 # Local runtime artifacts
+runtime/
 server/logs/
 backup/
 internal/

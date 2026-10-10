@@ -1,7 +1,7 @@
 # 项目计划与开发路线图
 
-> 更新时间：2026-10-09
-> 对应版本：FitMeal v0.3.0
+> 更新时间：2026-10-10
+> 对应版本：FitMeal v0.3.1
 > 关联材料：`README.md`、`docs/PRD.md`、`docs/evaluation-summary.md`、`evals/eval_set.csv`
 
 ## 1. 当前交付状态
@@ -12,13 +12,14 @@
 | --- | --- | --- |
 | 产品定义 | 需求分析、PRD、页面流程、功能范围、非目标和验收口径 | `docs/requirements-analysis.md`、`docs/PRD.md`、`prototypes/screens.md` |
 | 规则与数据 | 食谱 208、营养 159、外食 50、目标规则 3、替换规则 30、别名 24、单位换算 19 | `data/`、`server /health` |
-| 本地服务 | FastAPI 提供 `/health`、`/recommend` 和数据录入接口 | `server/app.py`、接口请求记录 |
+| 本地服务 | FastAPI 提供 `/health`、`/recommend`、`/feedback` 和数据录入接口 | `server/app.py`、接口请求记录 |
 | 本地前端 | 六类路径可交互展示，包含首页、食谱、外食、替换、营养、安全 | `web/`、`web/screenshots/` |
 | Dify 链路 | 参数抽取、安全判断、意图分类、参数合并、Python 数据服务和回答生成已跑通 | `docs/evaluation-summary.md` 和首轮 API 运行汇总 |
 | 数据一致性 | 数据校验、覆盖度诊断、数据版本和规则版本通过 | `scripts/validate_data.py`、`scripts/coverage_report.py` |
 | 评测集 | 270 条正式用例，dev 219 / holdout 51，能力矩阵和一致性检查通过 | `evals/eval_set.csv`、`evals/capability_matrix.csv` |
 | 代码层评测 | 234 pass / 10 fail / 14 blocked / 12 not_ready | `docs/evaluation-summary.md` |
 | 真实 API 首轮 | 196 pass / 58 fail / 3 blocked / 12 not_ready / 1 error | `docs/evaluation-summary.md`、`evals/showcase_results.md` |
+| 反馈事件记录 | 食谱卡片支持采纳、不喜欢、太麻烦、换一批，并写入本地事件文件 | `server/app.py`、`scripts/feedback_store.py`、`scripts/check_feedback_store.py` |
 | 面试演示材料 | 高风险失败、产品判断和复跑规则已整理 | `evals/showcase_results.md`、`evals/showcase_cases.csv` |
 
 ### 尚未完成
@@ -28,8 +29,8 @@
 | 安全与过敏 | 风险分类不稳定，过敏自动断言有误判 | P0，先统一判据和人工复核口径 |
 | 信息追问 | 缺少食材或目标时仍会直接推荐 | P0，在推荐前增加澄清分支 |
 | 食材抽取 | 首轮 API 食材准确率为 52.5% | P1，按别名、单位、复合食材、否定表达和候选缺失分类处理 |
-| 用户研究 | 尚未完成真实用户访谈 | 先补 5 至 10 位目标用户，再更新需求结论 |
-| 用户反馈 | F10 未实现 | 保留评测占位，不将当前输出算作通过 |
+| 用户研究 | 尚未完成真实用户访谈 | 不列入本轮交付；后续单独安排 5 至 10 位目标用户再更新需求结论 |
+| 用户反馈 | 最小事件记录已实现，反馈闭环未实现 | 12 条对话式用例保留 `not_ready`；只有真实测试后再评估偏好和排序 |
 | 用户体验 | 首轮 API P95 为 26.08 秒 | P2，在安全和澄清稳定后优化 |
 | 采纳率 | 没有真实埋点和用户测试数据 | 不写未经验证的转化数据 |
 
@@ -105,11 +106,11 @@
 3. 评估检索缓存和结果缓存。
 4. 目标是 P95 低于 8 秒，但延迟优化不能改变推荐和安全结果。
 
-### P1.3 用户研究与反馈
+### P1.3 用户研究与反馈闭环
 
-1. 招募 5 至 10 位目标用户，覆盖减脂、增肌、维持和外食场景。
+1. 后续单独招募 5 至 10 位目标用户，覆盖减脂、增肌、维持和外食场景。
 2. 记录用户是否在三次推荐内做出选择，以及没有选择的原因。
-3. 在真实交互可用后实现 F10，记录采纳、不喜欢、太麻烦和换一批事件。
+3. 当前已有采纳、不喜欢、太麻烦和换一批事件记录；只有在真实交互和用户测试完成后再考虑偏好持久化、候选排除和排序调整。
 4. 研究结论需要回写 PRD，不只在作品集里口头描述。
 
 ## 4. 里程碑
