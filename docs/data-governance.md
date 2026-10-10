@@ -2,7 +2,7 @@
 
 > 阶段：E2 配套文档
 > 日期：2026-10-06（2026-10-07 更新 §2.2 / §2.3 / §3）
-> 上位文档：`docs/PRD.md` §4.4、`docs/data-dictionary.md`、`docs/evaluation-plan.md`
+> 上位文档：`docs/PRD.md` §4.2 F4 / F12、`docs/data-dictionary.md`、`docs/evaluation-plan.md`
 > 相关工具：`scripts/data_version.py`、`scripts/validate_data.py`、`scripts/data_entry.py`、`scripts/data_store.py`、`scripts/add_data.py`、`scripts/refresh_target_ingredients.py`、`scripts/coverage_report.py`
 
 ## 1. 目的与适用范围

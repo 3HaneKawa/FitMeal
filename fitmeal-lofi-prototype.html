@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FitMeal 轻食令 · Web 端低保真交互原型（1440×1024）</title>
+<style>
+  :root{
+    --ink:#1f2328; --ink2:#5b6369; --ink3:#8b939a;
+    --line:#d5d9dd; --line2:#e9ecef;
+    --bg-app:#e9ebee; --panel:#ffffff; --soft:#f6f7f8;
+    --green:#2f7d52; --green-bg:#eef6f1; --green-line:#bcd9c8;
+    --orange:#b4560e; --orange-bg:#fdf4e9; --orange-line:#eccfa6;
+    --r:8px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg-app);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+    font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased}
+
+  /* ---------- 原型外壳（非画板内容） ---------- */
+  .shell{display:flex;flex-direction:column;height:100vh}
+  .topbar{height:52px;flex:none;display:flex;align-items:center;gap:14px;padding:0 16px;
+    background:#fff;border-bottom:1px solid var(--line)}
+  .topbar .brand{font-weight:600;font-size:14px}
+  .topbar .brand small{font-weight:400;color:var(--ink3);margin-left:8px;font-size:12px}
+  .topbar .spacer{flex:1}
+  .tool{border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 12px;font-size:12.5px;
+    color:var(--ink2);cursor:pointer;white-space:nowrap}
+  .tool:hover{border-color:var(--ink3)}
+  .tool.on{background:var(--green-bg);border-color:var(--green-line);color:var(--green);font-weight:600}
+
+  .main{flex:1;display:flex;min-height:0}
+  .rail{width:212px;flex:none;background:#fff;border-right:1px solid var(--line);overflow:auto;padding:14px 12px}
+  .rail h3{margin:0 0 8px;font-size:11.5px;color:var(--ink3);font-weight:600;letter-spacing:.4px}
+  .rail .grp{margin-bottom:14px}
+  .rail .item{display:block;width:100%;text-align:left;border:1px solid transparent;background:transparent;
+    border-radius:6px;padding:6px 9px;font-size:12.5px;color:var(--ink2);cursor:pointer;margin-bottom:2px}
+  .rail .item:hover{background:var(--soft)}
+  .rail .item.on{background:var(--green-bg);border-color:var(--green-line);color:var(--green);font-weight:600}
+  .rail .note{margin-top:6px;font-size:11.5px;color:var(--ink3);line-height:1.5}
+  .lg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink2);margin:4px 0}
+  .sw{width:14px;height:10px;border-radius:2px;display:inline-block}
+  .sw.g{background:var(--green-bg);border:1px solid var(--green-line)}
+  .sw.o{background:var(--orange-bg);border:1px solid var(--orange-line)}
+
+  .stage{flex:1;min-width:0;display:flex;flex-direction:column}
+  .stagebar{height:40px;flex:none;display:flex;align-items:center;gap:10px;padding:0 16px;
+    border-bottom:1px solid var(--line);background:#fff}
+  .stagebar .name{font-weight:600;font-size:12.5px}
+  .stagebar .meta{color:var(--ink3);font-size:11.5px}
+  .canvas{flex:1;min-height:0;overflow:auto;padding:20px}
+  .fit{display:flex;justify-content:center;align-items:flex-start}
+  .slot{position:relative}
+  .frame{position:absolute;top:0;left:0;width:1440px;height:1024px;background:#fff;
+    border:1px solid var(--line);transform-origin:top left;overflow:hidden}
+
+  .ov{display:grid;grid-template-columns:repeat(auto-fill,346px);gap:22px 26px;justify-content:start}
+  .ov-cell{width:346px}
+  .ov-cap{font-size:12px;font-weight:600;margin-bottom:3px}
+  .ov-sub{font-size:11px;color:var(--ink3);margin-bottom:7px;min-height:26px}
+  .ov .frame{pointer-events:none}
+  .flowbox{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:18px;max-width:1080px}
+  .flowbox b{font-size:12px}
+  .flowbox p{margin:5px 0 0;font-size:11.5px;color:var(--ink2)}
+
+  /* ---------- 画板内部组件 ---------- */
+  .frame .nav{height:64px;display:flex;align-items:center;padding:0 24px;background:#fafbfa;
+    border-bottom:1px solid var(--line);gap:20px}
+  .frame .nav .logo{font-size:16px;font-weight:600;letter-spacing:.2px}
+  .frame .nav .logo span{font-weight:400;color:var(--ink3);font-size:12px;margin-left:6px}
+  .frame .nav .tabs{display:flex;gap:6px;margin-left:6px}
+  .frame .nav .tab{border:1px solid transparent;border-radius:14px;padding:6px 14px;color:var(--ink2);
+    background:transparent;font-size:13px;cursor:pointer;font-family:inherit}
+  .frame .nav .tab.on{border-color:var(--green-line);background:var(--green-bg);color:var(--green);font-weight:600}
+  .frame .nav .status{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);
+    border:1px solid var(--line);border-radius:14px;padding:5px 12px;background:#fff}
+  .frame .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+
+  .frame .body{height:960px;display:flex;gap:20px;padding:20px 24px;background:var(--soft)}
+  .frame .col{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;
+    display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .frame .col.left{width:504px;flex:none}
+  .frame .col.right{flex:1;min-width:0}
+
+  .frame .eyebrow{font-size:11.5px;color:var(--ink3);letter-spacing:.4px;margin-bottom:6px}
+  .frame h1{margin:0 0 8px;font-size:20px;font-weight:600;letter-spacing:.2px}
+  .frame h2{margin:0;font-size:15px;font-weight:600}
+  .frame h3{margin:0 0 6px;font-size:13.5px;font-weight:600}
+  .frame .sub{margin:0;color:var(--ink2);font-size:12.5px}
+  .frame .hint{color:var(--ink3);font-size:11.5px;line-height:1.5}
+  .frame .label{font-size:11.5px;color:var(--ink3);font-weight:600;margin:0 0 6px;letter-spacing:.3px}
+  .frame .section{margin-top:16px}
+  .frame .divider{height:1px;background:var(--line2);margin:12px 0}
+
+  .frame .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .frame .chip{border:1px solid var(--line);background:#fcfcfc;border-radius:14px;padding:5px 12px;
+    font-size:12.5px;color:var(--ink);cursor:pointer;font-family:inherit}
+  .frame .chip:hover{border-color:var(--green-line);background:var(--green-bg);color:var(--green)}
+  .frame .tag{display:inline-block;border:1px solid var(--line);background:#fcfcfc;border-radius:6px;
+    padding:2px 8px;font-size:12px;color:var(--ink2)}
+  .frame .tag.g{border-color:var(--green-line);background:var(--green-bg);color:var(--green)}
+  .frame .tag.miss{border-style:dashed;color:var(--ink2);background:#fff}
+  .frame .tag.warn{border-color:var(--orange-line);background:var(--orange-bg);color:var(--orange)}
+
+  .frame .field{border:1px solid var(--line);border-radius:var(--r);padding:9px 11px;font-size:13px;
+    color:var(--ink);background:#fff;width:100%;font-family:inherit;outline:none}
+  .frame .field:focus{border-color:var(--green)}
+  .frame textarea.field{min-height:104px;resize:none;line-height:1.6}
+  .frame .btn{border:1px solid var(--line);background:#fff;border-radius:var(--r);padding:9px 16px;
+    font-size:13px;color:var(--ink);cursor:pointer;font-family:inherit}
+  .frame .btn:hover{border-color:var(--ink3)}
+  .frame .btn.primary{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}
+  .frame .btn.primary:hover{background:#2a6f49;border-color:#2a6f49}
+  .frame .btn.ghost{background:#fff;border-style:dashed;color:var(--green);border-color:var(--green-line)}
+  .frame .btn.warn{background:var(--orange-bg);border-color:var(--orange-line);color:var(--orange);font-weight:600}
+  .frame .btn.mini{padding:5px 10px;font-size:12px;border-radius:6px;color:var(--ink2)}
+  .frame .btn.wide{width:100%;justify-content:center;padding:11px 16px}
+  .frame .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .frame .err{color:var(--orange);font-size:11.5px;margin-top:5px}
+
+  .frame .ph{width:104px;height:76px;border:1px dashed var(--line);border-radius:8px;display:flex;
+    align-items:center;justify-content:center;color:var(--ink3);font-size:11.5px;background:#fcfcfc}
+  .frame .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;gap:10px;padding:0 40px}
+  .frame .empty-title{font-size:15px;font-weight:600}
+  .frame .bullets{margin:6px 0 0;padding:0;list-style:none;text-align:left;display:inline-block}
+  .frame .bullets li{font-size:12.5px;color:var(--ink2);padding-left:14px;position:relative;margin-top:5px}
+  .frame .bullets li:before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;
+    border:1px solid var(--ink3);border-radius:1px}
+
+  .frame .panel-head{display:flex;align-items:flex-start;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line2)}
+  .frame .panel-head .grow{flex:1}
+  .frame .panel-head .hint{margin-top:4px}
+  .frame .echo{margin-top:12px;border:1px solid var(--line);border-left:3px solid var(--green);
+    border-radius:6px;padding:8px 12px;background:var(--soft);font-size:12.5px;color:var(--ink2)}
+  .frame .echo b{color:var(--ink);font-weight:600}
+
+  .frame .card{border:1px solid var(--line);border-radius:10px;padding:14px;background:#fff;margin-top:12px}
+  .frame .card.first{border-left:3px solid var(--green)}
+  .frame .card-head{display:flex;align-items:baseline;gap:9px}
+  .frame .card-title{font-size:14.5px;font-weight:600;flex:1}
+  .frame .card.compact{padding:11px 14px}
+  .frame .card.compact .card-title{font-size:13.5px}
+
+  .frame .reason{margin-top:10px;border:1px solid var(--line2);background:var(--soft);border-radius:8px;
+    padding:9px 11px;font-size:12.5px;color:var(--ink2)}
+  .frame .reason .rk{color:var(--ink);font-weight:600;margin-right:6px}
+  .frame .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+  .frame .metagrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:4px}
+  .frame .metric{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;background:#fcfcfc}
+  .frame .metric .k{font-size:11px;color:var(--ink3)}
+  .frame .metric .v{font-size:14px;font-weight:600;margin-top:1px}
+  .frame .metric .v.sm{font-size:12.5px;font-weight:600}
+
+  .frame .fb-row{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink2)}
+  .frame .fb-row .grow{flex:1}
+
+  .frame .tbl{border:1px solid var(--line2);border-radius:8px;overflow:hidden;margin-top:6px}
+  .frame .trow{display:grid;gap:8px;padding:7px 11px;border-bottom:1px solid var(--line2);align-items:center;
+    font-size:12.5px}
+  .frame .trow:last-child{border-bottom:none}
+  .frame .trow.thead{background:var(--soft);color:var(--ink3);font-size:11.5px;font-weight:600}
+  .frame .trow.unknown{background:var(--orange-bg)}
+  .frame .r-c5{grid-template-columns:1.1fr .7fr .7fr .7fr 1.6fr}
+  .frame .r-c4{grid-template-columns:1fr 2.4fr 1.3fr 1.1fr}
+  .frame .r-ing{grid-template-columns:1.4fr .9fr 1fr}
+
+  .frame .alert{border:1px solid var(--orange-line);background:var(--orange-bg);border-radius:10px;padding:14px}
+  .frame .alert h3{color:var(--orange);font-size:14.5px}
+  .frame .alert p{margin:6px 0 0;font-size:12.5px;color:var(--ink2)}
+  .frame .alert ul{margin:8px 0 0;padding-left:16px}
+  .frame .alert li{font-size:12.5px;color:var(--ink2);margin-top:4px}
+
+  .frame .load-line{display:flex;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:8px;
+    padding:12px 14px;background:#fcfcfc;margin-top:10px;font-size:13px;color:var(--ink)}
+  .frame .dots{display:inline-flex;gap:4px}
+  .frame .dots i{width:5px;height:5px;border-radius:50%;background:var(--green);display:block;
+    animation:blink 1.2s infinite}
+  .frame .dots i:nth-child(2){animation-delay:.2s}
+  .frame .dots i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+
+  .frame .ing-line{display:grid;grid-template-columns:1.5fr .8fr auto;gap:8px;align-items:center;margin-bottom:8px}
+  .frame .ing-line .unit{font-size:12px;color:var(--ink3);width:14px}
+  .frame .unit-wrap{display:flex;align-items:center;gap:6px}
+  .frame .opt-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+  .frame .info-pairs{margin-top:12px;border:1px solid var(--line2);border-radius:8px;padding:10px 12px;background:#fcfcfc}
+  .frame .info-pairs div{display:flex;gap:8px;font-size:12.5px;color:var(--ink2);margin:3px 0}
+  .frame .info-pairs div b{color:var(--ink);font-weight:600;min-width:74px;display:inline-block}
+  .frame .card.kv{margin-top:12px}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">FitMeal 轻食令 · 低保真交互原型<small>Web / 桌面端 · 画板 1440 × 1024</small></div>
+    <div class="spacer"></div>
+    <button class="tool" data-mode="single">画板浏览</button>
+    <button class="tool" data-mode="overview">全部画板</button>
+    <button class="tool" data-nav="prev">← 上一张</button>
+    <button class="tool" data-nav="next">下一张 →</button>
+  </div>
+  <div class="main">
+    <aside class="rail">
+      <h3>页面地图</h3>
+      <div class="grp">
+        <div style="font-size:12px;font-weight:600;margin:0 0 5px 2px">推荐主流程</div>
+        <div id="railHome"></div>
+      </div>
+      <div class="grp">
+        <div style="font-size:12px;font-weight:600;margin:0 0 5px 2px">营养计算</div>
+        <div id="railNut"></div>
+      </div>
+      <div class="grp">
+        <div style="font-size:12px;font-weight:600;margin:0 0 5px 2px">反馈与数据</div>
+        <div id="railData"></div>
+      </div>
+      <h3>颜色约定</h3>
+      <div class="lg"><span class="sw g"></span>绿色：主操作 / 当前项 / 已识别</div>
+      <div class="lg"><span class="sw o"></span>橙色：警示 / 需补充数据 / 已记录</div>
+      <div class="note">灰阶线框，不使用照片、渐变、玻璃拟态与移动端界面。</div>
+    </aside>
+    <main class="stage">
+      <div class="stagebar">
+        <span class="name" id="boardName">P01_首页_空状态</span>
+        <span class="meta" id="boardMeta">画板 1440 × 1024 · 顶部导航 + 左右两栏</span>
+      </div>
+      <div class="canvas" id="canvas"></div>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   FitMeal 轻食令 · 低保真交互原型
+   11 张画板，画板尺寸 1440 × 1024
+   ============================================================ */
+
+var SAMPLE = {
+  cook:    '我有鸡胸肉、西兰花和鸡蛋，减脂，想 20 分钟内做完',
+  eatout:  '今晚和同事吃川菜，我在减脂',
+  sub:     '没有米饭，主食可以换成什么',
+  nut:     '100 克鸡胸肉有多少蛋白质',
+  safe:    '我想连续三天只喝水不吃饭'
+};
+
+/* 本机营养表（演示用子集，数值取自本地营养表每 100 克数据） */
+var NUT = {
+  '鸡胸肉': {kcal:120, p:22.5, f:2.6, c:0,   fib:0,   src:'本地营养表 · USDA FoodData Central FDC:171077'},
+  '西兰花': {kcal:34,  p:2.8,  f:0.4, c:6.6, fib:2.6, src:'本地营养表 · USDA FoodData Central FDC:170379'}
+};
+
+var state = {
+  mode: 'single',
+  screen: 'P01',
+  input: SAMPLE.cook,
+  inputError: '',
+  ingredients: [{name:'鸡胸肉', grams:'150'}, {name:'西兰花', grams:'200'}],
+  servings: '2',
+  rowErrors: {},
+  servingsError: '',
+  feedback: 'none',
+  routeNote: ''
+};
+
+var ORDER = ['P01','P02','P03','P04','P05','P06','P07','P08','P09','P10','P11'];
+
+var BOARDS = {
+  P01: {name:'P01_首页_空状态',        sub:'上游：—　下游：提交自然语言 → P02'},
+  P02: {name:'P02_首页_生成中',        sub:'上游：P01　下游：追问 → P04 · 安全命中 → P05 · 信息完整 → P03'},
+  P03: {name:'P03_建议结果_成功',      sub:'上游：P02　下游：记录反馈 → P09'},
+  P04: {name:'P04_建议结果_追问',      sub:'上游：P02（信息不足）　下游：选择目标 → P03'},
+  P05: {name:'P05_建议结果_安全拦截',  sub:'上游：P02（安全命中）　下游：返回修改需求 → P01'},
+  P06: {name:'P06_营养计算_空状态',    sub:'上游：导航「营养计算」或 P01　下游：计算营养 → P07'},
+  P07: {name:'P07_营养计算_成功',      sub:'上游：P06　下游：含未识别食材 → P08'},
+  P08: {name:'P08_营养计算_部分未识别',sub:'上游：P07　下游：补充营养或别名数据 → P11'},
+  P09: {name:'P09_反馈已记录',         sub:'上游：P03　下游：—（不改变本次推荐）'},
+  P10: {name:'P10_数据总览',           sub:'数据工具次要入口 · 项目补充证据　下游：新增数据 → P11'},
+  P11: {name:'P11_数据录入',           sub:'上游：P10　下游：保存草稿，供后续计算使用'}
+};
+
+/* ---------------- 工具函数 ---------------- */
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function round1(v){ return Math.round((v + 1e-9) * 10) / 10; }
+function tabOf(screen){
+  if(['P06','P07','P08'].indexOf(screen) >= 0) return 'nutrition';
+  if(['P10','P11'].indexOf(screen) >= 0) return 'data';
+  return 'home';
+}
+function metric(k, v, small){
+  return '<div class="metric"><div class="k">' + esc(k) + '</div><div class="v' +
+    (small ? ' sm' : '') + '">' + esc(v) + '</div></div>';
+}
+
+/* ---------------- 通用区块 ---------------- */
+function nav(active){
+  var tabs = [
+    {key:'home',      label:'推荐首页',  go:'P01'},
+    {key:'nutrition', label:'营养计算',  go:'P06'},
+    {key:'data',      label:'数据工具',  go:'P10'}
+  ];
+  var html = '<div class="nav"><div class="logo">FitMeal 轻食令<span>饮食建议与营养换算</span></div><div class="tabs">';
+  tabs.forEach(function(t){
+    html += '<button class="tab' + (t.key === active ? ' on' : '') + '" data-action="nav" data-go="' + t.go + '">' +
+      t.label + '</button>';
+  });
+  html += '</div><div class="status"><span class="dot"></span>服务已连接</div></div>';
+  return html;
+}
+
+function panelHead(title, hint, tagText, tagClass){
+  return '<div class="panel-head"><div class="grow"><h2>' + esc(title) + '</h2>' +
+    '<div class="hint">' + hint + '</div></div>' +
+    (tagText ? '<span class="tag ' + (tagClass || '') + '">' + esc(tagText) + '</span>' : '') + '</div>';
+}
+
+function emptyBlock(title, text, bullets, markText){
+  var html = '<div class="empty"><div class="ph">' + esc(markText || '结果区') + '</div>' +
+    '<div class="empty-title">' + esc(title) + '</div><div class="sub" style="max-width:420px">' + text + '</div>';
+  if(bullets && bullets.length){
+    html += '<ul class="bullets">';
+    bullets.forEach(function(b){ html += '<li>' + b + '</li>'; });
+    html += '</ul>';
+  }
+  return html + '</div>';
+}
+
+/* ---------------- 首页左侧输入区 ---------------- */
+function homeLeft(opt){
+  var chips = [
+    ['cook','自烹饪'], ['eatout','外食'], ['sub','替换'], ['nut','营养'], ['safe','安全拦截']
+  ];
+  var loading = opt.mode === 'loading';
+  var html = '<div class="col left">';
+  html += '<div class="eyebrow">步骤 1 · 说出需求</div>';
+  html += '<h1>把这一餐说清楚</h1>';
+  html += '<p class="sub">用一句话说明现有食材、目标、时间和忌口。系统会先判断风险，再给出可执行的建议。</p>';
+
+  html += '<div class="section"><div class="label">示例入口（点击填入）</div><div class="chips">';
+  chips.forEach(function(c){
+    html += '<button class="chip" data-action="fill" data-key="' + c[0] + '">' + c[1] + '</button>';
+  });
+  html += '</div></div>';
+
+  html += '<div class="section"><div class="label">需求描述</div>';
+  html += '<textarea class="field" data-field="input" data-role="input" placeholder="例：我有鸡胸肉、西兰花和鸡蛋，减脂，想 20 分钟内做完">' +
+    esc(state.input) + '</textarea>';
+  if(state.inputError){ html += '<div class="err" data-err="input">' + esc(state.inputError) + '</div>'; }
+  html += '<div class="hint" style="margin-top:6px">至少说明目标（减脂 / 增肌 / 维持体重）。只有一句“<span data-action="filltext" data-text="今晚吃什么" style="border-bottom:1px dashed #8b939a;cursor:pointer">今晚吃什么</span>”时，系统会先追问，不会直接推荐。</div>';
+  html += '</div>';
+
+  html += '<div class="section">';
+  if(loading){
+    html += '<button class="btn primary wide" disabled>正在生成</button>';
+    html += '<div class="hint" style="margin-top:8px">已提交：' + esc(state.input) + '</div>';
+    html += '<div class="hint">完整生成通常需要 20 至 40 秒，请不要重复提交。</div>';
+  }else{
+    html += '<button class="btn primary wide" data-action="generate">生成建议</button>';
+    html += '<div class="hint" style="margin-top:8px">页面只提交自然语言，不在浏览器里判断和拼装规则。</div>';
+  }
+  html += '</div>';
+  return html + '</div>';
+}
+
+/* ---------------- 首页右侧结果区 ---------------- */
+function loadingBlock(){
+  var lines = ['正在理解需求', '正在匹配食材和营养数据', '正在生成可执行建议'];
+  var html = panelHead('正在生成建议', '系统正在处理你刚才提交的一句话需求。', '生成中', 'g');
+  html += '<div class="echo" style="border-left-color:#2f7d52">你的需求：<b>' + esc(state.input) + '</b></div>';
+  lines.forEach(function(t){
+    html += '<div class="load-line"><span class="dots"><i></i><i></i><i></i></span>' + esc(t) + '</div>';
+  });
+  html += '<div class="hint" style="margin-top:12px">生成过程不显示进度百分比，完成后会直接给出建议、追问或安全提示。</div>';
+  return html;
+}
+
+function resultBlock(feedback){
+  var html = '<div class="panel-head"><div class="grow"><h2>晚餐建议已生成</h2>' +
+    '<div class="hint">共 3 条候选 · 按食材匹配和目标排序</div></div><span class="tag g">信息完整</span></div>';
+  html += '<div class="echo">你的需求：<b>' + esc(state.input) + '</b></div>';
+
+  html += '<div class="card first">';
+  html += '<div class="card-head"><div class="card-title">黑椒鸡胸炒西兰花</div><span class="tag g">首选</span>' +
+    '<span class="hint">20 分钟内完成 · 2 份</span></div>';
+  html += '<div class="reason"><span class="rk">推荐理由</span>优先使用现有食材，20 分钟内完成，符合减脂目标。</div>';
+  html += '<div class="two-col">' +
+    '<div><div class="label">现有食材</div><div class="chips"><span class="tag g">鸡胸肉</span><span class="tag g">西兰花</span><span class="tag g">鸡蛋</span></div></div>' +
+    '<div><div class="label">需要补充</div><div class="chips"><span class="tag miss">黑胡椒</span><span class="tag miss">少量橄榄油</span></div></div>' +
+    '</div>';
+  html += '<div style="margin-top:14px"><div class="label">份量与营养</div><div class="metagrid">' +
+    metric('份数','2 份') +
+    metric('每份重量','175 克') +
+    metric('每份热量','124 kcal') +
+    metric('每份蛋白质','19.7 克') +
+    metric('每份脂肪','2.4 克') +
+    metric('每份碳水','6.6 克') +
+    metric('每份膳食纤维','2.6 克') +
+    metric('数据来源','本地营养表', true) +
+    '</div></div>';
+  html += '<div class="divider"></div>';
+
+  if(feedback === 'recorded'){
+    html += '<div class="fb-row"><span>这个建议有帮助吗？</span>' +
+      '<button class="btn" disabled>有帮助</button><button class="btn" disabled>没帮助</button>' +
+      '<span class="tag g">已记录，感谢反馈</span></div>';
+    html += '<div class="hint" style="margin-top:8px">反馈只记录一次“没帮助”事件，不会改变本次推荐，也不会改变下一次排序。</div>';
+  }else{
+    html += '<div class="fb-row"><span class="grow">这个建议有帮助吗？</span>' +
+      '<button class="btn" data-action="fb-good">有帮助</button>' +
+      '<button class="btn" data-action="fb-no">没帮助</button></div>';
+  }
+  html += '</div>';
+
+  html += '<div class="card compact"><div class="card-title">番茄鸡蛋配糙米</div>' +
+    '<div class="hint">现有食材即可完成，蛋白质与碳水比例更平缓。· 25 分钟 · 约 210–240 kcal/份</div></div>';
+  html += '<div class="card compact"><div class="card-title">香煎鸡胸蔬菜碗</div>' +
+    '<div class="hint">食材最少、操作最简单，适合时间紧的一餐。· 15 分钟 · 约 180–210 kcal/份</div></div>';
+  html += '<div class="hint" style="margin-top:12px">展开的候选使用本地营养表按食材克重换算；其余候选的热量区间用于快速对比，展开后可查看完整份量与来源。</div>';
+  return html;
+}
+
+function clarifyBlock(){
+  var html = panelHead('需要先确认一个目标', '没有生成建议 · 只追问一个最关键的问题', '追问', 'warn');
+  html += '<div class="echo">你的需求：<b>今晚吃什么</b></div>';
+  html += '<div class="card first" style="margin-top:12px">' +
+    '<div class="card-title" style="font-size:14px;line-height:1.6">为了给你更合适的建议，先确认一下：你更想减脂、增肌还是维持体重？</div>' +
+    '<div class="opt-row">' +
+      '<button class="btn primary" data-action="goal">减脂</button>' +
+      '<button class="btn" data-action="goal">增肌</button>' +
+      '<button class="btn" data-action="goal">维持体重</button>' +
+    '</div>' +
+    '<div class="divider"></div>' +
+    '<button class="btn ghost" data-action="goal">补充其他要求（忌口、时间、地域）</button>' +
+    '<div class="hint" style="margin-top:8px">一次只问一个问题，不同时抛出多个表单字段。</div>' +
+    '</div>';
+
+  html += '<div class="info-pairs">' +
+    '<div><b>已识别</b>用餐时间：今晚</div>' +
+    '<div><b>仍缺少</b>目标：未知；现有食材：未知；可用时间：未知</div>' +
+    '</div>';
+  html += '<div class="hint" style="margin-top:12px">缺少目标、食材或时间时不会直接给推荐；补充目标后才会生成建议。</div>';
+  return html;
+}
+
+function safetyBlock(){
+  var html = panelHead('安全提示优先于普通推荐', '本次没有生成任何食谱建议', '已拦截', 'warn');
+  html += '<div class="echo" style="border-left-color:#b4560e">你的需求：<b>我想连续三天只喝水不吃饭</b></div>';
+  html += '<div class="alert" style="margin-top:12px">' +
+    '<h3>这个需求不适合继续生成饮食方案</h3>' +
+    '<ul>' +
+      '<li>极端断食、脱水或自行使用减肥药物，可能带来低血糖、脱水、电解质紊乱和脏器负担等健康风险。</li>' +
+      '<li>系统不会提供断食、脱水或药物减肥的执行步骤，也不会用普通饮食建议覆盖这类风险。</li>' +
+      '<li>这类需求属于医疗范畴，普通饮食建议无法给出安全边界。</li>' +
+    '</ul>' +
+    '</div>';
+  html += '<div class="card"><h3>建议的下一步</h3>' +
+    '<div class="sub">如果你想调整体重或饮食结构，建议先咨询医生或注册营养师，确认身体条件后再决定是否可以执行，并由专业人员给出可追踪的方案。</div>' +
+    '<div class="divider"></div>' +
+    '<button class="btn warn" data-action="back">返回修改需求</button>' +
+    '<div class="hint" style="margin-top:8px">这里不提供“继续推荐”按钮，避免把风险需求当成普通用餐需求处理。</div>' +
+    '</div>';
+  return html;
+}
+
+/* ---------------- 营养计算左侧录入区 ---------------- */
+function nutritionLeft(){
+  var html = '<div class="col left">';
+  html += '<div class="eyebrow">步骤 1 · 录入食材</div>';
+  html += '<h1>把食材和克重算清楚</h1>';
+  html += '<p class="sub">输入这一餐的实际用量，系统按本地营养表换算整份与每份结果。</p>';
+
+  html += '<div class="section"><div class="label">食材与克重</div>';
+  state.ingredients.forEach(function(r, i){
+    html += '<div class="ing-line">' +
+      '<input class="field" data-field="name" data-i="' + i + '" value="' + esc(r.name) + '" placeholder="食材名称" />' +
+      '<div class="unit-wrap"><input class="field" data-field="grams" data-i="' + i + '" value="' + esc(r.grams) + '" placeholder="克重" /><span class="unit">克</span></div>' +
+      '<button class="btn mini" data-action="del" data-i="' + i + '">删除</button>' +
+      '</div>';
+    if(state.rowErrors[i]){ html += '<div class="err" data-err="r' + i + '" style="margin:-3px 0 8px">' + esc(state.rowErrors[i]) + '</div>'; }
+  });
+  html += '<button class="btn ghost" data-action="add">+ 添加食材</button>';
+  html += '<div class="hint" style="margin-top:8px">食材可使用标准名或已登记别名。试：<span data-action="kale" style="border-bottom:1px dashed #8b939a;cursor:pointer;color:#2f7d52">羽衣甘蓝 100 克</span>（未匹配营养数据时会单独提示）。</div>';
+  html += '</div>';
+
+  html += '<div class="section"><div class="label">份数</div>' +
+    '<div class="unit-wrap" style="max-width:180px"><input class="field" data-field="servings" value="' + esc(state.servings) + '" placeholder="份数" /><span class="unit">份</span></div>';
+  if(state.servingsError){ html += '<div class="err" data-err="servings">' + esc(state.servingsError) + '</div>'; }
+  html += '<div class="hint" style="margin-top:6px">份数范围 1 至 100，只影响每份结果，不改变输入的总重量。</div>';
+  html += '</div>';
+
+  html += '<div class="section"><button class="btn primary wide" data-action="calc">计算营养</button>' +
+    '<div class="hint" style="margin-top:8px">营养值来自本地营养表，当前只接收克重，不接受“一碗”“少许”等描述。</div></div>';
+  return html + '</div>';
+}
+
+/* ---------------- 营养计算 ---------------- */
+function computeNutrition(){
+  var items = [], unresolved = [];
+  state.ingredients.forEach(function(r){
+    var name = (r.name || '').trim();
+    if(!name) return;
+    var g = Number(r.grams);
+    var n = NUT[name];
+    if(!n){ unresolved.push({name:name, grams:isFinite(g) && g > 0 ? g : 0}); return; }
+    if(!isFinite(g) || g <= 0) return;
+    items.push({
+      name:name, grams:g,
+      kcal:n.kcal * g / 100, p:n.p * g / 100, f:n.f * g / 100,
+      c:n.c * g / 100, fib:n.fib * g / 100, src:n.src
+    });
+  });
+  var tot = {weight:0, kcal:0, p:0, f:0, c:0, fib:0};
+  items.forEach(function(it){
+    tot.weight += it.grams; tot.kcal += it.kcal; tot.p += it.p;
+    tot.f += it.f; tot.c += it.c; tot.fib += it.fib;
+  });
+  var sv = Math.max(1, Number(state.servings) || 1);
+  return {
+    items: items, unresolved: unresolved, sv: sv,
+    total: {
+      weight: Math.round(tot.weight), kcal: Math.round(tot.kcal),
+      p: round1(tot.p), f: round1(tot.f), c: round1(tot.c), fib: round1(tot.fib)
+    },
+    per: {
+      weight: round1(tot.weight / sv), kcal: Math.round(tot.kcal / sv),
+      p: round1(tot.p / sv), f: round1(tot.f / sv), c: round1(tot.c / sv), fib: round1(tot.fib / sv)
+    }
+  };
+}
+
+function nutritionResult(kind){
+  var d = computeNutrition();
+  var html = '<div class="panel-head"><div class="grow"><h2>营养计算结果</h2>' +
+    '<div class="hint">整份与每份口径同时给出 · 来源可追溯</div></div>' +
+    '<span class="tag g">本地营养表</span></div>';
+
+  if(!d.items.length && d.unresolved.length){
+    return html + '<div class="alert" style="margin-top:12px"><h3>暂未匹配到营养数据</h3>' +
+      '<p>已输入的食材在本地营养表中没有对应记录，因此没有可展示的合计结果，也不会输出伪造的热量。请先补充营养数据或为食材登记别名。</p>' +
+      '<p>补数据入口：数据工具 → 新增食材。</p></div>';
+  }
+
+  if(d.unresolved.length){
+    var names = d.unresolved.map(function(u){ return u.name; }).join('、');
+    html += '<div class="alert" style="margin-top:12px"><h3>有 ' + d.unresolved.length +
+      ' 项食材暂未匹配营养数据：' + esc(names) + '</h3>' +
+      '<p>该项未计入合计，也不按 0 kcal 处理。请先补充营养或别名数据，再重新计算。</p></div>';
+  }
+
+  html += '<div class="card first" style="margin-top:12px">' +
+    '<div class="label">合计（整份）</div><div class="metagrid">' +
+    metric('总重量', d.total.weight + ' 克') +
+    metric('总热量', d.total.kcal + ' kcal') +
+    metric('份数', d.sv + ' 份') +
+    metric('每份重量', (Math.round(d.per.weight * 10) / 10) + ' 克') +
+    '</div></div>';
+
+  html += '<div class="card"><div class="label">整份营养</div><div class="metagrid">' +
+    metric('蛋白质', d.total.p + ' 克') +
+    metric('脂肪', d.total.f + ' 克') +
+    metric('碳水', d.total.c + ' 克') +
+    metric('膳食纤维', d.total.fib + ' 克') +
+    '</div>' +
+    '<div class="label" style="margin-top:12px">每份营养（' + Math.round(d.per.kcal) + ' kcal / 每份）</div><div class="metagrid">' +
+    metric('蛋白质', d.per.p + ' 克') +
+    metric('脂肪', d.per.f + ' 克') +
+    metric('碳水', d.per.c + ' 克') +
+    metric('膳食纤维', d.per.fib + ' 克') +
+    '</div></div>';
+
+  html += '<div class="card"><div class="label">食材明细与热量占比</div><div class="tbl">' +
+    '<div class="trow thead r-c5"><span>食材</span><span>克重</span><span>热量</span><span>热量占比</span><span>数据来源</span></div>';
+  d.items.forEach(function(it){
+    var share = d.total.kcal > 0 ? Math.round(it.kcal / d.total.kcal * 100) : 0;
+    html += '<div class="trow r-c5"><span>' + esc(it.name) + '</span><span>' + it.grams + ' 克</span>' +
+      '<span>' + Math.round(it.kcal) + ' kcal</span><span>约 ' + share + '%</span>' +
+      '<span class="hint">' + esc(it.src) + '</span></div>';
+  });
+  d.unresolved.forEach(function(u){
+    html += '<div class="trow r-c5 unknown"><span>' + esc(u.name) + '</span><span>' + (u.grams || '—') + ' 克</span>' +
+      '<span class="tag warn">未匹配</span><span class="tag warn">未计入合计</span>' +
+      '<span class="hint">本地营养表暂无该食材，未按 0 kcal 处理</span></div>';
+  });
+  html += '</div>';
+
+  html += '<div class="divider"></div>' +
+    '<div class="hint">整份与每份数值分别四舍五入展示，两者相加可能与合计存在 0.1 克的显示差异。</div>' +
+    '<div class="hint">结果用于日常饮食记录，不替代医生或注册营养师的个体化建议。份数只影响每份结果，不改变输入的总重量。</div>' +
+    '</div>';
+  return html;
+}
+
+/* ---------------- P10 数据总览 ---------------- */
+function dataOverview(){
+  var rows = [
+    ['食谱数据','208 条','食谱、食材组合、烹饪时间与目标标签','按食材克重换算营养，不手填食谱数值'],
+    ['营养数据','159 条','每 100 克食材热量、蛋白质、脂肪、碳水与膳食纤维','新增食材时补充，保留来源与编号'],
+    ['外食数据','50 条','外食菜品类型、地域与点菜策略','只给选菜策略，不编造品牌营养值'],
+    ['替换数据','30 条','食材替换关系与适用条件','说明替换依据与营养变化'],
+    ['别名数据','24 条','同一食材的不同叫法与形态归一化','别名缺失会出现未识别提示'],
+    ['单位换算','19 条','克、毫升、勺等常见单位与克的换算','只用于把描述换算为克重']
+  ];
+  var html = '<div class="col left">';
+  html += '<div class="eyebrow">数据工具</div><h1>数据覆盖总览</h1>';
+  html += '<p class="sub">这里展示建议和计算所依赖的数据覆盖范围，用来解释结果从哪里来，不代表用户使用成果。</p>';
+  html += '<div class="section"><div class="label">数据量概览</div><div class="metagrid" style="grid-template-columns:1fr 1fr">' +
+    metric('食谱数据','208 条') + metric('营养数据','159 条') +
+    metric('外食数据','50 条') + metric('替换数据','30 条') +
+    metric('别名数据','24 条') + metric('单位换算','19 条') +
+    '</div></div>';
+  html += '<div class="section"><div class="label">目标区间规则</div>' +
+    '<div class="card" style="margin-top:0"><div class="hint">减脂 / 增肌 / 维持 三套营养区间，作为推荐评分的信号；只有用例明确写出营养断言时，才作为硬性条件。</div></div></div>';
+  html += '<div class="section"><div class="label">未识别食材的处理</div>' +
+    '<div class="alert"><h3 style="font-size:13.5px">未匹配就单独提示，不按 0 计算</h3>' +
+    '<p>营养计算遇到本地营养表没有的食材时，会继续计算已识别部分，并单独列出未识别项及其原因。</p></div></div>';
+  html += '<div class="hint" style="margin-top:12px">数据总览只是项目补充证据，不作为首页主入口，也不替代推荐与计算流程。</div>';
+  return html + '</div>';
+}
+
+function dataOverviewRight(){
+  var rows = [
+    ['食谱数据','208','推荐候选来源','208 道食谱的食材组合与目标标签'],
+    ['营养数据','159','每 100 克营养换算','热量、蛋白质、脂肪、碳水、膳食纤维'],
+    ['外食数据','50','外食点菜策略','菜品类型、地域与风险提示'],
+    ['替换数据','30','食材替换关系','替换依据、适用条件与营养变化'],
+    ['别名数据','24','食材名称归一化','同一食材的不同叫法与切法'],
+    ['单位换算','19','描述换算为克重','勺、份、毫升等常见单位']
+  ];
+  var html = panelHead('数据明细与维护方式', '只说明数据的用途和维护口径，不展示内部施工文件。', '补充证据');
+  html += '<div class="tbl" style="margin-top:12px">' +
+    '<div class="trow thead r-c4"><span>数据类别</span><span>覆盖说明</span><span>用途</span><span>维护方式</span></div>';
+  rows.forEach(function(r){
+    html += '<div class="trow r-c4"><span>' + esc(r[0]) + '</span><span class="hint">' + esc(r[3]) + '</span>' +
+      '<span>' + esc(r[2]) + '</span><span class="hint">' + esc(r[1]) + ' 条</span></div>';
+  });
+  html += '</div>';
+  html += '<div class="card"><h3>当前的覆盖缺口</h3><ul class="bullets" style="display:block">' +
+    '<li>部分绿叶菜与进口蔬菜还没有营养数据，会出现未识别提示。</li>' +
+    '<li>别名表只覆盖常见叫法，方言词和复合菜名仍可能匹配失败。</li>' +
+    '<li>外食数据给的是点菜策略，不包含品牌菜品的精确营养值。</li>' +
+    '</ul></div>';
+  html += '<div class="section" style="margin-top:auto">' +
+    '<button class="btn primary" data-action="nav" data-go="P11">新增食材或食谱</button>' +
+    '<div class="hint" style="margin-top:8px">新增数据只影响之后的营养计算，已生成的建议不会自动重算。</div></div>';
+  return html;
+}
+
+/* ---------------- P11 数据录入 ---------------- */
+function dataEntryLeft(){
+  var html = '<div class="col left">';
+  html += '<div class="eyebrow">数据工具 · 新增食材</div><h1>录入食材与营养</h1>';
+  html += '<p class="sub">按每 100 克录入营养并标注来源，保存后用于营养计算和别名归一化。</p>';
+
+  html += '<div class="section"><div class="label">基本信息</div>' +
+    '<input class="field" value="羽衣甘蓝" />' +
+    '<div style="margin-top:8px"><select class="field"><option>蔬菜</option><option>蛋白质</option><option>主食</option><option>水果</option><option>调味</option></select></div>' +
+    '<div class="hint" style="margin-top:6px">名称为必填；与已有食材重名时会提示合并或补充别名。</div></div>';
+
+  html += '<div class="section"><div class="label">每 100 克营养</div><div class="metagrid" style="grid-template-columns:1fr 1fr">' +
+    '<div><input class="field" value="49" /><div class="hint">热量 kcal</div></div>' +
+    '<div><input class="field" value="4.3" /><div class="hint">蛋白质 克</div></div>' +
+    '<div><input class="field" value="0.9" /><div class="hint">脂肪 克</div></div>' +
+    '<div><input class="field" value="8.8" /><div class="hint">碳水 克</div></div>' +
+    '</div>' +
+    '<div style="margin-top:8px"><input class="field" placeholder="膳食纤维（选填）" /></div>' +
+    '<div class="hint" style="margin-top:6px">膳食纤维可留空，留空表示暂无数据，不会按 0 参与计算。</div>' +
+    '</div>';
+
+  html += '<div class="section"><div class="label">来源</div>' +
+    '<input class="field" value="USDA FoodData Central · FDC:168421" />' +
+    '<div class="hint" style="margin-top:6px">来源与编号必填，用于说明数据出处和置信等级。</div></div>';
+
+  html += '<div class="section" style="margin-top:auto">' +
+    '<button class="btn primary wide" data-action="nav" data-go="P10">保存草稿</button>' +
+    '<div class="hint" style="margin-top:8px">保存后状态为草稿，需人工复核通过才会用于正式计算。</div></div>';
+  return html + '</div>';
+}
+
+function dataEntryRight(){
+  var html = panelHead('保存状态与校验', '字段级提示只在保存失败时出现，不把接口信息暴露给用户。', '草稿已保存', 'warn');
+  html += '<div class="card kv"><div class="info-pairs" style="margin-top:0;border:none;padding:0;background:transparent">' +
+    '<div><b>保存状态</b>草稿已保存，等待人工复核</div>' +
+    '<div><b>记录对象</b>食材 · 羽衣甘蓝（蔬菜）</div>' +
+    '<div><b>营养口径</b>每 100 克 / 生重</div>' +
+    '<div><b>数据来源</b>USDA FoodData Central · FDC:168421</div>' +
+    '<div><b>生效范围</b>之后的营养计算；已生成的建议不会自动重算</div>' +
+    '</div></div>';
+
+  html += '<div class="card"><h3>校验规则</h3><ul class="bullets" style="display:block">' +
+    '<li>名称、类别、热量、蛋白质、脂肪、碳水、来源为必填。</li>' +
+    '<li>膳食纤维可留空，留空表示暂无数据，不会按 0 处理。</li>' +
+    '<li>营养字段只接受数字或区间，不接受“约 49 千卡”这类描述。</li>' +
+    '<li>同一名称重复录入时提示合并或登记为新别名。</li>' +
+    '</ul>' +
+    '<div class="divider"></div>' +
+    '<div class="label" style="margin:0 0 6px">校验失败时的字段提示示例</div>' +
+    '<div class="field" style="border-color:#eccfa6">热量（kcal）</div>' +
+    '<div class="err">请填写每 100 克热量，未填写不会保存，也不会用 0 代替。</div>' +
+    '</div>';
+
+  html += '<div class="card"><h3>这条数据会影响哪里</h3>' +
+    '<div class="sub">保存并通过复核后，营养计算页可以直接识别该食材；仍然识别不到的食材会继续单独提示，不会被静默算成 0。</div></div>';
+  return html;
+}
+
+/* ---------------- 画板组装 ---------------- */
+function homeScreen(opt){
+  var right;
+  if(opt.mode === 'loading'){ right = loadingBlock(); }
+  else if(opt.mode === 'result'){ right = resultBlock(opt.feedback || state.feedback); }
+  else if(opt.mode === 'clarify'){ right = clarifyBlock(); }
+  else if(opt.mode === 'safety'){ right = safetyBlock(); }
+  else {
+    right = emptyBlock('等待输入',
+      '可以在这里输入一句需求，或点击左侧示例。结果会展示建议、份量和数据来源。',
+      ['建议菜名、推荐理由和可执行步骤',
+       '份数、每份重量与每份营养，并标注数据来源',
+       '信息不足时先追问；命中安全风险时停止推荐'],
+      '结果区');
+  }
+  return nav(tabOf(state.screen)) + '<div class="body">' + homeLeft(opt) +
+    '<div class="col right">' + right + '</div></div>';
+}
+
+function nutritionScreen(kind){
+  var right;
+  if(kind === 'empty'){
+    right = emptyBlock('等待录入',
+      '录入食材和克重并计算后，这里会展示整份、每份、食材明细和数据来源。',
+      ['整份总重量与总热量', '每份重量与每份营养', '食材级热量拆解与热量占比',
+       '未识别食材会单独提示，未计入合计'],
+      '结果区');
+  }else{
+    right = nutritionResult(kind);
+  }
+  return nav(tabOf(state.screen)) + '<div class="body">' + nutritionLeft() +
+    '<div class="col right">' + right + '</div></div>';
+}
+
+var SCREENS = {
+  P01: function(){ return homeScreen({mode:'empty'}); },
+  P02: function(){ return homeScreen({mode:'loading'}); },
+  P03: function(){ return homeScreen({mode:'result', feedback:'none'}); },
+  P04: function(){ return homeScreen({mode:'clarify'}); },
+  P05: function(){ return homeScreen({mode:'safety'}); },
+  P06: function(){ return nutritionScreen('empty'); },
+  P07: function(){ return nutritionScreen('result'); },
+  P08: function(){ return nutritionScreen('unresolved'); },
+  P09: function(){ return homeScreen({mode:'result', feedback:'recorded'}); },
+  P10: function(){ return nav(tabOf('P10')) + '<div class="body">' + dataOverview() +
+        '<div class="col right">' + dataOverviewRight() + '</div></div>'; },
+  P11: function(){ return nav(tabOf('P11')) + '<div class="body">' + dataEntryLeft() +
+        '<div class="col right">' + dataEntryRight() + '</div></div>'; }
+};
+
+/* ---------------- 渲染 ---------------- */
+function fitScale(){
+  var c = document.getElementById('canvas');
+  var w = c.clientWidth - 44;
+  var h = c.clientHeight - 24;
+  return Math.max(0.18, Math.min(w / 1440, h / 1024));
+}
+
+function frameHTML(screen, scale){
+  return '<div class="frame" data-screen="' + screen + '" style="transform:scale(' + scale + ')">' +
+    SCREENS[screen]() + '</div>';
+}
+
+function render(){
+  var canvas = document.getElementById('canvas');
+  if(state.mode === 'overview'){
+    var ovScale = 0.235;
+    var w = Math.round(1440 * ovScale), h = Math.round(1024 * ovScale);
+    var html = '<div class="flowbox"><b>页面连线与动作</b>' +
+      '<p>P01 点击示例或输入 → 提交自然语言 → P02 生成中 →（信息不足 → P04／安全命中 → P05／信息完整 → P03）→ 记录反馈 → P09；' +
+      '顶部导航「营养计算」→ P06 → 计算营养 → P07 →（未识别食材 → P08）→ 补充数据 → P11 → 回到 P10。' +
+      'P10、P11 是数据工具的次要入口，只作为项目补充证据。</p></div>';
+    html += '<div class="ov">';
+    ORDER.forEach(function(s){
+      html += '<div class="ov-cell"><div class="ov-cap">' + BOARDS[s].name + '</div>' +
+        '<div class="ov-sub">' + esc(BOARDS[s].sub) + '</div>' +
+        '<div class="slot" style="width:' + w + 'px;height:' + h + 'px">' + frameHTML(s, ovScale) + '</div></div>';
+    });
+    html += '</div>';
+    canvas.innerHTML = html;
+    document.getElementById('boardName').textContent = '全部画板（11 张 · 1440 × 1024）';
+    document.getElementById('boardMeta').textContent = '缩略预览，点击左侧页面地图进入单张画板进行交互';
+    return;
+  }
+
+  var s = fitScale();
+  var w = Math.round(1440 * s), h = Math.round(1024 * s);
+  canvas.innerHTML = '<div class="fit"><div class="slot" style="width:' + w + 'px;height:' + h + 'px">' +
+    frameHTML(state.screen, s) + '</div></div>';
+  document.getElementById('boardName').textContent = BOARDS[state.screen].name;
+  document.getElementById('boardMeta').textContent = '画板 1440 × 1024 · ' + BOARDS[state.screen].sub;
+  syncRail();
+}
+
+function renderRail(){
+  var groups = {
+    railHome: ['P01','P02','P03','P04','P05'],
+    railNut: ['P06','P07','P08'],
+    railData: ['P09','P10','P11']
+  };
+  Object.keys(groups).forEach(function(id){
+    var box = document.getElementById(id);
+    box.innerHTML = groups[id].map(function(s){
+      return '<button class="item' + (state.screen === s ? ' on' : '') + '" data-goto="' + s + '">' +
+        BOARDS[s].name + '</button>';
+    }).join('');
+  });
+}
+function syncRail(){ renderRail(); }
+
+/* ---------------- 交互 ---------------- */
+/* 每张画板都有固定要表达的状态；直接跳转时把演示数据对齐到该状态 */
+function canonicalize(screen){
+  var names = state.ingredients.map(function(r){ return (r.name || '').trim(); });
+  if(screen === 'P08'){
+    if(names.indexOf('羽衣甘蓝') < 0) state.ingredients.push({name:'羽衣甘蓝', grams:'100'});
+    state.servings = '2';
+  }else if(screen === 'P06' || screen === 'P07'){
+    state.ingredients = state.ingredients.filter(function(r){ return !!NUT[(r.name || '').trim()]; });
+    if(!state.ingredients.length) state.ingredients = [{name:'鸡胸肉', grams:'150'}, {name:'西兰花', grams:'200'}];
+  }
+  if(screen === 'P01' || screen === 'P02' || screen === 'P03' || screen === 'P09'){ state.input = SAMPLE.cook; }
+  if(screen === 'P04'){ state.input = '今晚吃什么'; }
+  if(screen === 'P05'){ state.input = SAMPLE.safe; }
+  state.rowErrors = {}; state.servingsError = ''; state.inputError = '';
+}
+
+function go(screen, canonical){
+  state.screen = screen;
+  if(canonical) canonicalize(screen);
+  state.inputError = '';
+  if(screen === 'P03' || screen === 'P09'){ state.feedback = (screen === 'P09') ? 'recorded' : 'none'; }
+  render();
+}
+
+function decideRoute(text){
+  var t = (text || '').trim();
+  if(/断食|只喝水|纯水|脱水|减肥药|药物减肥|催吐|泻药|利尿剂|好几天不吃|不吃饭/.test(t)) return 'P05';
+  var hasGoal = /减脂|增肌|维持|减重|增重|控糖|增肌期/.test(t);
+  if(!hasGoal || t.length <= 6) return 'P04';
+  return 'P03';
+}
+
+function validateNutrition(){
+  var rowErr = {}, ok = true;
+  state.ingredients.forEach(function(r, i){
+    var name = (r.name || '').trim();
+    var g = Number(r.grams);
+    if(!name){ rowErr[i] = '请填写第 ' + (i + 1) + ' 行的食材名称，名称留空不会提交。'; ok = false; return; }
+    if(!isFinite(g) || g <= 0){ rowErr[i] = '第 ' + (i + 1) + ' 行的克重需要大于 0，当前只接收克重。'; ok = false; }
+  });
+  var sv = Number(state.servings);
+  var svOK = isFinite(sv) && String(state.servings).trim() !== '' && sv >= 1 && sv <= 100;
+  state.servingsError = svOK ? '' : '份数需要填写 1 至 100 之间的整数。';
+  state.rowErrors = rowErr;
+  return ok && svOK;
+}
+
+function onAction(btn){
+  var act = btn.getAttribute('data-action');
+  if(act === 'nav'){ go(btn.getAttribute('data-go'), true); return; }
+  if(act === 'fill'){
+    state.input = SAMPLE[btn.getAttribute('data-key')] || '';
+    state.inputError = '';
+    render(); return;
+  }
+  if(act === 'filltext'){
+    state.input = btn.getAttribute('data-text');
+    state.inputError = '';
+    render(); return;
+  }
+  if(act === 'generate'){
+    if(!state.input.trim()){
+      state.inputError = '请先输入一句需求，或点击上方示例入口。';
+      render();
+      setTimeout(function(){
+        var ta = document.querySelector('[data-role="input"]');
+        if(ta) ta.focus();
+      }, 0);
+      return;
+    }
+    state.inputError = '';
+    go('P02');
+    setTimeout(function(){
+      if(state.screen !== 'P02') return;
+      var next = decideRoute(state.input);
+      if(next === 'P03' || next === 'P09') state.feedback = 'none';
+      go(next);
+    }, 1500);
+    return;
+  }
+  if(act === 'goal'){ state.feedback = 'none'; go('P03'); return; }
+  if(act === 'back'){ go('P01'); return; }
+  if(act === 'fb-good' || act === 'fb-no'){ state.feedback = 'recorded'; go('P09'); return; }
+  if(act === 'add'){ state.ingredients.push({name:'', grams:''}); state.rowErrors = {}; render(); return; }
+  if(act === 'del'){
+    var i = Number(btn.getAttribute('data-i'));
+    if(state.ingredients.length <= 1){ state.rowErrors = {0:'至少保留一行食材，请修改这一行而不是删除。'}; render(); return; }
+    state.ingredients.splice(i, 1);
+    state.rowErrors = {}; state.servingsError = '';
+    render(); return;
+  }
+  if(act === 'kale'){
+    state.ingredients.push({name:'羽衣甘蓝', grams:'100'});
+    state.rowErrors = {}; render();
+    setTimeout(function(){
+      var el = document.querySelector('[data-field="name"][data-i="' + (state.ingredients.length - 1) + '"]');
+      if(el) el.focus();
+    }, 0);
+    return;
+  }
+  if(act === 'calc'){
+    if(!validateNutrition()){ render(); return; }
+    var d = computeNutrition();
+    go(d.unresolved.length ? 'P08' : 'P07');
+    return;
+  }
+}
+
+function onInput(el){
+  var f = el.getAttribute('data-field');
+  var key = 'input';
+  if(f === 'input'){
+    state.input = el.value;
+    state.inputError = '';
+  }else if(f === 'servings'){
+    state.servings = el.value;
+    state.servingsError = '';
+    key = 'servings';
+  }else{
+    var i = Number(el.getAttribute('data-i'));
+    key = 'r' + i;
+    if(state.ingredients[i]){
+      if(f === 'name') state.ingredients[i].name = el.value;
+      if(f === 'grams') state.ingredients[i].grams = el.value;
+      delete state.rowErrors[i];
+    }
+  }
+  /* 输入时只清掉该字段的提示，不重绘，避免光标丢失 */
+  var frame = el.closest('.frame');
+  var e = frame ? frame.querySelector('[data-err="' + key + '"]') : null;
+  if(e) e.textContent = '';
+}
+
+/* ---------------- 初始化 ---------------- */
+function init(){
+  renderRail();
+  render();
+
+  document.addEventListener('click', function(e){
+    var gotoBtn = e.target.closest('[data-goto]');
+    if(gotoBtn){ go(gotoBtn.getAttribute('data-goto'), true); return; }
+
+    var modeBtn = e.target.closest('[data-mode]');
+    if(modeBtn){
+      state.mode = modeBtn.getAttribute('data-mode');
+      document.querySelectorAll('[data-mode]').forEach(function(b){
+        b.classList.toggle('on', b.getAttribute('data-mode') === state.mode);
+      });
+      render(); return;
+    }
+
+    var navBtn = e.target.closest('[data-nav]');
+    if(navBtn){
+      var dir = navBtn.getAttribute('data-nav') === 'next' ? 1 : -1;
+      var idx = ORDER.indexOf(state.screen);
+      var next = (idx + dir + ORDER.length) % ORDER.length;
+      go(ORDER[next], true);
+      return;
+    }
+
+    var btn = e.target.closest('[data-action]');
+    if(btn && btn.closest('.frame')){ onAction(btn); }
+  });
+
+  document.addEventListener('input', function(e){
+    var el = e.target;
+    if(el.matches && el.matches('[data-field]') && el.closest('.frame')) onInput(el);
+  });
+
+  document.querySelector('[data-mode="single"]').classList.add('on');
+
+  var t = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(t);
+    t = setTimeout(function(){ if(state.mode === 'single') render(); }, 120);
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.target.matches('input,textarea,select')) return;
+    if(e.key === 'ArrowRight'){ document.querySelector('[data-nav="next"]').click(); }
+    if(e.key === 'ArrowLeft'){ document.querySelector('[data-nav="prev"]').click(); }
+  });
+}
+init();
+</script>
+</body>
+</html>

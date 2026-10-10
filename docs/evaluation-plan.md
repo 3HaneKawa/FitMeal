@@ -3,7 +3,7 @@
 > 阶段：E1 已完成
 > 冻结日期：2026-10-06
 > 版本：E1-v1.0
-> 上游事实来源：`docs/PRD.md`（F1–F15、§4.1–§4.6）与 `docs/safety-spec.md`
+> 上游事实来源：`docs/PRD.md`（F1–F16、§4.1–§4.2）与 `docs/safety-spec.md`
 > 机器可读矩阵：`evals/capability_matrix.csv`
 > 校验脚本：`scripts/check_capability_matrix.py`
 > 状态补充：2026-10-10 新增独立营养计算器；接口、页面和离线确定性回归均已验证，回归脚本为 `scripts/check_nutrition_calculator.py`。真实用户验证仍未开展。
