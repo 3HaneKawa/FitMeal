@@ -1,17 +1,104 @@
 # 接口契约
 
-> 状态：v0.8
+> 状态：v0.9
 > 更新时间：2026-10-10
 > 适用范围：Dify Chatflow 与后续自建 API 的统一输入输出约定
 
 ## 1. 约定
 
 1. 所有接口使用 JSON 传输，UTF-8 编码。
-2. LLM 节点的输出必须是可直接解析的 JSON，不允许夹带解释文字。
-3. 缺失字段一律填 `null`，不编造用户未提及的信息。
-4. 营养数值只能由 `scripts/nutrition_calc.py` 现算得出，事实来源是 `data/nutrition.csv`（每 100g）；LLM 与编排层都不得改写。
+2. 浏览器只有一个聊天入口：`POST /chat`。浏览器不得直接调用 `/recommend`，也不得持有 Dify API Key。
+3. LLM 节点的输出必须是可直接解析的 JSON，不允许夹带解释文字。
+4. 缺失字段一律填 `null`，不编造用户未提及的信息。
+5. 营养数值只能由 `scripts/nutrition_calc.py` 现算得出，事实来源是 `data/nutrition.csv`（每 100g）；LLM 与编排层都不得改写。
 
-## 2. 请求结构
+## 2. 客户端聊天接口（唯一前端入口）
+
+### 2.1 `GET /chat/status`
+
+用于前端和演示前检查 Dify 代理是否已配置，不返回 Token。
+
+```json
+{
+  "ok": true,
+  "configured": true,
+  "provider": "Dify Chatflow",
+  "timeout_seconds": 180.0
+}
+```
+
+### 2.2 `POST /chat`
+
+请求：
+
+```json
+{
+  "query": "我有鸡胸肉、西兰花和鸡蛋，减脂，20 分钟内做完",
+  "conversation_id": "",
+  "user": "fitmeal-anonymous-user",
+  "inputs": {}
+}
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| query | string | 是 | 用户自然语言输入，最长 4000 字 |
+| conversation_id | string | 否 | Dify 多轮会话 ID；首次请求为空，后续沿用返回值 |
+| user | string | 否 | 匿名用户标识；当前存于浏览器 localStorage，不使用真实身份 |
+| inputs | object | 否 | 预留给 Dify 应用变量的固定输入；当前前端传空对象 |
+
+成功响应：
+
+```json
+{
+  "ok": true,
+  "answer": "Dify 返回的自然语言回答",
+  "conversation_id": "dify-conversation-id",
+  "message_id": "dify-message-id",
+  "request_id": "本地生成的请求编号",
+  "elapsed_ms": 26437.6,
+  "metadata": {}
+}
+```
+
+| 字段 | 说明 |
+| --- | --- |
+| answer | Dify Chatflow 最终回答；前端只展示该文本，不重新拼本地推荐 |
+| conversation_id | 下一次请求继续多轮对话时回传 |
+| message_id | Dify 消息编号，用于问题排查 |
+| request_id | FitMeal 为本次端到端请求生成的编号，用于关联 `/feedback` |
+| elapsed_ms | 浏览器到 Dify 再返回的真实端到端耗时，不是 `/recommend` 的毫秒级数据节点耗时 |
+| metadata | Dify 返回的 token、模型耗时等元数据；缺少时不补造 |
+
+错误：
+
+| HTTP | error.code | 触发条件 |
+| ---: | --- | --- |
+| 400 | `empty_query` / `query_too_long` | 输入为空或超过 4000 字 |
+| 502 | `dify_error` | Dify 未配置、不可连接、超时或返回异常 |
+| 502 | `empty_answer` | Dify 返回成功但没有可展示回答 |
+
+> 前端不会在 `/chat` 失败后调用 `/recommend` 生成替代答案。若要演示本地规则回归，必须单独明确标注，不能冒充 Dify 结果。
+
+### 2.3 Dify 内部数据 payload
+
+> 以下结构是 Dify 通过 HTTP 请求节点调用 `POST /recommend` 时使用的内部 payload，不是浏览器聊天请求。
+
+```json
+{
+  "user_input": "我有鸡胸肉、西兰花、鸡蛋，练完背，想吃低脂但有点味道的，20 分钟内搞定",
+  "goal": "fat_loss",
+  "region": "generic"
+}
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| user_input | string | 是 | 用户自然语言输入；五类意图与安全风险标志均由 LLM 从这句话推断 |
+| goal | string | 否 | `fat_loss` / `muscle_gain` / `maintain` |
+| region | string | 否 | 地域偏好，见第 5 节词表 |
+
+> Dify 的 LLM 节点会先抽取食材、目标、时间、地域和忌口，再与安全、意图字段合并成 `payload` 交给 `/recommend`；前端不负责拼这些字段。
 
 ```json
 {
@@ -103,7 +190,7 @@
 
 ## 4. 响应结构
 
-> `POST /recommend` 的完整响应是外层包络 `{ "result": { … }, "elapsed_ms": 123.4, "request_id": "…" }`；下面先展示 `result` 的内容，再把 `request_id` 交给 `POST /feedback`。
+> 本节描述 Dify 内部数据节点 `POST /recommend` 的响应。完整响应是外层包络 `{ "result": { … }, "elapsed_ms": 123.4, "request_id": "…" }`；下面先展示 `result` 的内容，再把 `request_id` 交给 `POST /feedback`。
 
 ```json
 {
@@ -304,6 +391,7 @@
    - v0.6（2026-10-06）：新增第 8 节「数据录入接口」（`/data/*` + `scripts/add_data.py`）；确认营养写入规则为「只收食材与克重、一律现算」，写入统一走 `scripts/data_store.py`。
    - v0.7（2026-10-07）：意图新增 `provenance`（数据来源与算法口径溯源）；响应新增 `answer_type=provenance` 与 `sources`；`ingredient_breakdown[]` 与 `analyze_nutrition` 新增 `source` / `source_ref` / `source_name` / `confidence` / `verified_at` 来源字段。
    - v0.8（2026-10-10）：`/recommend` 外层新增 `request_id`；新增 `/feedback` 最小事件记录接口。反馈当前不读取、不重排、不持久化为个性化偏好。
+   - v0.9（2026-10-10）：新增浏览器唯一聊天入口 `/chat` 及探活接口 `/chat/status`；明确 `/recommend` 只作为 Dify 内部数据节点，前端不持有 API Key、不回退本地规则。
 2. 本契约变更需同步更新 `prompts/*.md`、`scripts/*.py` 与 `evals/eval_set.csv`。
 
 ## 8. 数据录入接口
@@ -332,27 +420,29 @@
 
 ## 9. 反馈接口
 
-`POST /feedback` 只记录用户对某次推荐结果的明确操作，用于本地 Demo 复盘。它不自动改变下一次推荐，也不把反馈写进用户画像。
+`POST /feedback` 只记录用户对某次 Dify 回答或推荐结果的明确操作，用于本地 Demo 复盘。它不自动改变下一次推荐，也不把反馈写进用户画像。
+
+当前前端只发送回答级 `accept` / `reject`，并把 `request_id` 或 Dify `message_id` 填入兼容字段 `recipe_id`；`recipe_id` 暂不代表某道具体食谱。
 
 请求：
 
 ```json
 {
   "request_id": "b4c2e0f7a9d14c91b9576a04e0a54db7",
-  "recipe_id": "R001",
-  "action": "reject",
-  "reason": "不喜欢",
-  "note": "口味偏淡"
+  "recipe_id": "dify-message-id",
+  "action": "accept",
+  "reason": "有帮助",
+  "note": ""
 }
 ```
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| request_id | string | 是 | `/recommend` 返回的请求编号 |
-| recipe_id | string | 是 | 用户操作的食谱 ID；当前四类按钮都以单张食谱卡片为单位 |
-| action | string | 是 | `accept` 采纳 / `reject` 不喜欢 / `too_much` 太麻烦 / `regenerate` 换一批 |
+| request_id | string | 是 | `/chat` 或 `/recommend` 返回的请求编号 |
+| recipe_id | string | 是 | 兼容字段；当前回答级反馈填入 Dify `message_id` 或 `request_id`，后续单道食谱反馈再填食谱 ID |
+| action | string | 是 | `accept` 有帮助 / `reject` 没帮助；接口同时预留 `too_much` 太麻烦 / `regenerate` 换一批，供后续卡片反馈使用 |
 | reason | string | 否 | 当前只接受与 `action` 一致的中文按钮文案 |
-| note | string | 否 | 预留的自由文本，最长 500 字；当前前端不采集 |
+| note | string | 否 | 自由文本，最长 500 字；当前前端不采集 |
 
 成功响应：
 
@@ -362,10 +452,10 @@
   "event": {
     "event_id": "1f5c9f5d5d8a4cd5a85b9f547db2f4e0",
     "request_id": "b4c2e0f7a9d14c91b9576a04e0a54db7",
-    "recipe_id": "R001",
-    "action": "reject",
-    "reason": "不喜欢",
-    "note": "口味偏淡",
+    "recipe_id": "dify-message-id",
+    "action": "accept",
+    "reason": "有帮助",
+    "note": "",
     "created_at": "2026-10-10T14:30:00+08:00"
   }
 }
@@ -380,7 +470,7 @@
 
 边界：
 
-1. 当前只覆盖食谱推荐卡片的四个按钮，不覆盖外食、替换、营养和安全结果。
+1. 当前是回答级反馈，不能区分推荐、外食、替换、营养和安全分支。
 2. “换一批”当前只记录用户意图，不会重新生成或排除上一批推荐。
 3. 事件写入 `runtime/feedback_events.csv`；该运行文件被 `.gitignore` 排除，不进入公开仓库。
 4. 反馈事件持久化不等于偏好持久化；对话式反馈理解、偏好记忆和排序闭环仍未实现。

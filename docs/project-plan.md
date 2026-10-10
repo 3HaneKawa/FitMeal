@@ -1,7 +1,7 @@
 # 项目计划与开发路线图
 
 > 更新时间：2026-10-10
-> 对应版本：FitMeal v0.3.1
+> 对应版本：FitMeal v0.4.0
 > 关联材料：`README.md`、`docs/PRD.md`、`docs/evaluation-summary.md`、`evals/eval_set.csv`
 
 ## 1. 当前交付状态
@@ -12,14 +12,14 @@
 | --- | --- | --- |
 | 产品定义 | 需求分析、PRD、页面流程、功能范围、非目标和验收口径 | `docs/requirements-analysis.md`、`docs/PRD.md`、`prototypes/screens.md` |
 | 规则与数据 | 食谱 208、营养 159、外食 50、目标规则 3、替换规则 30、别名 24、单位换算 19 | `data/`、`server /health` |
-| 本地服务 | FastAPI 提供 `/health`、`/recommend`、`/feedback` 和数据录入接口 | `server/app.py`、接口请求记录 |
-| 本地前端 | 六类路径可交互展示，包含首页、食谱、外食、替换、营养、安全 | `web/`、`web/screenshots/` |
-| Dify 链路 | 参数抽取、安全判断、意图分类、参数合并、Python 数据服务和回答生成已跑通 | `docs/evaluation-summary.md` 和首轮 API 运行汇总 |
+| FastAPI 服务 | `/chat` 代理 Dify，`/recommend` 作为 Dify 内部数据节点，并提供 `/health`、`/feedback` 和数据录入接口 | `server/app.py`、接口请求记录 |
+| 单输入前端 | 一句话提交需求，展示 Dify 回答、真实链路和端到端耗时 | `web/`、`web/screenshots/` |
+| Dify 链路 | 浏览器经 `/chat` 进入 Dify；Dify 完成参数抽取、安全判断、意图分类、数据节点调用和回答生成 | `server/app.py`、`docs/evaluation-summary.md` 和首轮 API 运行汇总 |
 | 数据一致性 | 数据校验、覆盖度诊断、数据版本和规则版本通过 | `scripts/validate_data.py`、`scripts/coverage_report.py` |
 | 评测集 | 270 条正式用例，dev 219 / holdout 51，能力矩阵和一致性检查通过 | `evals/eval_set.csv`、`evals/capability_matrix.csv` |
 | 代码层评测 | 234 pass / 10 fail / 14 blocked / 12 not_ready | `docs/evaluation-summary.md` |
 | 真实 API 首轮 | 196 pass / 58 fail / 3 blocked / 12 not_ready / 1 error | `docs/evaluation-summary.md`、`evals/showcase_results.md` |
-| 反馈事件记录 | 食谱卡片支持采纳、不喜欢、太麻烦、换一批，并写入本地事件文件 | `server/app.py`、`scripts/feedback_store.py`、`scripts/check_feedback_store.py` |
+| 反馈事件记录 | Dify 回答支持“有帮助 / 没帮助”，并写入本地事件文件 | `server/app.py`、`scripts/feedback_store.py`、`scripts/check_feedback_store.py` |
 | 面试演示材料 | 高风险失败、产品判断和复跑规则已整理 | `evals/showcase_results.md`、`evals/showcase_cases.csv` |
 
 ### 尚未完成
@@ -30,14 +30,14 @@
 | 信息追问 | 缺少食材或目标时仍会直接推荐 | P0，在推荐前增加澄清分支 |
 | 食材抽取 | 首轮 API 食材准确率为 52.5% | P1，按别名、单位、复合食材、否定表达和候选缺失分类处理 |
 | 用户研究 | 尚未完成真实用户访谈 | 不列入本轮交付；后续单独安排 5 至 10 位目标用户再更新需求结论 |
-| 用户反馈 | 最小事件记录已实现，反馈闭环未实现 | 12 条对话式用例保留 `not_ready`；只有真实测试后再评估偏好和排序 |
+| 用户反馈 | 回答级最小事件记录已实现，反馈闭环未实现 | 12 条对话式用例保留 `not_ready`；只有真实测试后再评估偏好和排序 |
 | 用户体验 | 首轮 API P95 为 26.08 秒 | P2，在安全和澄清稳定后优化 |
 | 采纳率 | 没有真实埋点和用户测试数据 | 不写未经验证的转化数据 |
 
 ## 2. 已经验证的事实
 
 1. 规则层可以稳定读取并校验现有数据表。
-2. 本地前端已经通过结构化请求调用 FastAPI，而不是静态页面占位。
+2. 单输入前端已经通过 `/chat` 代理调用 Dify，不是静态页面或本地规则占位。
 3. 食谱、外食、替换、营养、安全五条路径都有实际响应。
 4. 270 条评测集的结构、枚举、能力引用和 dev/holdout 划分通过校验。
 5. Dify API 第一轮完整跑完，保留了原始分流和逐用例结果。
@@ -118,7 +118,7 @@
 | 里程碑 | 完成标志 | 当前状态 |
 | --- | --- | --- |
 | M1 数据与规则可用 | 核心数据表通过校验，推荐链路可以用固定输入复现 | 已达成 |
-| M2 原型可运行 | 本地前端和 Dify 链路均可完成请求 | 已达成 |
+| M2 原型可运行 | 单输入前端经 `/chat` 代理完成 Dify 请求 | 已达成 |
 | M3 评测可重复 | 270 条用例结构固定，代码层和 API 层都有运行记录 | 已达成，指标未达标 |
 | M4 风险可控 | 安全、过敏和澄清高风险用例通过，holdout 复跑没有回归 | 进行中 |
 | M5 用户可验证 | 完成小范围用户测试，拿到三次推荐内决策率 | 未开始 |

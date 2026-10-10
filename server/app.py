@@ -20,7 +20,9 @@
 
 接口一览：
 - GET  /health                服务与数据表状态（Dify 探活 / 排查用）
-- POST /recommend             入参 = 参数合并节点产出的 payload，出参 = api-contract §4 响应结构
+- GET  /chat/status           Dify 代理配置状态
+- POST /chat                  前端自然语言入口：代理调用 Dify Chatflow
+- POST /recommend             Dify HTTP 节点内部数据接口，不由前端直接调用
 - POST /feedback              记录采纳、不喜欢、太麻烦和换一批事件
 - GET  /data/schema           六张数据表的列名、行数、id 前缀（录入端先看这个）
 - POST /data/nutrition        新增 / 更新一条食材营养（每 100g）
@@ -50,8 +52,12 @@
 
 from __future__ import annotations
 
+import json
+import os
 import sys
 import time
+import urllib.error
+import urllib.request
 import uuid
 from pathlib import Path
 from typing import Any
@@ -71,9 +77,38 @@ from handler import handle  # noqa: E402  （必须先补 sys.path 才能 import
 from feedback_store import FeedbackError, record_feedback  # noqa: E402
 
 WEB_DIR = ROOT / "web"
+ENV_PATH = ROOT / ".env"
+
+
+def _load_local_env(path: Path) -> None:
+    """读取项目根目录 .env；真实环境变量优先，不让文件覆盖部署配置。"""
+    if not path.exists():
+        return
+    for raw_line in path.read_text(encoding="utf-8-sig").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+_load_local_env(ENV_PATH)
+
+DIFY_CHAT_URL = os.environ.get(
+    "DIFY_API_URL", "http://127.0.0.1/v1/chat-messages"
+).strip()
+DIFY_API_KEY = os.environ.get("DIFY_API_KEY", "").strip()
+try:
+    DIFY_TIMEOUT_SECONDS = float(os.environ.get("DIFY_TIMEOUT_SECONDS", "180"))
+except ValueError:
+    DIFY_TIMEOUT_SECONDS = 180.0
+DIFY_TIMEOUT_SECONDS = min(max(DIFY_TIMEOUT_SECONDS, 10.0), 300.0)
 
 SERVICE_NAME = "fitmeal-data"
-SERVICE_VERSION = "0.3.0"
+SERVICE_VERSION = "0.4.0"
 DATA_TABLES = (
     "recipes.csv",
     "nutrition.csv",
@@ -88,8 +123,8 @@ app = FastAPI(
     title="FitMeal 本地数据服务",
     version=SERVICE_VERSION,
     description=(
-        "筛选 / 评分 / 过敏过滤 / 营养计算；供 Dify Chatflow 的 HTTP 请求节点调用。"
-        "另提供 /data/* 数据录入接口，用于快速补菜谱、食材营养与外食数据。"
+        "前端通过 /chat 代理调用 Dify Chatflow；筛选、评分、营养计算由 Dify "
+        "HTTP 节点调用本服务完成。另提供 /data/* 数据录入接口。"
     ),
 )
 
@@ -125,6 +160,130 @@ def _table_counts() -> dict[str, int]:
     return {name: len(load_csv(name)) for name in DATA_TABLES}
 
 
+# ---------------------------------------------------------------- Dify 代理
+
+def _dify_status() -> dict[str, Any]:
+    """只报告配置状态，不向前端暴露 API Key 或上游完整错误。"""
+    return {
+        "configured": bool(DIFY_CHAT_URL and DIFY_API_KEY),
+        "provider": "Dify Chatflow",
+        "timeout_seconds": DIFY_TIMEOUT_SECONDS,
+    }
+
+
+def _upstream_message(body: bytes) -> str:
+    raw = body.decode("utf-8", errors="replace").strip()
+    if not raw:
+        return "上游没有返回可读信息"
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return raw[:300]
+    if isinstance(parsed, dict):
+        for key in ("message", "error", "detail"):
+            value = parsed.get(key)
+            if value:
+                return str(value)[:300]
+    return raw[:300]
+
+
+def _call_dify_chat(
+    query: str,
+    conversation_id: str,
+    user: str,
+    inputs: dict[str, Any],
+) -> dict[str, Any]:
+    """由服务端持有密钥调用 Dify，浏览器永远拿不到 Dify API Key。"""
+    if not DIFY_CHAT_URL or not DIFY_API_KEY:
+        raise RuntimeError("Dify 未配置：请在项目根目录 .env 中设置 DIFY_API_KEY")
+
+    request_payload = {
+        "inputs": inputs,
+        "query": query,
+        "response_mode": "blocking",
+        "conversation_id": conversation_id,
+        "user": user,
+    }
+    request = urllib.request.Request(
+        DIFY_CHAT_URL,
+        data=json.dumps(request_payload, ensure_ascii=False).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {DIFY_API_KEY}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=DIFY_TIMEOUT_SECONDS) as response:
+            response_body = response.read()
+    except urllib.error.HTTPError as exc:
+        detail = _upstream_message(exc.read())
+        raise RuntimeError(f"Dify 返回异常（HTTP {exc.code}）：{detail}") from exc
+    except urllib.error.URLError as exc:
+        reason = getattr(exc, "reason", None) or "连接失败"
+        raise RuntimeError(f"无法连接 Dify：{reason}") from exc
+    except TimeoutError as exc:
+        raise RuntimeError(f"Dify 响应超过 {DIFY_TIMEOUT_SECONDS:.0f} 秒") from exc
+
+    try:
+        data = json.loads(response_body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError("Dify 返回了无法解析的响应") from exc
+    if not isinstance(data, dict):
+        raise RuntimeError("Dify 返回格式不正确")
+    return data
+
+
+@app.get("/chat/status")
+def chat_status() -> JSONResponse:
+    """前端探活用：确认服务已配置 Dify 代理。"""
+    return JSONResponse(content={"ok": True, **_dify_status()})
+
+
+@app.post("/chat")
+def chat_endpoint(payload: dict[str, Any] | None = Body(default=None)) -> JSONResponse:
+    """前端唯一聊天入口：自然语言 -> Dify Chatflow -> 回答。"""
+    if not isinstance(payload, dict):
+        return _error(400, "bad_request", "请求体必须是 JSON 对象")
+
+    query = str(payload.get("query") or "").strip()
+    if not query:
+        return _error(400, "empty_query", "请先输入你的饮食需求")
+    if len(query) > 4000:
+        return _error(400, "query_too_long", "输入内容过长，请控制在 4000 字以内")
+
+    conversation_id = str(payload.get("conversation_id") or "").strip()[:128]
+    user = str(payload.get("user") or "fitmeal-web").strip()[:128] or "fitmeal-web"
+    inputs = payload.get("inputs")
+    if not isinstance(inputs, dict):
+        inputs = {}
+
+    started = time.perf_counter()
+    try:
+        upstream = _call_dify_chat(query, conversation_id, user, inputs)
+    except RuntimeError as exc:
+        return _error(502, "dify_error", str(exc))
+
+    answer = str(upstream.get("answer") or "").strip()
+    if not answer:
+        return _error(502, "empty_answer", "Dify 没有返回可展示的回答")
+
+    elapsed_ms = round((time.perf_counter() - started) * 1000, 1)
+    return JSONResponse(
+        content={
+            "ok": True,
+            "answer": answer,
+            "conversation_id": upstream.get("conversation_id") or conversation_id,
+            "message_id": upstream.get("message_id") or upstream.get("id") or "",
+            "request_id": uuid.uuid4().hex,
+            "elapsed_ms": elapsed_ms,
+            "metadata": upstream.get("metadata") or {},
+        }
+    )
+
+
 # ---------------------------------------------------------------- 查询 / 推荐
 
 @app.get("/health")
@@ -148,6 +307,7 @@ def health() -> JSONResponse:
             "service": SERVICE_NAME,
             "version": SERVICE_VERSION,
             "data": counts,
+            "chat": _dify_status(),
         }
     )
 

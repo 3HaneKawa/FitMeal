@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="FitMeal 轻食令本地产品原型">
+  <meta name="description" content="FitMeal 轻食令 Dify Chatflow 产品原型">
   <title>FitMeal 轻食令</title>
-  <link rel="stylesheet" href="./styles.css?v=0.4.2">
+  <link rel="stylesheet" href="./styles.css?v=0.5.0">
 </head>
 <body>
   <div class="page-shell">
@@ -28,94 +28,28 @@
     <main class="workspace">
       <section class="input-panel" aria-labelledby="inputTitle">
         <div class="eyebrow">今天这一餐</div>
-        <h1 id="inputTitle">先把条件说清楚，再决定吃什么。</h1>
-        <p class="lead">输入现有食材、目标和时间。推荐结果会说明用了什么、还缺什么，以及营养数字从哪里来。</p>
+        <h1 id="inputTitle">直接说出需求，Dify 来完成判断。</h1>
+        <p class="lead">用一句话说明现有食材、目标、时间和忌口。页面不会在本地拆规则，而是通过服务端代理请求 Dify Chatflow。</p>
 
         <div class="sample-row" aria-label="示例输入">
           <button class="sample-button" type="button" data-sample="cook">自烹饪</button>
           <button class="sample-button" type="button" data-sample="eat_out">外食</button>
           <button class="sample-button" type="button" data-sample="substitute">替换</button>
+          <button class="sample-button" type="button" data-sample="nutrition">营养</button>
           <button class="sample-button" type="button" data-sample="safety">安全拦截</button>
         </div>
 
         <form id="mealForm" novalidate>
           <label class="field field-wide">
             <span>一句话描述</span>
-            <textarea id="userInput" rows="3" placeholder="例：我有鸡胸肉、西兰花和鸡蛋，减脂，想 20 分钟内做完"></textarea>
+            <textarea id="userInput" rows="5" required placeholder="例：我有鸡胸肉、西兰花和鸡蛋，减脂，想 20 分钟内做完，口味清淡一点。"></textarea>
           </label>
-
-          <div class="field-grid">
-            <label class="field">
-              <span>场景</span>
-              <select id="intent">
-                <option value="auto">自动判断</option>
-                <option value="cook">自己做饭</option>
-                <option value="eat_out">外食 / 点餐</option>
-                <option value="substitute">食材替换</option>
-                <option value="nutrition_analysis">营养查询</option>
-                <option value="unsafe">安全测试</option>
-              </select>
-            </label>
-            <label class="field">
-              <span>目标</span>
-              <select id="goal">
-                <option value="fat_loss">减脂</option>
-                <option value="muscle_gain">增肌</option>
-                <option value="maintain">维持</option>
-              </select>
-            </label>
-            <label class="field">
-              <span>时间上限</span>
-              <div class="input-suffix">
-                <input id="timeLimit" type="number" min="5" max="120" step="5" value="20">
-                <span>分钟</span>
-              </div>
-            </label>
-            <label class="field">
-              <span>地域偏好</span>
-              <select id="region">
-                <option value="generic">不限</option>
-                <option value="川渝">川渝</option>
-                <option value="粤式">粤式</option>
-                <option value="江浙">江浙</option>
-                <option value="北方">北方</option>
-              </select>
-            </label>
-          </div>
-
-          <label class="field field-wide">
-            <span>现有食材 <small>用逗号分隔</small></span>
-            <input id="ingredients" type="text" placeholder="鸡胸肉，西兰花，鸡蛋">
-          </label>
-
-          <label class="field field-wide">
-            <span>过敏 / 忌口 <small>仅填写明确说明</small></span>
-            <input id="allergies" type="text" placeholder="例：花生，牛奶">
-          </label>
-
-          <div class="advanced-fields" id="advancedFields">
-            <label class="field" data-advanced="substitute">
-              <span>想替换的食材</span>
-              <input id="originalIngredient" type="text" placeholder="例：白米饭">
-            </label>
-            <label class="field" data-advanced="nutrition">
-              <span>查询食材</span>
-              <input id="nutritionIngredient" type="text" placeholder="例：鸡胸肉">
-            </label>
-            <label class="field" data-advanced="nutrition">
-              <span>查询重量</span>
-              <div class="input-suffix">
-                <input id="amountG" type="number" min="1" step="1" value="100">
-                <span>克</span>
-              </div>
-            </label>
-          </div>
 
           <button class="primary-button" id="submitButton" type="submit">
-            <span>生成今晚的建议</span>
+            <span>生成 Dify 建议</span>
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4"/></svg>
           </button>
-          <p class="form-note">本地 Demo 会把表单转换为结构化请求，再调用 FastAPI。Dify 链路另见项目文档。</p>
+          <p class="form-note">浏览器只把这段自然语言发给本地代理，再由服务端调用 Dify；API Key 不会进入前端。</p>
         </form>
       </section>
 
@@ -136,8 +70,8 @@
               <span class="leaf leaf-a"></span>
               <span class="leaf leaf-b"></span>
             </div>
-            <h3>先给这顿饭设几个边界</h3>
-            <p>条件越具体，推荐越容易解释。也可以直接点上方示例快速体验。</p>
+            <h3>先告诉 Dify 这顿饭的边界</h3>
+            <p>可以直接输入，也可以点上方示例。结果会标注真实链路和完整耗时。</p>
           </div>
         </div>
       </section>
@@ -147,10 +81,11 @@
   <template id="loadingTemplate">
     <div class="loading-state">
       <div class="loading-mark"><span></span><span></span><span></span></div>
-      <p>正在筛选候选并核算营养...</p>
+      <p>Dify 正在理解需求、读取数据并生成建议...</p>
+      <small>完整链路通常需要 20 至 40 秒</small>
     </div>
   </template>
 
-  <script src="./app.js?v=0.4.2" defer></script>
+  <script src="./app.js?v=0.5.0" defer></script>
 </body>
 </html>

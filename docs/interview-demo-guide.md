@@ -4,18 +4,14 @@
 
 ## 1. 演示前检查
 
-1. 在项目根目录启动本地服务：
+1. 确认项目根目录 `.env` 已配置 `DIFY_API_KEY`，且 Dify、8765 数据服务和 8766 向量服务在线。
+2. 双击根目录 `启动FitMeal.bat`，或运行 `powershell -ExecutionPolicy Bypass -File .\server\start.ps1`。启动器会检查 Dify、向量服务、环境变量和端口。
+3. 打开 `http://127.0.0.1:8765/app/?v=0.5.0`。
+4. 确认页面顶部显示 `Dify Chatflow` 已连接。
+5. 提前打开 `docs/PRD.md`、`prototypes/screens.md`、`evals/showcase_results.md` 和 `docs/evaluation-summary.md`。
+6. 不要现场展示 API Key、Dify 节点配置、原始回包和未脱敏运行记录。
 
-```powershell
-uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir server --host 127.0.0.1 --port 8765
-```
-
-2. 打开 `http://127.0.0.1:8765/app/`。
-3. 确认页面顶部显示服务状态和食谱数量。
-4. 提前打开 `docs/PRD.md`、`prototypes/screens.md`、`evals/showcase_results.md` 和 `docs/evaluation-summary.md`。
-5. 不要现场展示 API Key、Dify 节点配置、原始回包和未脱敏运行记录。
-
-## 2. 两到三分钟本地演示
+## 2. 两到三分钟 Dify 端到端演示
 
 ### 2.1 首页
 
@@ -33,9 +29,9 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 
 展示重点：
 
-- 结果页先回显系统收到的目标、时间、地域和食材。
-- 推荐卡片展示 Top 3、每份重量、营养、已有和缺失食材、做法及热量来源。
-- 说明评分由食材匹配、营养目标、时间、地域和多样性共同决定。
+- 页面只收集一句自然语言，并明确标注 `Dify Chatflow · 真实 API`。
+- 结果必须来自 Dify 回答，页面显示真实端到端耗时，不回退本地规则。
+- 回答中如果出现推荐，需同时讲清营养和数据来自 Python 数据节点，而不是模型心算。
 
 讲解词：
 
@@ -51,8 +47,8 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 
 展示重点：
 
-- 输出点餐方向、参考热量区间和控制分量的建议。
-- 没有可靠品牌配方时，不给精确营养数字。
+- Dify 回答应输出点餐方向、控制分量的建议和必要风险提示。
+- 没有可靠品牌配方时，不接受精确营养数字作为事实。
 
 讲解词：
 
@@ -69,7 +65,7 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 展示重点：
 
 - 替换项要说明适用条件、营养变化和使用限制。
-- 没有规则时显示数据缺口，不生成没有依据的建议。
+- 没有规则时应在回答中说明数据缺口，不生成没有依据的建议。
 
 ### 2.5 营养查询
 
@@ -81,8 +77,8 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 
 展示重点：
 
-- 显示标准名、每 100 克基准、查询重量换算和数据来源。
-- 查不到时明确说明，不用相近食材顶替。
+- 回答应显示标准名、每 100 克基准、查询重量换算和数据来源。
+- 查不到时应明确说明，不用相近食材顶替。
 
 ### 2.6 安全拦截
 
@@ -109,17 +105,17 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 
 ### 第二分钟：我的工作
 
-- 独立完成需求拆分、PRD、原型、前端、FastAPI 服务、规则和数据表。
+- 独立完成需求拆分、PRD、原型、单输入前端、FastAPI `/chat` 代理、数据服务、规则和数据表。
 - 大模型只做理解、解释和表达；候选筛选、评分、过敏过滤和营养计算由 Python 与数据表完成。
 - 拉了 270 条结构化评测用例，区分开发集和验收集，记录能力、风险、期望行为和通过规则。
 - 首轮真实 API 结果是修复前基线，不是优化后的成绩。
 
 ### 第三分钟：原型取舍
 
-- 左侧表单负责收集条件，右侧按结果类型渲染，不同状态分开处理。
-- 先回显条件，再给推荐卡片，避免用户看到结果后才发现条件理解错了。
-- 信息不足、无匹配和安全拦截分别展示，不合并成同一种报错。
-- 食谱卡片底部已有采纳、不喜欢、太麻烦和换一批按钮，点击会记录事件；换一批当前只记录意图，不会真正重排，反馈也还不会影响下一次推荐。
+- 前端收敛成一个自然语言输入框，不在浏览器里判断意图或拼结构化 payload。
+- 浏览器只调用 `/chat`；FastAPI 代理持有 Dify API Key，Dify 内部再调用 `/recommend` 数据节点。
+- Dify 不可用时直接显示错误，不用本地规则结果伪装成 Dify 回答。
+- 每个回答下只有“有帮助 / 没帮助”两个反馈按钮，反馈会落库，但暂不改变下一次推荐。
 
 ### 第四分钟：测试和判断
 
@@ -142,18 +138,18 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 | --- | --- | --- |
 | 需求从哪里来 | `docs/requirements-analysis.md` | 公开产品观察、场景拆解和自用流程，真实访谈尚未完成 |
 | 为什么这样分工 | `docs/PRD.md`、`docs/architecture.md` | 模型负责理解与表达，代码和数据负责可追溯的筛选与计算 |
-| 原型怎么做的 | `prototypes/screens.md`、`prototypes/wireframes.md` | 表单输入、结果回显、五类结果和独立异常状态 |
+| 原型怎么做的 | `prototypes/screens.md`、`prototypes/wireframes.md` | 单输入、Dify 回答、真实耗时、反馈、加载和错误状态 |
 | 测试集怎么设计 | `evals/capability_matrix.csv`、`evals/eval_set.csv`、`docs/evaluation-pipeline.md` | 按能力和风险分层，开发集定位问题，验收集只做验收；先讲数据怎么构建和解释 |
 | 失败后怎么判断 | `evals/showcase_results.md` | 用代表用例说明观测、判断、动作和下一轮通过条件 |
-| 项目是否真的能跑 | `README.md`、`web/screenshots/` | 展示本地服务、五类请求和页面截图；Dify 结果单独说明 |
+| 项目是否真的能跑 | `README.md`、`server/app.py`、Dify 回答界面 | 展示 `/chat` 调用、真实 Dify 回答和端到端耗时，不把 `/recommend` 的耗时当成 Dify 延迟 |
 | 哪些还没做 | `docs/PRD.md`、`docs/evaluation-summary.md` | F10 只完成事件记录，真实用户测试本轮不做，首轮 API 是修复前基线 |
 
 ## 5. 断网或 Dify 不可用时的备选
 
-1. 只展示本地前端和 FastAPI 服务，不把本地结果说成 Dify 结果。
-2. 打开 PRD、原型、评测集和汇总结果，讲清当前证据和缺口。
-3. 如果本地服务也无法启动，展示仓库截图和复现命令，并明确说明哪些内容是历史记录。
-4. 不临时修改数字，不把待人工评分说成通过。
+1. 当前前端不支持本地规则回退；Dify 不可用时不继续用页面出结果。
+2. 改用 PRD、原型、评测集、历史运行汇总和录屏讲清链路，明确说明现场未连上 Dify。
+3. 如果本地服务也无法启动，展示仓库截图和复现命令，并明确哪些截图属于历史版本。
+4. 不临时修改数字，不把待人工评分说成通过，也不把 `/recommend` 结果说成完整 Dify 回答。
 
 ## 6. 不能说的内容
 
@@ -161,4 +157,4 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 - 不能说反馈闭环、偏好记忆或反馈驱动排序已经完成。
 - 不能说真实 API 首轮结果代表优化后效果。
 - 不能把过敏自动断言结果直接说成真实漏放过敏原。
-- 不能把本地前端延迟写成 Dify API 延迟。
+- 不能把 `/recommend` 数据节点的耗时写成 Dify 端到端延迟。
