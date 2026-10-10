@@ -131,6 +131,6 @@ E1 同时冻结用例原则，E2 起按此写具体用例：
 
 ## 9. 后续维护
 
-E2 起的维护计划、覆盖缺口追踪与断言执行器路线见 `docs/eval-maintenance-plan.md`；实时覆盖状态用 `scripts/eval_status.py` 查看（`--strict` 可作覆盖率门禁）。
+E2 起的维护规则、覆盖缺口和运行方式见 `evals/README.md`；实时覆盖状态用 `scripts/eval_status.py` 查看（`--strict` 可作覆盖率门禁）。
 
-> 2026-10-10 状态补充：最小反馈事件记录和 `/feedback` 接口已加入，但仍不改变推荐排序；12 条对话式 F10 用例保持 `not_ready`。正式结构化集为 270 条（219 dev / 51 holdout）；代码层历史基线仍为 234 pass / 10 fail / 14 blocked / 12 not_ready，最新复跑版本以 `docs/eval-maintenance-plan.md` 和运行记录为准。
+> 2026-10-10 状态补充：最小反馈事件记录和 `/feedback` 接口已加入，但仍不改变推荐排序；12 条对话式 F10 用例保持 `not_ready`。正式结构化集为 270 条（219 dev / 51 holdout）；代码层历史基线仍为 234 pass / 10 fail / 14 blocked / 12 not_ready，最新复跑版本以 `evals/README.md` 和本地运行记录为准。

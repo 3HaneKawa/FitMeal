@@ -141,7 +141,7 @@ def main() -> None:
     print(f"  - 未达标 in-scope 能力 {len(unmet)} 项；F10 为承诺未实现，暂按占位处理。")
     print("  - rubric.md 营养阈值与 goal_rules.csv 一致性校验已 PASS。")
     print("  - 下一批优先补 F06 / F08，随后补安全风险与 X01 交叉难题。")
-    print("  - 分批建设与门禁见 docs/eval-maintenance-plan.md。")
+    print("  - 分批建设与门禁见 evals/README.md。")
 
     if args.strict and unmet:
         print()

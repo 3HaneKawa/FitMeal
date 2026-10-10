@@ -287,5 +287,5 @@ Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8765/data/aliases `
 | --- | --- |
 | `docs/data-dictionary.md` | 各表的完整列定义 |
 | `docs/api-contract.md` 第 8 节 | 数据录入接口的契约 |
-| `docs/project-plan.md` 阶段二·补 | 数据扩充的目标与来源 |
+| `docs/data-governance.md` | 数据来源分级、版本机制和扩充流程 |
 | `scripts/coverage_report.py` | 补数据前后看覆盖度指标 |
