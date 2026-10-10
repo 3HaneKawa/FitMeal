@@ -38,7 +38,7 @@
           <button class="sample-button" type="button" data-sample="safety">安全拦截</button>
         </div>
 
-        <form id="mealForm">
+        <form id="mealForm" novalidate>
           <label class="field field-wide">
             <span>一句话描述</span>
             <textarea id="userInput" rows="3" placeholder="例：我有鸡胸肉、西兰花和鸡蛋，减脂，想 20 分钟内做完"></textarea>
@@ -105,7 +105,7 @@
             <label class="field" data-advanced="nutrition">
               <span>查询重量</span>
               <div class="input-suffix">
-                <input id="amountG" type="number" min="1" step="10" value="100">
+                <input id="amountG" type="number" min="1" step="1" value="100">
                 <span>克</span>
               </div>
             </label>
