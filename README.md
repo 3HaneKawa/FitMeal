@@ -146,6 +146,7 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 | --- | --- |
 | `docs/requirements-analysis.md` | 用户、场景、需求优先级和未验证假设 |
 | `docs/PRD.md` | 产品需求、流程、功能、安全和验收标准 |
+| `docs/modao-prototype-prompt.md` | 墨刀 AI 低保真原型主提示词、补全提示词和检查清单 |
 | `docs/architecture.md` | 系统组件、数据流和职责边界 |
 | `docs/api-contract.md` | 输入输出接口与 JSON 结构 |
 | `docs/safety-spec.md` | 安全与过敏处理规则 |
