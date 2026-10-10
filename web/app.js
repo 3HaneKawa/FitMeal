@@ -102,7 +102,7 @@ function renderAnswer(answer) {
   });
 
   closeList();
-  return html.join('') || '<p>Dify 返回了空回答。</p>';
+  return html.join('') || '<p>服务没有返回可展示的回答。</p>';
 }
 
 function usageText(metadata) {
@@ -125,16 +125,16 @@ function renderResult(data) {
   };
 
   const usage = usageText(data.metadata);
-  resultTitle.textContent = 'Dify 建议已生成';
-  resultMeta.textContent = `Dify Chatflow · ${formatElapsed(data.elapsed_ms)}`;
+  resultTitle.textContent = '建议已生成';
+  resultMeta.textContent = `智能生成 · ${formatElapsed(data.elapsed_ms)}`;
 
   results.innerHTML = `<article class="chat-card">
     <div class="chat-source">
       <span class="live-dot" aria-hidden="true"></span>
-      <strong>Dify Chatflow · 真实 API</strong>
+      <strong>智能建议 · 实时生成</strong>
       <span>${usage ? esc(usage) : '完整链路已完成'}</span>
     </div>
-    <div class="dify-answer">${renderAnswer(data.answer)}</div>
+    <div class="answer-content">${renderAnswer(data.answer)}</div>
     <div class="feedback-actions" data-feedback-group>
       <span class="feedback-label">这个回答有帮助吗？</span>
       <button type="button" class="feedback-button" data-feedback-action="accept">有帮助</button>
@@ -159,7 +159,7 @@ async function submitForm(event) {
   const timeout = setTimeout(() => controller.abort(), 185000);
   currentMessage = null;
   resultPanel.setAttribute('aria-busy', 'true');
-  resultTitle.textContent = 'Dify 正在生成';
+  resultTitle.textContent = '正在生成建议';
   resultMeta.textContent = '真实链路通常需要 20 至 40 秒';
   results.innerHTML = loadingTemplate.innerHTML;
   submitButton.disabled = true;
@@ -178,20 +178,20 @@ async function submitForm(event) {
 
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.message || `HTTP ${response.status}`);
-    if (!data.answer) throw new Error('Dify 没有返回可展示的回答');
+    if (!data.answer) throw new Error('服务没有返回可展示的回答');
 
     currentConversationId = data.conversation_id || currentConversationId;
     localStorage.setItem('fitmeal_conversation_id', currentConversationId);
     renderResult(data);
   } catch (error) {
-    resultTitle.textContent = 'Dify 请求没有完成';
-    resultMeta.textContent = '未使用本地规则降级';
+    resultTitle.textContent = '这次请求没有完成';
+    resultMeta.textContent = '本次未生成替代结果';
     const message = error.name === 'AbortError'
-      ? '等待超过 185 秒，请检查 Dify 和本地数据服务。'
+      ? '等待时间较长，请确认智能服务和数据服务正在运行。'
       : error.message;
     results.innerHTML = `<div class="error-card">
-      <strong>这次没有拿到 Dify 回答。</strong><br>
-      请确认 Dify、8765 数据服务和 8766 向量服务都在运行。<br>
+      <strong>这次没有拿到有效建议。</strong><br>
+      请确认智能服务、推荐数据和检索服务都在运行。<br>
       <small>${esc(message)}</small>
     </div>`;
   } finally {
@@ -260,16 +260,16 @@ async function checkHealth() {
 
     const health = await serviceResponse.json();
     const chat = await chatResponse.json();
-    if (!chat.configured) throw new Error('Dify is not configured');
+    if (!chat.configured) throw new Error('Service is not configured');
 
     const recipeCount = health.data?.['recipes.csv'] || 0;
     serviceState.classList.remove('is-offline');
     serviceState.classList.add('is-online');
-    serviceState.innerHTML = `<span class="state-dot" aria-hidden="true"></span><span>Dify 链路已配置 · ${recipeCount} 道食谱</span>`;
+    serviceState.innerHTML = `<span class="state-dot" aria-hidden="true"></span><span>智能服务已连接 · ${recipeCount} 道食谱</span>`;
   } catch {
     serviceState.classList.remove('is-online');
     serviceState.classList.add('is-offline');
-    serviceState.innerHTML = '<span class="state-dot" aria-hidden="true"></span><span>Dify 或本地服务未就绪</span>';
+    serviceState.innerHTML = '<span class="state-dot" aria-hidden="true"></span><span>智能服务未就绪</span>';
   }
 }
 

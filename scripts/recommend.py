@@ -27,6 +27,19 @@ REGION_ALIASES = {
 }
 
 
+# 外食请求里的具体品类词。命中菜名时优先于只命中点餐策略，
+# 避免「想吃鱼」却返回一整套与鱼肉无关的通用候选。
+EAT_OUT_KEYWORD_GROUPS = (
+    ("鱼", ("鱼", "鱼片", "鱼肉", "海鲜", "刺身", "寿司")),
+    ("虾", ("虾", "虾仁", "海鲜")),
+    ("牛肉", ("牛肉", "肥牛", "牛腩", "牛排")),
+    ("鸡肉", ("鸡", "鸡肉", "鸡胸", "鸡腿")),
+    ("火锅", ("火锅",)),
+    ("粥", ("粥",)),
+    ("沙拉", ("沙拉", "轻食")),
+    ("豆腐", ("豆腐", "豆制品")),
+)
+
 def normalize_region(value):
     if value is None:
         return "通用"
@@ -249,10 +262,57 @@ def recommend(user_input, recipes=None, rules=None, top_n=3):
     return select_top(candidates, top_n)
 
 
+def _as_text_values(value):
+    """把字符串、数组或空值统一转成文本列表，用于外食关键词匹配。"""
+    if value is None:
+        return []
+    if isinstance(value, (list, tuple, set)):
+        return [str(item).strip() for item in value if str(item).strip()]
+    text = str(value).strip()
+    return [text] if text else []
+
+
+def _eat_out_request_terms(user_input):
+    """从原始请求中提取用户明确想吃的品类，排除明确不吃的品类。"""
+    request_text = " ".join(
+        _as_text_values(user_input.get("user_input"))
+        + _as_text_values(user_input.get("ingredients"))
+        + _as_text_values(user_input.get("flavor_preference"))
+    ).lower()
+    avoid_text = " ".join(_as_text_values(user_input.get("avoid_items"))).lower()
+
+    terms = []
+    for label, aliases in EAT_OUT_KEYWORD_GROUPS:
+        if any(alias.lower() in avoid_text for alias in aliases):
+            continue
+        if any(alias.lower() in request_text for alias in aliases):
+            terms.append((label, aliases))
+    return terms
+
+
+def _eat_out_request_match(row, request_terms):
+    """返回命中的品类和排序加分；菜名命中比策略命中权重大。"""
+    name = row["name"].lower()
+    details = " ".join((
+        row["order_strategy"], row["risk_notes"], row["tags"], row["region"],
+    )).lower()
+    matched = []
+    bonus = 0.0
+    for label, aliases in request_terms:
+        if any(alias.lower() in name for alias in aliases):
+            matched.append(label)
+            bonus += 0.6
+        elif any(alias.lower() in details for alias in aliases):
+            matched.append(label)
+            bonus += 0.3
+    return matched, bonus
+
+
 def recommend_eat_out(user_input, eat_out_foods=None, top_n=3):
     eat_out_foods = eat_out_foods or load_csv("eat_out_foods.csv")
     goal = user_input.get("goal")
     region = normalize_region(user_input.get("region", "通用"))
+    request_terms = _eat_out_request_terms(user_input)
 
     candidates = []
     for row in eat_out_foods:
@@ -274,6 +334,8 @@ def recommend_eat_out(user_input, eat_out_foods=None, top_n=3):
         if "低脂" in row["tags"] or "高蛋白" in row["tags"]:
             score += 0.2
 
+        matched_request_terms, match_bonus = _eat_out_request_match(row, request_terms)
+        rank_score = score + match_bonus
         candidates.append({
             "id": row["id"],
             "name": row["name"],
@@ -284,10 +346,17 @@ def recommend_eat_out(user_input, eat_out_foods=None, top_n=3):
             "risk_notes": split_items(row["risk_notes"]),
             "calorie_range": row["calorie_range"],
             "tags": split_items(row["tags"]),
+            "matched_request_terms": matched_request_terms,
+            "_rank_score": rank_score,
         })
 
-    return sorted(candidates, key=lambda x: x["score"], reverse=True)[:top_n]
-
+    candidates.sort(
+        key=lambda item: (item["_rank_score"], len(item["matched_request_terms"])),
+        reverse=True,
+    )
+    for item in candidates:
+        item.pop("_rank_score", None)
+    return candidates[:top_n]
 
 def suggest_substitution(user_input, substitutions=None):
     substitutions = substitutions or load_csv("substitutions.csv")

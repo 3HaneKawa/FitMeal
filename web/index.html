@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="FitMeal 轻食令 Dify Chatflow 产品原型">
+  <meta name="description" content="FitMeal 轻食令智能饮食推荐产品原型">
   <title>FitMeal 轻食令</title>
-  <link rel="stylesheet" href="./styles.css?v=0.5.0">
+  <link rel="stylesheet" href="./styles.css?v=0.5.1">
 </head>
 <body>
   <div class="page-shell">
@@ -28,8 +28,8 @@
     <main class="workspace">
       <section class="input-panel" aria-labelledby="inputTitle">
         <div class="eyebrow">今天这一餐</div>
-        <h1 id="inputTitle">直接说出需求，Dify 来完成判断。</h1>
-        <p class="lead">用一句话说明现有食材、目标、时间和忌口。页面不会在本地拆规则，而是通过服务端代理请求 Dify Chatflow。</p>
+        <h1 id="inputTitle">直接说出需求，让系统来完成判断。</h1>
+        <p class="lead">用一句话说明现有食材、目标、时间和忌口。页面只发送自然语言，由服务端完成理解、匹配和生成。</p>
 
         <div class="sample-row" aria-label="示例输入">
           <button class="sample-button" type="button" data-sample="cook">自烹饪</button>
@@ -46,10 +46,10 @@
           </label>
 
           <button class="primary-button" id="submitButton" type="submit">
-            <span>生成 Dify 建议</span>
+            <span>生成建议</span>
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4"/></svg>
           </button>
-          <p class="form-note">浏览器只把这段自然语言发给本地代理，再由服务端调用 Dify；API Key 不会进入前端。</p>
+          <p class="form-note">页面只发送这段自然语言，服务端负责匹配数据并生成建议。</p>
         </form>
       </section>
 
@@ -70,7 +70,7 @@
               <span class="leaf leaf-a"></span>
               <span class="leaf leaf-b"></span>
             </div>
-            <h3>先告诉 Dify 这顿饭的边界</h3>
+            <h3>先告诉系统这顿饭的边界</h3>
             <p>可以直接输入，也可以点上方示例。结果会标注真实链路和完整耗时。</p>
           </div>
         </div>
@@ -81,11 +81,11 @@
   <template id="loadingTemplate">
     <div class="loading-state">
       <div class="loading-mark"><span></span><span></span><span></span></div>
-      <p>Dify 正在理解需求、读取数据并生成建议...</p>
+      <p>系统正在理解需求、读取数据并生成建议...</p>
       <small>完整链路通常需要 20 至 40 秒</small>
     </div>
   </template>
 
-  <script src="./app.js?v=0.5.0" defer></script>
+  <script src="./app.js?v=0.5.1" defer></script>
 </body>
 </html>

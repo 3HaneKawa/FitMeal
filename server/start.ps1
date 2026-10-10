@@ -1,4 +1,4 @@
-﻿param(
+param(
     [switch]$NoBrowser
 )
 
@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $port = 8765
 $healthUrl = "http://127.0.0.1:$port/health"
-$appUrl = "http://127.0.0.1:$port/app/?v=0.5.0"
+$appUrl = "http://127.0.0.1:$port/app/?v=0.5.1"
 $chatStatusUrl = "http://127.0.0.1:$port/chat/status"
 $embedRoot = Join-Path (Split-Path -Parent $root) "embed-server"
 $embedHealthUrl = "http://127.0.0.1:8766/health"
