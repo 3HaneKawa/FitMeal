@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $port = 8765
 $healthUrl = "http://127.0.0.1:$port/health"
-$appUrl = "http://127.0.0.1:$port/app/"
+$appUrl = "http://127.0.0.1:$port/app/?v=0.4.2"
 $browserJob = $null
 
 Push-Location $root

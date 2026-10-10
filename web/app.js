@@ -70,6 +70,20 @@ const splitValues = (value) => String(value || '')
   .map((item) => item.trim())
   .filter(Boolean);
 
+function mergeValues(...groups) {
+  const seen = new Set();
+  const merged = [];
+  groups.flat().forEach((rawValue) => {
+    const value = String(rawValue || '').trim();
+    if (!value) return;
+    const key = value.replace(/\s+/g, '').toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    merged.push(value);
+  });
+  return merged;
+}
+
 function detectIntent(text) {
   if (/断食|只喝水|催吐|暴食|节食到|绝食|不吃饭|病|糖尿病|怀孕|孕期|未成年/.test(text)) return 'unsafe';
   if (/替换|换成|替代|能不能换|用什么代替/.test(text)) return 'substitute';
@@ -134,9 +148,10 @@ function buildPayload() {
   let intent = intentSelect.value;
   if (intent === 'auto') intent = detectIntent(text);
 
-  const parsedIngredients = ingredientsInput.value.trim()
-    ? splitValues(ingredientsInput.value)
-    : detectIngredients(text);
+  const parsedIngredients = mergeValues(
+    splitValues(ingredientsInput.value),
+    detectIngredients(text)
+  );
   const parsedTime = Number(timeLimit.value) || detectTime(text) || null;
   const goal = goalSelect.value || detectGoal(text);
   const region = regionSelect.value || detectRegion(text);
@@ -195,9 +210,10 @@ function renderRecipe(recommendation, index) {
 
   const breakdownHtml = breakdown.slice(0, 6).map((item) => {
     const share = Math.round(Number(item.calorie_share || 0) * 100);
+    const amount = item.amount_text || (item.amount_g ? `${formatNumber(item.amount_g)}g` : '用量未标注');
     return `<div class="breakdown-row">
-      <span>${esc(item.name)}</span>
-      <span class="breakdown-track"><span class="breakdown-fill" style="width:${Math.max(2, share)}%"></span></span>
+      <span class="breakdown-name"><strong>${esc(item.name)}</strong><small>${esc(amount)}</small></span>
+      <span class="breakdown-track"><span class="breakdown-fill" style="width:${Math.min(100, Math.max(2, share))}%"></span></span>
       <span>${formatNumber(item.calories)} kcal · ${share}%</span>
     </div>`;
   }).join('');
