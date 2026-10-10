@@ -1,13 +1,13 @@
 # 接口契约
 
-> 状态：v0.9
+> 状态：v0.11
 > 更新时间：2026-10-10
-> 适用范围：Dify Chatflow 与后续自建 API 的统一输入输出约定
+> 适用范围：Dify Chatflow、本地数据服务与独立营养计算页的统一输入输出约定
 
 ## 1. 约定
 
 1. 所有接口使用 JSON 传输，UTF-8 编码。
-2. 浏览器只有一个聊天入口：`POST /chat`。浏览器不得直接调用 `/recommend`，也不得持有 Dify API Key。
+2. 聊天入口只有 `POST /chat`。浏览器不得直接调用 `/recommend`，也不得持有 Dify API Key；营养计算页是独立的确定性工具，不进入聊天链路。
 3. LLM 节点的输出必须是可直接解析的 JSON，不允许夹带解释文字。
 4. 缺失字段一律填 `null`，不编造用户未提及的信息。
 5. 营养数值只能由 `scripts/nutrition_calc.py` 现算得出，事实来源是 `data/nutrition.csv`（每 100g）；LLM 与编排层都不得改写。
@@ -94,27 +94,13 @@
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| user_input | string | 是 | 用户自然语言输入；五类意图与安全风险标志均由 LLM 从这句话推断 |
-| goal | string | 否 | `fat_loss` / `muscle_gain` / `maintain` |
-| region | string | 否 | 地域偏好，见第 5 节词表 |
-
-> Dify 的 LLM 节点会先抽取食材、目标、时间、地域和忌口，再与安全、意图字段合并成 `payload` 交给 `/recommend`；前端不负责拼这些字段。
-
-```json
-{
-  "user_input": "我有鸡胸肉、西兰花、鸡蛋，练完背，想吃低脂但有点味道的，20 分钟内搞定",
-  "goal": "fat_loss",
-  "region": "generic"
-}
-```
-
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
 | user_input | string | 是 | 用户自然语言输入；`cook` / `eat_out` / `substitute` / `nutrition_analysis` / `provenance` 五类意图与安全风险标志均由 LLM 从这句话推断，请求体不再单列场景字段 |
 | goal | string | 否 | `fat_loss` / `muscle_gain` / `maintain` |
 | region | string | 否 | 地域偏好，见第 5 节词表 |
 
 > v1 的 Dify 实现里 `user_input` 就是聊天输入（`sys.query`），`goal` / `region` 暂不单独传入、由 LLM 从自然语言抽取；这两个字段留给后续前端选择器与自建 API。
+
+> Dify 的 LLM 节点会先抽取食材、目标、时间、地域和忌口，再与安全、意图字段合并成 `payload` 交给 `/recommend`；前端不负责拼这些字段。
 
 ## 3. 节点输出结构
 
@@ -387,12 +373,13 @@
 1. 字段只增不删；删除字段需升级主版本号。
    - v0.3（2026-10-05）：删除 `meal_type`（早餐/午餐/晚餐/练后）；推荐项新增 `servings` / `serving_weight_g` / `nutrition_basis`。
    - v0.4（2026-10-06）：`ingredients` 明确由参数抽取 LLM 先归一化；推荐项新增 `matched_ingredients`；Python 增加最低食材匹配门槛。
-   - v0.5（2026-10-06）：营养改为**计算值**（事实来源 `data/nutrition.csv`，`recipes.csv` 营养列降级为缓存并由校验强制对齐）；新增 `data/ingredient_aliases.csv`（24 组别名）与 `data/unit_conversions.csv`（14 条单位换算）；推荐项新增 `ingredient_breakdown`（食材级营养拆解）与每份 `fiber_g`。
+   - v0.5（2026-10-06）：营养改为**计算值**（事实来源 `data/nutrition.csv`，`recipes.csv` 营养列降级为缓存并由校验强制对齐）；新增 `data/ingredient_aliases.csv`（24 组别名）与 `data/unit_conversions.csv`（当前 19 条单位换算）；推荐项新增 `ingredient_breakdown`（食材级营养拆解）与每份 `fiber_g`。
    - v0.6（2026-10-06）：新增第 8 节「数据录入接口」（`/data/*` + `scripts/add_data.py`）；确认营养写入规则为「只收食材与克重、一律现算」，写入统一走 `scripts/data_store.py`。
    - v0.7（2026-10-07）：意图新增 `provenance`（数据来源与算法口径溯源）；响应新增 `answer_type=provenance` 与 `sources`；`ingredient_breakdown[]` 与 `analyze_nutrition` 新增 `source` / `source_ref` / `source_name` / `confidence` / `verified_at` 来源字段。
    - v0.8（2026-10-10）：`/recommend` 外层新增 `request_id`；新增 `/feedback` 最小事件记录接口。反馈当前不读取、不重排、不持久化为个性化偏好。
    - v0.9（2026-10-10）：新增浏览器唯一聊天入口 `/chat` 及探活接口 `/chat/status`；明确 `/recommend` 只作为 Dify 内部数据节点，前端不持有 API Key、不回退本地规则。
    - v0.10（2026-10-10）：新增只读数据查询接口 `/data/rows`，供数据总览页执行表切换、关键词检索与分页。
+   - v0.11（2026-10-10）：新增独立营养计算接口 `POST /nutrition/calculate`，输入标准食材名或已登记别名与克重，返回整份、每份、食材拆解、来源和未识别项；接口不调用 LLM，也不经过 Dify。
 2. 本契约变更需同步更新 `prompts/*.md`、`scripts/*.py` 与 `evals/eval_set.csv`。
 
 ## 8. 数据录入与查询接口
@@ -484,3 +471,135 @@ GET /data/rows?table=nutrition&q=鸡胸&limit=50&offset=0
 2. “换一批”当前只记录用户意图，不会重新生成或排除上一批推荐。
 3. 事件写入 `runtime/feedback_events.csv`；该运行文件被 `.gitignore` 排除，不进入公开仓库。
 4. 反馈事件持久化不等于偏好持久化；对话式反馈理解、偏好记忆和排序闭环仍未实现。
+
+## 10. 独立营养计算接口
+
+`POST /nutrition/calculate` 面向“食材和克重已经确定，只需要算这一餐营养”的场景。它直连本地 FastAPI，不经过 Dify，不调用 LLM，也不写入任何 CSV。
+
+请求：
+
+```json
+{
+  "items": [
+    {"name": "鸡胸肉", "amount_g": 150},
+    {"name": "西兰花", "amount_g": 200}
+  ],
+  "servings": 2
+}
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| items | array | 是 | 至少一条；每一项包含食材名和克重 |
+| items[].name | string | 是 | 标准食材名或 `data/ingredient_aliases.csv` 中已有的别名 |
+| items[].amount_g | number | 是 | 克重，必须大于 0；这里不接收“个 / 碗 / 把”等单位 |
+| servings | int | 否 | 份数，默认 1，范围 1–100；只影响每份结果，不改变输入总重量 |
+
+成功响应：
+
+```json
+{
+  "ok": true,
+  "result": {
+    "action": "calculate",
+    "servings": 2,
+    "total_weight_g": 350.0,
+    "serving_weight_g": 175.0,
+    "total_nutrition": {
+      "calories": 248.0,
+      "protein_g": 39.4,
+      "fat_g": 4.7,
+      "carbs_g": 13.2,
+      "fiber_g": 5.2
+    },
+    "per_serving_nutrition": {
+      "calories": 124.0,
+      "protein_g": 19.7,
+      "fat_g": 2.4,
+      "carbs_g": 6.6,
+      "fiber_g": 2.6
+    },
+    "ingredient_breakdown": [
+      {
+        "name": "鸡胸肉",
+        "raw_name": "鸡胸肉",
+        "amount_text": "150g",
+        "amount_g": 150.0,
+        "calories": 180.0,
+        "protein_g": 33.8,
+        "fat_g": 3.9,
+        "carbs_g": 0.0,
+        "fiber_g": 0.0,
+        "per_serving_amount_g": 75.0,
+        "per_serving_calories": 90.0,
+        "per_serving_protein_g": 16.9,
+        "per_serving_fat_g": 1.9,
+        "per_serving_carbs_g": 0.0,
+        "per_serving_fiber_g": 0.0,
+        "calorie_share": 0.726,
+        "source": "usda_fdc",
+        "source_ref": "FDC:171077",
+        "source_name": "Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",
+        "confidence": "L3",
+        "verified_at": "2026-10-07"
+      },
+      {
+        "name": "西兰花",
+        "raw_name": "西兰花",
+        "amount_text": "200g",
+        "amount_g": 200.0,
+        "calories": 68.0,
+        "protein_g": 5.6,
+        "fat_g": 0.8,
+        "carbs_g": 13.2,
+        "fiber_g": 5.2,
+        "per_serving_amount_g": 100.0,
+        "per_serving_calories": 34.0,
+        "per_serving_protein_g": 2.8,
+        "per_serving_fat_g": 0.4,
+        "per_serving_carbs_g": 6.6,
+        "per_serving_fiber_g": 2.6,
+        "calorie_share": 0.274,
+        "source": "usda_fdc",
+        "source_ref": "FDC:170379",
+        "source_name": "Broccoli, raw",
+        "confidence": "L3",
+        "verified_at": "2026-10-07"
+      }
+    ],
+    "unresolved": [],
+    "complete": true,
+    "nutrition_source": "data/nutrition.csv",
+    "note": "营养值按 data/nutrition.csv 的每 100g 数据计算；未识别食材未计入合计。"
+  },
+  "elapsed_ms": 1.2,
+  "request_id": "4d5e6f..."
+}
+```
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| total_weight_g | float | 已识别食材的输入总重量；未识别项不计入 |
+| serving_weight_g | float | 输入总重量按份数折算后的每份重量 |
+| total_nutrition | object | 输入总量对应的热量、蛋白质、脂肪、碳水、膳食纤维 |
+| per_serving_nutrition | object | 按份数折算后的每份营养 |
+| ingredient_breakdown | array | 已识别食材的整份营养、每份营养、热量占比和数据来源 |
+| unresolved | array | 未识别的食材及原因；不会按 0 静默计入合计 |
+| complete | bool | 是否全部食材均已识别且存在可计算明细 |
+| nutrition_source | string | 当前固定为 `data/nutrition.csv` |
+
+错误：
+
+| HTTP | error.code | 触发条件 |
+| ---: | --- | --- |
+| 400 | `invalid_data` | `items` 为空或格式错误、食材名缺失、克重不大于 0、份数不是 1–100 的整数 |
+| 500 | `internal_error` | 本地数据表读取或计算过程异常 |
+
+边界：
+
+1. 已识别食材会正常计算，未识别食材只在 `unresolved` 中列出并在页面明确提示，不伪造近似值。
+2. 别名归一化使用 `data/ingredient_aliases.csv`；该接口只接收克重，因此不依赖单位换算表。
+3. `ingredient_breakdown` 中 `amount_g`、`calories` 等字段表示整份输入量；`per_serving_*` 字段才表示每份。
+4. 当前通过接口、页面和 `scripts/check_nutrition_calculator.py` 离线回归验证了正常计算、别名、份数、未识别项和非法输入；尚无真实用户使用验证。

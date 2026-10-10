@@ -22,7 +22,10 @@ RULE_FILES = [
 
 
 def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    # 行尾格式不应改变数据版本；统一为历史基线使用的 CRLF 字节表示。
+    content = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    content = content.replace(b"\n", b"\r\n")
+    return hashlib.sha256(content).hexdigest()
 
 
 def _hash_files(filenames: list[str]) -> tuple[str, dict[str, str]]:

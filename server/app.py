@@ -34,6 +34,7 @@
 - POST /data/units            新增 / 更新一条单位换算
 - POST /data/import           批量导入（数组，逐条返回成功 / 失败）
 - POST /data/regen            按当前营养库重算所有食谱营养缓存
+- POST /nutrition/calculate    按食材与克重计算营养，不落库、不调用 LLM
 
 录入示例（先加食材，再加食谱，营养由服务算）：
 
@@ -109,7 +110,7 @@ except ValueError:
 DIFY_TIMEOUT_SECONDS = min(max(DIFY_TIMEOUT_SECONDS, 10.0), 300.0)
 
 SERVICE_NAME = "fitmeal-data"
-SERVICE_VERSION = "0.4.0"
+SERVICE_VERSION = "0.5.0"
 DATA_TABLES = (
     "recipes.csv",
     "nutrition.csv",
@@ -455,6 +456,12 @@ def data_import(payload: Any = Body(default=None)) -> JSONResponse:
 def data_regen(payload: dict[str, Any] | None = Body(default=None)) -> JSONResponse:
     """按当前营养库重算所有食谱的营养缓存。改过营养库 / 别名 / 单位后必须调用。"""
     return _run(lambda _payload: data_entry.regen_recipes(), payload)
+
+
+@app.post("/nutrition/calculate")
+def nutrition_calculate(payload: dict[str, Any] | None = Body(default=None)) -> JSONResponse:
+    """确定性营养计算：输入食材和克重，返回整份与每份结果。"""
+    return _run(data_entry.calculate_nutrition, payload)
 
 
 # ---------------------------------------------------------------- 产品 Demo

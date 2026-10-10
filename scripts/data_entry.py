@@ -233,6 +233,77 @@ def _prepare_recipe(payload: dict) -> tuple[dict, dict]:
     return row, calc
 
 
+def calculate_nutrition(payload: dict) -> dict[str, Any]:
+    """营养计算器：接收食材与克重，返回整份和每份营养，不落库、不调用 LLM。
+
+    请求里的 items 表示一份菜谱或一餐的全部食材：
+        [{"name": "鸡胸肉", "amount_g": 150}, {"name": "西兰花", "amount_g": 200}]
+    servings 只影响每份结果的展示，不改变用户输入的食材总重量。
+    无法识别的食材进入 unresolved；已识别食材仍会正常计算。
+    """
+    items = payload.get("items")
+    if not isinstance(items, list) or not items:
+        raise DataError("items 至少需要一条食材")
+
+    try:
+        servings_value = float(_text(payload, "servings", "1") or "1")
+    except ValueError:
+        raise DataError("servings 必须是整数") from None
+    if not servings_value.is_integer():
+        raise DataError("servings 必须是整数")
+    servings = int(servings_value)
+    if servings < 1 or servings > 100:
+        raise DataError("servings 必须是 1 到 100 之间的整数")
+
+    parts = []
+    for position, item in enumerate(items, 1):
+        if not isinstance(item, dict):
+            raise DataError(f"items 第 {position} 项必须是对象")
+        name = _require(item, "name", f"第 {position} 项食材名")
+        amount = _num(
+            item,
+            "amount_g",
+            f"第 {position} 项重量（克）",
+            minimum=0.01,
+        )
+        parts.append(f"{name}:{amount}g")
+
+    # 先按整份计算，保证输入重量就是用户看到的实际用量；
+    # 再基于整份结果换算出每份，避免在中间步骤重复四舍五入。
+    total_calc = compute_ingredients(";".join(parts), build_index(), servings=1)
+    total_nutrition = total_calc["nutrition"]
+    per_serving_nutrition = {
+        key: round(total_nutrition[key] / servings, 1)
+        for key in MACRO_KEYS
+    }
+
+    breakdown = []
+    for item in total_calc["ingredient_breakdown"]:
+        row = dict(item)
+        row["per_serving_amount_g"] = round(row["amount_g"] / servings, 1)
+        row["per_serving_calories"] = round(row["calories"] / servings, 1)
+        row["per_serving_protein_g"] = round(row["protein_g"] / servings, 1)
+        row["per_serving_fat_g"] = round(row["fat_g"] / servings, 1)
+        row["per_serving_carbs_g"] = round(row["carbs_g"] / servings, 1)
+        row["per_serving_fiber_g"] = round(row["fiber_g"] / servings, 1)
+        breakdown.append(row)
+
+    total_weight_g = round(float(total_calc["serving_weight_g"]), 1)
+    return {
+        "action": "calculate",
+        "servings": servings,
+        "total_weight_g": total_weight_g,
+        "serving_weight_g": round(total_weight_g / servings, 1),
+        "total_nutrition": total_nutrition,
+        "per_serving_nutrition": per_serving_nutrition,
+        "ingredient_breakdown": breakdown,
+        "unresolved": total_calc["unresolved"],
+        "complete": not total_calc["unresolved"] and bool(breakdown),
+        "nutrition_source": "data/nutrition.csv",
+        "note": "营养值按 data/nutrition.csv 的每 100g 数据计算；未识别食材未计入合计。",
+    }
+
+
 def preview_recipe(payload: dict) -> dict[str, Any]:
     """试算：不落库，只看营养和是否落在目标区间。"""
     _, calc = _prepare_recipe(payload)

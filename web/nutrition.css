@@ -1,0 +1,222 @@
+.nutrition-workspace {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(360px, 520px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.nutrition-input-card,
+.nutrition-output-card {
+  border: 1px solid rgba(217, 221, 212, .9);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 248, .94);
+  box-shadow: var(--shadow);
+}
+
+.nutrition-input-card { padding: 30px; position: sticky; top: 22px; }
+.nutrition-output-card { min-height: 620px; overflow: hidden; }
+
+.ingredient-table-head,
+.ingredient-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 128px 54px;
+  gap: 10px;
+  align-items: center;
+}
+
+.ingredient-table-head {
+  padding: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ingredient-rows { display: grid; gap: 10px; }
+.ingredient-row .field { gap: 0; }
+.ingredient-row input {
+  min-height: 42px;
+  background: #fffefb;
+}
+.ingredient-row input[name="name"] { font-weight: 700; }
+.ingredient-row input[name="amount_g"] { text-align: right; }
+.ingredient-row input:focus { border-color: rgba(39, 98, 77, .62); box-shadow: 0 0 0 4px rgba(39, 98, 77, .09); }
+
+.remove-row {
+  min-height: 42px;
+  border: 1px solid #e0c7c1;
+  border-radius: 12px;
+  background: #fff8f5;
+  color: #a14f42;
+  cursor: pointer;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.remove-row:hover { border-color: #c88e83; background: #fcebe6; }
+.remove-row:disabled { opacity: .45; cursor: not-allowed; }
+
+.input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 11px;
+}
+.secondary-action {
+  border: 1px dashed #b8c7bb;
+  border-radius: 11px;
+  background: #f6faf6;
+  color: var(--green);
+  padding: 9px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+.secondary-action:hover { border-style: solid; background: #edf6ee; }
+.input-hint { color: #8a948f; font-size: 11px; text-align: right; }
+
+.calculate-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.servings-field small { line-height: 1.45; }
+.calculate-button { min-width: 132px; }
+
+.calculation-note {
+  display: grid;
+  gap: 5px;
+  margin-top: 19px;
+  padding: 13px 14px;
+  border: 1px solid #d8e3d8;
+  border-radius: 13px;
+  background: #f3f8f3;
+  color: #53665b;
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+.calculation-note strong { color: var(--green); font-size: 12px; }
+.calculation-note code { padding: 1px 4px; border-radius: 4px; background: #e3eee4; color: #355946; }
+
+.output-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 28px 28px 0;
+}
+.result-meta { color: var(--muted); font-size: 12px; text-align: right; }
+
+.calculator-empty {
+  min-height: 480px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  padding: 50px 30px;
+  text-align: center;
+  color: var(--muted);
+}
+.calculator-empty h3 { margin: 15px 0 7px; color: var(--ink); font-size: 17px; }
+.calculator-empty p { max-width: 390px; margin: 0; font-size: 12.5px; line-height: 1.7; }
+.empty-mark { display: flex; align-items: end; gap: 7px; height: 48px; }
+.empty-mark span { display: block; width: 18px; border-radius: 8px 8px 3px 3px; background: #cfe2d1; }
+.empty-mark span:nth-child(1) { height: 28px; background: #d8e9d8; }
+.empty-mark span:nth-child(2) { height: 46px; background: #a9cfb1; }
+.empty-mark span:nth-child(3) { height: 35px; background: #efd3c3; }
+
+#resultContent { padding: 20px 28px 28px; }
+.result-summary { display: grid; gap: 14px; }
+.macro-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.macro-card {
+  min-height: 102px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #fffefb;
+}
+.macro-card.is-primary { border-color: #b8d3bd; background: #edf6ee; }
+.macro-card span { display: block; color: var(--muted); font-size: 11px; font-weight: 800; }
+.macro-card strong { display: block; margin-top: 11px; font-size: 25px; line-height: 1; letter-spacing: -.04em; }
+.macro-card small { display: block; margin-top: 6px; color: #7e8b84; font-size: 10.5px; }
+
+.serving-strip {
+  padding: 13px 15px;
+  border: 1px solid #d6e2d8;
+  border-radius: 13px;
+  background: #f6faf6;
+  color: #4c6254;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.serving-strip strong { color: var(--green); }
+
+.unresolved-panel {
+  margin-top: 15px;
+  padding: 14px 15px;
+  border: 1px solid #e4c58d;
+  border-radius: 13px;
+  background: #fff8ea;
+  color: #79581e;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.unresolved-panel strong { display: block; margin-bottom: 5px; color: #68470e; }
+.unresolved-list { margin: 0; padding-left: 18px; }
+
+.breakdown-section { margin-top: 24px; }
+.section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+.section-heading h3 { margin: 0 0 4px; font-size: 17px; }
+.section-heading p { margin: 0; color: var(--muted); font-size: 11.5px; }
+.source-badge { padding: 5px 9px; border-radius: 999px; background: #e8f0e8; color: var(--green); font-size: 10.5px; font-weight: 800; white-space: nowrap; }
+.breakdown-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+.breakdown-table { width: 100%; min-width: 760px; border-collapse: collapse; background: #fffefb; font-size: 11.5px; }
+.breakdown-table th,
+.breakdown-table td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.breakdown-table th { background: #f6f5ef; color: var(--muted); font-size: 10.5px; font-weight: 850; white-space: nowrap; }
+.breakdown-table tr:last-child td { border-bottom: 0; }
+.breakdown-table td:not(:first-child) { white-space: nowrap; }
+.ingredient-cell strong { display: block; color: var(--ink); font-size: 12.5px; }
+.ingredient-cell small { display: block; margin-top: 3px; color: #8a948f; font-size: 10.5px; }
+.calorie-cell strong { display: block; }
+.calorie-bar { width: 84px; height: 4px; margin-top: 5px; overflow: hidden; border-radius: 999px; background: #eef0e9; }
+.calorie-bar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--green), #78a987); }
+.source-cell { max-width: 170px; color: #718078; font-size: 10.5px; white-space: normal !important; word-break: break-word; }
+.result-footnote { margin: 16px 0 0; color: #8a948f; font-size: 10.5px; line-height: 1.6; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 1080px) {
+  .nutrition-workspace { grid-template-columns: 1fr; }
+  .nutrition-input-card { position: static; }
+  .macro-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .nutrition-input-card { padding: 21px 17px; }
+  .output-toolbar, #resultContent { padding-left: 18px; padding-right: 18px; }
+  .output-toolbar { flex-direction: column; gap: 8px; }
+  .result-meta { text-align: left; }
+  .ingredient-table-head { display: none; }
+  .ingredient-row { grid-template-columns: 1fr 102px 52px; }
+  .calculate-bar { grid-template-columns: 1fr; }
+  .calculate-button { width: 100%; }
+  .macro-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .macro-card strong { font-size: 22px; }
+  .input-actions { align-items: flex-start; flex-direction: column; }
+  .input-hint { text-align: left; }
+}

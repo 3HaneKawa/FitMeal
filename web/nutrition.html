@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FitMeal 轻食令食材营养与热量计算器">
+  <title>营养计算 · FitMeal 轻食令</title>
+  <link rel="stylesheet" href="./styles.css?v=0.5.3">
+  <link rel="stylesheet" href="./nutrition.css?v=0.1.0">
+</head>
+<body>
+  <div class="page-shell nutrition-page">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="返回 FitMeal 首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" role="img"><path d="M8.5 7.5c4.8.4 8.2 2.5 10.2 6.3 2.1 4 1.5 8-1.8 11.6-2.6-1-4.5-2.5-5.9-4.7-1.6-2.6-2.4-5.5-2.5-8.7-.1-1.7 0-3.2 0-4.5Z"/><path d="M18.2 12.1c1.4-3 3.5-4.8 6.4-5.5.8 3.7-.1 6.7-2.8 8.9"/></svg>
+        </span>
+        <span>
+          <strong>FitMeal</strong>
+          <small>轻食令 · 营养计算</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <a class="data-entry-link" href="./">推荐首页</a>
+        <a class="data-entry-link is-current" href="./nutrition.html" aria-current="page">营养计算</a>
+        <a class="data-entry-link" href="./data.html">数据录入</a>
+        <a class="data-entry-link" href="./overview.html">数据总览</a>
+        <div class="service-state" id="serviceState">
+          <span class="state-dot" aria-hidden="true"></span>
+          <span>正在连接本地服务</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="nutrition-workspace">
+      <section class="nutrition-input-card">
+        <div class="eyebrow">确定性计算工具</div>
+        <h1>把食材和克重算清楚</h1>
+        <p class="lead">输入这一餐的实际用量，系统按本地营养表计算热量、蛋白质、脂肪、碳水和膳食纤维。页面不调用大模型，也未识别的食材不会偷偷按 0 计算。</p>
+
+        <form id="nutritionForm" novalidate>
+          <div class="ingredient-table-head" aria-hidden="true">
+            <span>食材</span>
+            <span>重量（克）</span>
+            <span>操作</span>
+          </div>
+          <div class="ingredient-rows" id="ingredientRows"></div>
+
+          <div class="input-actions">
+            <button class="secondary-action" id="addIngredient" type="button">+ 添加食材</button>
+            <span class="input-hint">支持营养库标准名和已登记的别名</span>
+          </div>
+
+          <div class="calculate-bar">
+            <label class="field servings-field">
+              <span>这份食材分成几份</span>
+              <input id="servings" name="servings" type="number" min="1" max="100" step="1" value="1" inputmode="numeric">
+              <small>只影响每份结果，不改变输入的食材总重</small>
+            </label>
+            <button class="primary-button calculate-button" id="calculateButton" type="submit">
+              <span>计算营养</span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4"/></svg>
+            </button>
+          </div>
+        </form>
+
+        <div class="calculation-note">
+          <strong>计算口径</strong>
+          <span>营养值来自 <code>data/nutrition.csv</code> 的每 100 克数据，按“每 100 克 × 实际克重 ÷ 份数”计算。</span>
+        </div>
+      </section>
+
+      <section class="nutrition-output-card" id="resultPanel" aria-live="polite" aria-busy="false">
+        <div class="output-toolbar">
+          <div>
+            <div class="eyebrow">计算结果</div>
+            <h2 id="resultTitle">等待录入</h2>
+          </div>
+          <div class="result-meta" id="resultMeta"></div>
+        </div>
+
+        <div class="calculator-empty" id="emptyState">
+          <div class="empty-mark" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <h3>先填写食材和克重</h3>
+          <p>点击“计算营养”后，这里会展示整份合计、每份结果、食材明细和数据来源。</p>
+        </div>
+
+        <div id="resultContent" hidden>
+          <div class="result-summary" id="resultSummary"></div>
+          <div class="unresolved-panel" id="unresolvedPanel" hidden></div>
+          <div class="breakdown-section">
+            <div class="section-heading">
+              <div>
+                <h3>食材明细</h3>
+                <p>每行显示录入总重、热量贡献和营养数据来源。</p>
+              </div>
+              <span class="source-badge">nutrition.csv</span>
+            </div>
+            <div class="breakdown-wrap">
+              <table class="breakdown-table">
+                <thead>
+                  <tr>
+                    <th>食材</th>
+                    <th>重量</th>
+                    <th>热量</th>
+                    <th>蛋白质</th>
+                    <th>脂肪</th>
+                    <th>碳水</th>
+                    <th>纤维</th>
+                    <th>来源</th>
+                  </tr>
+                </thead>
+                <tbody id="breakdownBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <p class="result-footnote">结果用于日常饮食记录，不替代医生或注册营养师的个体化建议。</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <datalist id="ingredientOptions"></datalist>
+
+  <template id="ingredientRowTemplate">
+    <div class="ingredient-row">
+      <label class="field ingredient-name-field">
+        <span class="sr-only">食材</span>
+        <input name="name" type="text" list="ingredientOptions" autocomplete="off" placeholder="例：鸡胸肉">
+      </label>
+      <label class="field ingredient-amount-field">
+        <span class="sr-only">重量（克）</span>
+        <input name="amount_g" type="number" min="0.1" step="0.1" inputmode="decimal" placeholder="150">
+      </label>
+      <button class="remove-row" type="button" aria-label="删除这项食材">删除</button>
+    </div>
+  </template>
+
+  <script src="./nutrition.js?v=0.1.0" defer></script>
+</body>
+</html>
