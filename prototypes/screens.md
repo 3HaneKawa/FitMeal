@@ -3,7 +3,7 @@
 > 更新时间：2026-10-10
 > 对应前端：`web/`
 > 运行地址：`http://127.0.0.1:8765/app/`
-> 截图目录：`web/screenshots/`
+> 运行截图：仅保存在本机，不随仓库提交。
 
 ## 1. 原型范围
 
@@ -19,18 +19,7 @@
 
 ## 2. 页面截图
 
-> 现有截图来自改造前的结构化表单版本。当前版本为单输入框加 Dify 回答，截图需要统一重拍后再用于作品集。
-
-| 页面 | 文件 | 备注 |
-| --- | --- | --- |
-| 首页 | `web/screenshots/00-home.png` | 历史版本 |
-| 自烹饪 | `web/screenshots/01-cook.png` | 历史版本 |
-| 外食 | `web/screenshots/02-eat-out.png` | 历史版本 |
-| 替换 | `web/screenshots/03-substitute.png` | 历史版本 |
-| 营养 | `web/screenshots/04-nutrition.png` | 历史版本 |
-| 安全 | `web/screenshots/05-safety.png` | 历史版本 |
-| 反馈入口 | `web/screenshots/06-feedback.png` | 历史版本 |
-| 独立营养计算 | 待补拍 `web/nutrition.html` | 当前代码已实现，截图未补 |
+现有截图来自改造前的结构化表单版本，仅用于本机演示复盘，不随仓库提交。当前单输入版以 `web/` 代码和 `fitmeal-lofi-prototype.html` 为准；独立营养计算页的截图仍需后续补拍。
 
 ## 3. 页面结构
 

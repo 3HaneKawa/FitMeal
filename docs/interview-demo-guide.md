@@ -5,7 +5,11 @@
 ## 1. 演示前检查
 
 1. 先自行启动 Dify 和 Docker Desktop，确认 Dify 控制台可访问；项目根目录 `.env` 已配置 `DIFY_API_KEY`。
-2. 双击根目录 `启动FitMeal.bat`，或运行 `powershell -ExecutionPolicy Bypass -File .\server\start.ps1`。脚本会自动启动向量服务 `8766` 和 FitMeal 服务 `8765`，并检查 Dify、环境变量和端口。
+2. 在本机启动 FitMeal API 与前端服务：
+   ```powershell
+   uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir server --host 127.0.0.1 --port 8765
+   ```
+   如果本机保留了未纳入仓库的一键启动脚本，也可以直接使用；公开仓库不提供这些本地脚本。
 3. 打开 `http://127.0.0.1:8765/app/?v=0.5.3`。
 4. 确认页面顶部显示“智能服务已连接”。
 5. 提前打开 `docs/PRD.md`、`prototypes/screens.md`、`evals/showcase_results.md` 和 `docs/evaluation-summary.md`。

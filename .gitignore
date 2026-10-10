@@ -35,6 +35,11 @@ Thumbs.db
 # Node
 node_modules/
 
+# Local-only launchers and screenshots
+启动FitMeal.bat
+server/start.ps1
+web/screenshots/
+
 # Internal build notes and deployment helpers
 CHANGELOG.md
 docs/dev-log.md

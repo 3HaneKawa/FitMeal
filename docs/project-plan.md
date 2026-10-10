@@ -13,7 +13,7 @@
 | 产品定义 | 需求分析、PRD、页面流程、功能范围、非目标和验收口径 | `docs/requirements-analysis.md`、`docs/PRD.md`、`prototypes/screens.md` |
 | 规则与数据 | 食谱 208、营养 159、外食 50、目标规则 3、替换规则 30、别名 24、单位换算 19、目标食材施工单 48 | `data/`、`server /health` |
 | FastAPI 服务 | `/chat` 代理 Dify，`/recommend` 作为 Dify 内部数据节点，并提供 `/health`、`/feedback` 和数据录入接口 | `server/app.py`、接口请求记录 |
-| 单输入前端 | 一句话提交需求，展示 Dify 回答、真实链路和端到端耗时 | `web/`、`web/screenshots/` |
+| 单输入前端 | 一句话提交需求，展示 Dify 回答、真实链路和端到端耗时 | `web/`、`fitmeal-lofi-prototype.html` |
 | 独立营养计算器 | 输入食材、克重和份数，返回整份 / 每份营养、食材拆解、来源和未识别项 | `web/nutrition.*`、`POST /nutrition/calculate` |
 | Dify 链路 | 浏览器经 `/chat` 进入 Dify；Dify 完成参数抽取、安全判断、意图分类、数据节点调用和回答生成 | `server/app.py`、`docs/evaluation-summary.md` 和首轮 API 运行汇总 |
 | 数据一致性 | 数据校验、覆盖度诊断、数据版本和规则版本通过 | `scripts/validate_data.py`、`scripts/coverage_report.py` |

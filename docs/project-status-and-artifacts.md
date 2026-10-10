@@ -68,7 +68,7 @@ v1 不做账号、支付、外卖下单、医疗级建议和长期偏好学习�
 - `prototypes/screens.md`：交互状态与结果呈现。
 - `web/`：可以直接运行的本地交互 Demo。
 - `web/nutrition.html`、`web/nutrition.css`、`web/nutrition.js`：独立营养计算页。
-- `web/screenshots/`：首页、推荐、外食、替换、营养和安全六类截图。
+- 运行截图只保留在本机，用于演示复盘，不随仓库提交。
 
 ### 4.3 数据与规则
 
@@ -104,8 +104,7 @@ v1 不做账号、支付、外卖下单、医疗级建议和长期偏好学习�
 
 - `server/app.py`：FastAPI 服务、`/chat` Dify 代理、`/recommend` 内部数据接口、`/nutrition/calculate` 确定性营养接口、最小反馈接口、数据录入接口和静态前端入口。
 - `scripts/`：数据校验、推荐、营养计算、评测、覆盖诊断、反馈自测和数据录入。
-- `启动FitMeal.bat`：Windows 双击启动入口。
-- `server/start.ps1`：实际启动脚本；需要时自动启动 `8766` 向量服务，再启动 `8765` 并打开浏览器入口。
+- 本地启动辅助脚本不随公开仓库提交；启动命令见 `README.md`。
 
 ## 5. 当前结果
 

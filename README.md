@@ -30,7 +30,7 @@ FitMeal 是一个面向健身人群的饮食决策助手。用户可以用一句
 ```text
 data/         食谱、营养、外食、目标规则、替换规则、别名和单位换算
 server/       FastAPI 数据服务与静态前端入口
-web/          本地可交互前端和运行截图
+web/          本地可交互前端和工具页
 scripts/      数据校验、推荐、评测、覆盖诊断和数据录入
 evals/        正式评测集、评分规则和能力矩阵
 docs/         PRD、架构、接口、安全、数据治理和评测说明
@@ -45,24 +45,11 @@ prototypes/   页面结构、交互流程和原型说明
 Copy-Item .env.example .env
 ```
 
-`.env` 已被 Git 忽略，只保存在本机。前端、截图和公开仓库都不能包含 `DIFY_API_KEY`。除 FitMeal API 外，演示 Dify 完整链路还需要 Dify 服务与本地向量服务 `8766` 在线；Dify 工作流仍通过 `/recommend` 调用营养计算和候选筛选。
+`.env` 已被 Git 忽略，只保存在本机。前端文件和公开仓库都不能包含 `DIFY_API_KEY`。除 FitMeal API 外，演示 Dify 完整链路还需要 Dify 服务与本地向量服务 `8766` 在线；Dify 工作流仍通过 `/recommend` 调用营养计算和候选筛选。
 
-## 一键启动（Windows）
+## 本地运行说明
 
-先自行启动 Dify 和 Docker Desktop，确认 Dify 控制台可访问。然后在项目根目录双击：
-
-```text
-启动FitMeal.bat
-```
-
-启动脚本会自动完成：
-
-- 检查 `.env` 与 Dify 连接；
-- 启动本地向量服务 `8766`（如果尚未运行）；
-- 启动 FitMeal 数据与前端服务 `8765`；
-- 打开前端 Demo：`http://127.0.0.1:8765/app/`
-
-服务窗口需要保持打开。停止 FitMeal 时在该窗口按 `Ctrl+C`；向量服务日志位于 `D:\Desktop\ai\embed-server\logs`。本项目使用 `uv` 管理 Python 3.12；如果电脑上没有 `uv`，启动脚本会给出提示。
+Dify、Docker Desktop、本地向量服务和启动辅助脚本都属于本机运行环境，不随仓库提交。请先在本机准备这些服务并在项目根目录配置 `.env`，再按下面的命令启动 FitMeal API 与前端。
 
 ## 手动运行
 
@@ -111,20 +98,9 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 
 返回值包含整份总营养、每份营养、食材级拆解、热量占比、数据来源和未识别食材。计算只使用 `data/nutrition.csv` 和别名表，不调用 LLM，不经过 Dify，也不写入数据表。当前输入口径是克重，不把“个 / 瓣 / 碗”等非重量单位自动折算；未识别食材会单独暴露，不会被静默按 0 计入合计。
 
-## 原型截图
+## 原型材料
 
-> 下列截图记录的是改造前的结构化表单版本；当前 Dify 单输入版与回答级反馈界面以 `web/` 代码为准，待统一重拍。
-
-![首页](web/screenshots/00-home.png)
-
-![自烹饪推荐](web/screenshots/01-cook.png)
-
-![反馈入口](web/screenshots/06-feedback.png)
-
-![外食策略](web/screenshots/02-eat-out.png)
-
-![安全拦截](web/screenshots/05-safety.png)
-
+低保真原型见 `fitmeal-lofi-prototype.html`，页面结构与交互说明见 `prototypes/screens.md`。运行截图只用于本机演示复盘，不随仓库提交。
 ## 评测说明
 
 正式评测集为 `evals/eval_set.csv`，共 270 条：
@@ -170,4 +146,3 @@ uv run --python 3.12 --with fastapi --with uvicorn uvicorn app:app --app-dir ser
 5. F10 只完成最小反馈事件记录；12 条对话式反馈用例仍为 `not_ready`。反馈不会自动改变推荐，跨会话偏好、对话反馈理解和排序闭环尚未实现。
 6. 真实用户测试尚未完成，当前不能宣称采纳率或决策率已经达到目标。
 7. 营养计算器依赖现有营养表和别名，且当前只接收克重；未覆盖食材会返回 `unresolved`，需要先补齐数据再复算。接口、页面和离线确定性回归已通过 `scripts/check_nutrition_calculator.py`，但仍未做真实用户验证，不代表用户已经使用或认可该工具。
-
